@@ -14,5 +14,8 @@
         "entrypoints": {
             "client": "hibi.blind_me.Main::clientInit"
         }
-    }
+    },
+    "mixin": [
+        "blind_me.mixins.json"
+    ]
 }
