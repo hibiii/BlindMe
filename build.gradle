@@ -1,0 +1,30 @@
+plugins {
+    id 'org.quiltmc.loom' version '1.4.+'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.deps__minecraft}"
+    mappings "org.quiltmc:quilt-mappings:${project.deps__mappings}"
+    modImplementation "org.quiltmc:quilt-loader:${project.deps__loader}"
+}
+
+processResources {
+    filesMatching(['quilt.mod.json', 'fabric.mod.json']) {
+        expand (
+            'mod_id': project.id,
+            'mod_version': project.version,
+            'minecraft_version': ">=${project.deps__minecraft}"
+        )
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = 'UTF-8'
+    it.options.release = 17
+}
+
+jar {
+    from('LICENSE') {
+        rename {"${it}_${project.id}"}
+    }
+}

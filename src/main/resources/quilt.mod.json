@@ -1,0 +1,18 @@
+{
+    "schema_version": 1,
+    "quilt_loader": {
+        "group": "hibiscvs",
+        "id": "${mod_id}",
+        "version": "${mod_version}",
+        "depends": [
+            {
+                "id": "minecraft",
+                "version": "${minecraft_version}"
+            }
+        ],
+        "intermediate_mappings": "net.fabricmc:intermediary",
+        "entrypoints": {
+            "client": "hibi.blind_me.Main::clientInit"
+        }
+    }
+}
