@@ -1,7 +1,15 @@
 package hibi.blind_me;
 
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientWorldTickEvents;
+import org.quiltmc.qsl.networking.api.client.ClientPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 
 public class Main {
 
@@ -9,5 +17,27 @@ public class Main {
 
     public static void clientInit() {
         LOGGER.info("Hello, world");
+        ClientWorldTickEvents.START.register(Main::tickCallback);
+        ClientPlayConnectionEvents.DISCONNECT.register(Main::disconnectCallback);
+    }
+
+    private static StatusEffectInstance effect = null;
+
+    private static void tickCallback(MinecraftClient client, ClientWorld world) {
+        if (effect != null && client.player.hasStatusEffect(StatusEffects.field_5919)) {
+            return;
+        }
+        StatusEffectInstance ef = new StatusEffectInstance(
+            StatusEffects.field_5919,
+            StatusEffectInstance.INFINITE_DURATION, 0,
+            false, true, true
+        );
+        if (client.player.addStatusEffect(ef)) {
+            effect = ef;
+        }
+    }
+
+    private static void disconnectCallback(ClientPlayNetworkHandler handler, MinecraftClient client) {
+        effect = null;
     }
 }
