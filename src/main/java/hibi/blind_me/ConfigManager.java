@@ -11,5 +11,7 @@ public class ConfigManager {
     }
 
     public static void configureInstance() {
+        EffectManager.setDisabledCreative(CONFIG.creativeBypass.getRealValue());
+        EffectManager.setDisabledSpectator(CONFIG.spectatorBypass.getRealValue());
     }
 }
