@@ -2,8 +2,8 @@ package hibi.blind_me;
 
 import org.quiltmc.loader.api.config.v2.QuiltConfig;
 
-public class ConfigManager {
-    public static final Config CONFIG = QuiltConfig.create("blind_me", "config", Config.class);
+public final class ConfigManager {
+    public static final Config CONFIG = QuiltConfig.create("BlindMe", "config", Config.class);
 
     public static void init() {
         ConfigManager.configureInstance();
@@ -14,4 +14,6 @@ public class ConfigManager {
         EffectManager.setDisabledCreative(CONFIG.creativeBypass.getRealValue());
         EffectManager.setDisabledSpectator(CONFIG.spectatorBypass.getRealValue());
     }
+
+    private ConfigManager() {}
 }

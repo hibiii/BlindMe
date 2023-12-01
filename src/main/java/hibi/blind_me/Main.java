@@ -10,7 +10,7 @@ public class Main {
     public static final Logger LOGGER = LoggerFactory.getLogger("BlindMe");
 
     public static void clientInit() {
-        LOGGER.info("Hello, world");
+        ConfigManager.init();
         ClientWorldTickEvents.START.register(EffectManager::tickCallback);
         ClientPlayConnectionEvents.DISCONNECT.register(EffectManager::disconnectCallback);
         ClientPlayConnectionEvents.JOIN.register(EffectManager::joinCallback);
