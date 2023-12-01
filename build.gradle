@@ -2,11 +2,18 @@ plugins {
     id 'org.quiltmc.loom' version '1.4.+'
 }
 
+repositories {
+    maven { url 'https://maven.terraformersmc.com/releases/' }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${project.deps__minecraft}"
     mappings "org.quiltmc:quilt-mappings:${project.deps__mappings}"
     modImplementation "org.quiltmc:quilt-loader:${project.deps__loader}"
     modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${project.deps__stdlib}"
+    modImplementation ("com.terraformersmc:modmenu:${project.deps__modmenu}") {
+        exclude(group: 'net.fabricmc')
+    }
 }
 
 processResources {
