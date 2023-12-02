@@ -14,6 +14,18 @@
         "entrypoints": {
             "client": "hibi.blind_me.Main::clientInit",
             "modmenu": "hibi.blind_me.MenuInteg"
+        },
+        "metadata": {
+            "name": "BlindMe",
+            "description": "A client-sided mod that enforces the Blindness effect on the player, configurable per world.",
+            "contributors": {
+                "hibi": "Owner"
+            },
+            "license": "MIT",
+            "icon": "assets/blindme/icon.png",
+            "contact": {
+                "sources": "https://github.com/hibiii/BlindMe"
+            }
         }
     },
     "mixin": [
