@@ -3,7 +3,7 @@
 A client-sided mod that gives you the Blindness (or Darkness) effect all the time.
 Configurable per world and server.
 
-This is where a screenshot would go, but it would be mostly dark except for the HUD and very few blocks!
+![Screenshot of an already built-up world but with the BlindMe mod active](.github/screenshot.png)
 
 Currently a beta version, there might be some bugs.
 Licensed under MIT, made by hibi.
