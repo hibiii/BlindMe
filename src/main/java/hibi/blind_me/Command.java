@@ -35,7 +35,7 @@ public final class Command {
             cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_SET));
             return 0;
         }
-        ConfigManager.CONFIG.servers.getRealValue().put(EffectManager.uniqueId, ef);
+        ConfigManager.CONFIG.setEffectForServer(EffectManager.uniqueId, ef);
         cmd.getSource().sendFeedback(switch(ef) {
             case OFF -> Text.translatable(K_EFFECT_OFF);
             case BLINDNESS -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.minecraft.blindness"));

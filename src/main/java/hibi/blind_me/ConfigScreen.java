@@ -59,7 +59,7 @@ public class ConfigScreen extends GameOptionsScreen {
                 Text.literal(K_CURRENT_SERVER),
                 (button, value) -> {
                     this.changed = true;
-                    ConfigManager.CONFIG.servers.getRealValue().put(EffectManager.uniqueId, value);
+                    ConfigManager.CONFIG.setEffectForServer(EffectManager.uniqueId, value);
                 }
             );
         serverEffectButton.active = ingame;

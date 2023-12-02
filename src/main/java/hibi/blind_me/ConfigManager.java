@@ -2,9 +2,8 @@ package hibi.blind_me;
 
 import org.quiltmc.loader.api.config.v2.QuiltConfig;
 
-import hibi.blind_me.ConfigEnums.ServerEffect;
-
 public final class ConfigManager {
+    
     public static final Config CONFIG = QuiltConfig.create("BlindMe", "config", Config.class);
 
     public static void init() {
@@ -15,7 +14,7 @@ public final class ConfigManager {
     public static void configureInstance() {
         EffectManager.setDisabledCreative(CONFIG.creativeBypass.getRealValue());
         EffectManager.setDisabledSpectator(CONFIG.spectatorBypass.getRealValue());
-        EffectManager.setDesiredEffect(CONFIG.servers.getRealValue().getOrDefault(EffectManager.uniqueId, ServerEffect.BLINDNESS));
+        EffectManager.setDesiredEffect(CONFIG.getEffectForServer(EffectManager.uniqueId));
     }
 
     private ConfigManager() {}
