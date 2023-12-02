@@ -1,0 +1,9 @@
+{
+    "blindme.options.title": "BlindMe Settings",
+    "blindme.options.creative_bypass": "Disable in Creative Mode",
+    "blindme.options.spectator_bypass": "Disable in Spectator Mode",
+    "blindme.options.current_world_effect": "Effect for the current world / server: %s",
+    "blindme.options.current_world_effect.tooltip.OFF": "OFF: Disable any vision-impairing effects",
+    "blindme.options.current_world_effect.tooltip.BLINDNESS": "Blindness: Blocks and entities are only visible in a small radius",
+    "blindme.options.current_world_effect.tooltip.DARKNESS": "Darkness: Blocks and entities are visible in a medium radius"
+}
