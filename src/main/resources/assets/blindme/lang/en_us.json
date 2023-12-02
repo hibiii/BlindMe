@@ -1,4 +1,7 @@
 {
+    "blindme.command.effect_already_set": "This is the currently active effect",
+    "blindme.command.set_effect": "Set the active effect to %s",
+    "blindme.command.disable_effect": "Disabled vision-impairing effects",
     "blindme.options.title": "BlindMe Settings",
     "blindme.options.creative_bypass": "Disable in Creative Mode",
     "blindme.options.spectator_bypass": "Disable in Spectator Mode",
