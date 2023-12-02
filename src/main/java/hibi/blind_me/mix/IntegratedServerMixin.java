@@ -1,7 +1,6 @@
 package hibi.blind_me.mix;
 
 import hibi.blind_me.EffectManager;
-import hibi.blind_me.Main;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
