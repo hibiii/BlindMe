@@ -24,11 +24,19 @@
             "license": "MIT",
             "icon": "assets/blindme/icon.png",
             "contact": {
+                "homepage": "https://hibiscus.pet/mods/blindme",
+                "issues": "https://github.com/hibiii/BlindMe/issues",
                 "sources": "https://github.com/hibiii/BlindMe"
             }
         }
     },
     "mixin": [
         "blind_me.mixins.json"
-    ]
+    ],
+    "modmenu": {
+        "links": {
+            "modmenu.blindme.users_manual": "https://hibiscus.pet/mods/blindme/documentation",
+            "modmenu.github_releases": "https://github.com/hibiii/BlindMe/releases/"
+        }
+    }
 }
