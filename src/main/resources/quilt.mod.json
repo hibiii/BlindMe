@@ -8,7 +8,13 @@
             {
                 "id": "minecraft",
                 "version": "${minecraft_version}"
-            }
+            },
+            { "id": "quilt_loader" },
+            { "id": "quilt_client_command" },
+            { "id": "quilt_command" },
+            { "id": "quilt_lifecycle_events" },
+            { "id": "quilt_networking" },
+            { "id": "quilt_resource_loader" }
         ],
         "intermediate_mappings": "net.fabricmc:intermediary",
         "entrypoints": {
