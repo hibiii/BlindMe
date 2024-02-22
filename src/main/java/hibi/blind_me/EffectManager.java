@@ -12,7 +12,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.network.packet.payload.CustomPayload;
 
 public final class EffectManager {
 
@@ -61,7 +60,7 @@ public final class EffectManager {
         effect = null;
     }
 
-    public static void joinCallback(ClientPlayNetworkHandler handler, PacketSender<CustomPayload> sender, MinecraftClient client) {
+    public static void joinCallback(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
         if (client.isSingleplayer()) {
             return;
         }
