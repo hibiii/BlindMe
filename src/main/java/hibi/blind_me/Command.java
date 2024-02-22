@@ -32,11 +32,15 @@ public final class Command {
             default -> throw new IllegalStateException("Unreachable code executed");
         };
 
-        if (Manager.CONFIG.getEffectForServer(EffectManager.uniqueId) == ef) {
+        String uniqueId = EffectManager.getUniqueId();
+        if (uniqueId == null) {
+            throw new IllegalStateException("Command called outside of a world");
+        }
+        if (Manager.CONFIG.getEffectForServer(uniqueId) == ef) {
             cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_SET));
             return 0;
         }
-        Manager.CONFIG.setEffectForServer(EffectManager.uniqueId, ef);
+        Manager.CONFIG.setEffectForServer(uniqueId, ef);
         cmd.getSource().sendFeedback(switch(ef) {
             case OFF -> Text.translatable(K_EFFECT_OFF);
             case BLINDNESS -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.minecraft.blindness"));

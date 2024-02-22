@@ -16,7 +16,7 @@ public final class Manager {
     public static void configureInstance() {
         EffectManager.setDisabledCreative(CONFIG.creativeBypass.getRealValue());
         EffectManager.setDisabledSpectator(CONFIG.spectatorBypass.getRealValue());
-        EffectManager.setDesiredEffect(CONFIG.getEffectForServer(EffectManager.uniqueId));
+        EffectManager.setDesiredEffect(CONFIG.getEffectForServer(EffectManager.getUniqueId()));
     }
 
     private Manager() {}

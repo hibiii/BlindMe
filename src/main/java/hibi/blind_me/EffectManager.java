@@ -16,7 +16,7 @@ import net.minecraft.entity.effect.StatusEffects;
 
 public final class EffectManager {
 
-    public static @Nullable String uniqueId = null; // public readonly
+    private static String uniqueId = null;
     private static StatusEffectInstance effect = null;
     private static boolean skipCreative = false;
     private static boolean skipSpectator = true;
@@ -100,5 +100,9 @@ public final class EffectManager {
             }
         }
         effectChanged = true;
+    }
+
+    public static @Nullable String getUniqueId() {
+        return uniqueId;
     }
 }

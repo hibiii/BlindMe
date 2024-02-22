@@ -42,7 +42,7 @@ public class ConfigScreen extends GameOptionsScreen {
         ));
         boolean ingame = this.client.world != null;
         ServerEffect initial = ingame
-            ? Manager.CONFIG.getEffectForServer(EffectManager.uniqueId)
+            ? Manager.CONFIG.getEffectForServer(EffectManager.getUniqueId())
             : ServerEffect.BLINDNESS;
         CyclingButtonWidget<ServerEffect> serverEffectButton = CyclingButtonWidget
             .builder((ServerEffect value) -> Text.translatable(K_CURRENT_SERVER, switch(value) {
@@ -60,7 +60,7 @@ public class ConfigScreen extends GameOptionsScreen {
                 Text.literal(K_CURRENT_SERVER),
                 (button, value) -> {
                     this.changed = true;
-                    Manager.CONFIG.setEffectForServer(EffectManager.uniqueId, value);
+                    Manager.CONFIG.setEffectForServer(EffectManager.getUniqueId(), value);
                 }
             );
         serverEffectButton.active = ingame;
