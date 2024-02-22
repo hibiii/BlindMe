@@ -7,7 +7,8 @@ import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
-import hibi.blind_me.ConfigEnums.ServerEffect;
+import hibi.blind_me.config.Manager;
+import hibi.blind_me.config.Enums.ServerEffect;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
 import net.minecraft.text.Text;
@@ -31,11 +32,11 @@ public final class Command {
             default -> throw new IllegalStateException("Unreachable code executed");
         };
 
-        if (ConfigManager.CONFIG.getEffectForServer(EffectManager.uniqueId) == ef) {
+        if (Manager.CONFIG.getEffectForServer(EffectManager.uniqueId) == ef) {
             cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_SET));
             return 0;
         }
-        ConfigManager.CONFIG.setEffectForServer(EffectManager.uniqueId, ef);
+        Manager.CONFIG.setEffectForServer(EffectManager.uniqueId, ef);
         cmd.getSource().sendFeedback(switch(ef) {
             case OFF -> Text.translatable(K_EFFECT_OFF);
             case BLINDNESS -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.minecraft.blindness"));

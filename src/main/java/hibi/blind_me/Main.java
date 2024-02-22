@@ -6,12 +6,14 @@ import org.quiltmc.qsl.networking.api.client.ClientPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import hibi.blind_me.config.Manager;
+
 public class Main {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("BlindMe");
 
     public static void clientInit() {
-        ConfigManager.init();
+        Manager.init();
         ClientWorldTickEvents.START.register(EffectManager::tickCallback);
         ClientPlayConnectionEvents.DISCONNECT.register(EffectManager::disconnectCallback);
         ClientPlayConnectionEvents.JOIN.register(EffectManager::joinCallback);

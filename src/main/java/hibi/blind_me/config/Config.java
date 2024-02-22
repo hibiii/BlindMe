@@ -1,4 +1,4 @@
-package hibi.blind_me;
+package hibi.blind_me.config;
 
 import org.quiltmc.config.api.ReflectiveConfig;
 import org.quiltmc.config.api.annotations.Comment;
@@ -6,7 +6,7 @@ import org.quiltmc.config.api.annotations.Processor;
 import org.quiltmc.config.api.values.TrackedValue;
 import org.quiltmc.config.api.values.ValueMap;
 
-import hibi.blind_me.ConfigEnums.ServerEffect;
+import hibi.blind_me.config.Enums.ServerEffect;
 
 @Processor("setSerializer")
 public class Config extends ReflectiveConfig {

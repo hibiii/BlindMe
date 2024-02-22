@@ -3,7 +3,8 @@ package hibi.blind_me;
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.PacketSender;
 
-import hibi.blind_me.ConfigEnums.ServerEffect;
+import hibi.blind_me.config.Manager;
+import hibi.blind_me.config.Enums.ServerEffect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -75,7 +76,7 @@ public final class EffectManager {
     }
 
     private static void getEffectForServer() {
-        EffectManager.setDesiredEffect(ConfigManager.CONFIG.getEffectForServer(uniqueId));
+        EffectManager.setDesiredEffect(Manager.CONFIG.getEffectForServer(uniqueId));
     }
 
     public static void setDisabledCreative(boolean skipsCreative) {

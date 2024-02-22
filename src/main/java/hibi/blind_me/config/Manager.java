@@ -1,14 +1,16 @@
-package hibi.blind_me;
+package hibi.blind_me.config;
 
 import org.quiltmc.loader.api.config.v2.QuiltConfig;
 
-public final class ConfigManager {
+import hibi.blind_me.EffectManager;
+
+public final class Manager {
     
     public static final Config CONFIG = QuiltConfig.create("BlindMe", "config", Config.class);
 
     public static void init() {
-        ConfigManager.configureInstance();
-        CONFIG.registerCallback(_1 -> ConfigManager.configureInstance());
+        Manager.configureInstance();
+        CONFIG.registerCallback(_1 -> Manager.configureInstance());
     }
 
     public static void configureInstance() {
@@ -17,5 +19,5 @@ public final class ConfigManager {
         EffectManager.setDesiredEffect(CONFIG.getEffectForServer(EffectManager.uniqueId));
     }
 
-    private ConfigManager() {}
+    private Manager() {}
 }

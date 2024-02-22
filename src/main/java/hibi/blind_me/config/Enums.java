@@ -1,6 +1,6 @@
-package hibi.blind_me;
+package hibi.blind_me.config;
 
-public class ConfigEnums {
+public class Enums {
     public enum ServerEffect {
         OFF,
         BLINDNESS,

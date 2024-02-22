@@ -1,6 +1,7 @@
-package hibi.blind_me;
+package hibi.blind_me.config;
 
-import hibi.blind_me.ConfigEnums.ServerEffect;
+import hibi.blind_me.EffectManager;
+import hibi.blind_me.config.Enums.ServerEffect;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
@@ -19,29 +20,29 @@ public class ConfigScreen extends GameOptionsScreen {
     }
 
     protected void init() {
-        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(ConfigManager.CONFIG.creativeBypass.getRealValue())
+        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.creativeBypass.getRealValue())
         .build(
             this.width / 2 - 155, this.height / 6,
             310, 20,
             Text.translatable(K_CREATIVE_BYPASS),
             (button, set) -> {
                 this.changed = true;
-                ConfigManager.CONFIG.creativeBypass.setValue(set, false);
+                Manager.CONFIG.creativeBypass.setValue(set, false);
             }
         ));
-        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(ConfigManager.CONFIG.spectatorBypass.getRealValue())
+        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.spectatorBypass.getRealValue())
         .build(
             this.width / 2 - 155, this.height / 6 + 24,
             310, 20,
             Text.translatable(K_SPECTATOR_BYPASS),
             (button, set) -> {
                 this.changed = true;
-                ConfigManager.CONFIG.spectatorBypass.setValue(set, false);
+                Manager.CONFIG.spectatorBypass.setValue(set, false);
             }
         ));
         boolean ingame = this.client.world != null;
         ServerEffect initial = ingame
-            ? ConfigManager.CONFIG.getEffectForServer(EffectManager.uniqueId)
+            ? Manager.CONFIG.getEffectForServer(EffectManager.uniqueId)
             : ServerEffect.BLINDNESS;
         CyclingButtonWidget<ServerEffect> serverEffectButton = CyclingButtonWidget
             .builder((ServerEffect value) -> Text.translatable(K_CURRENT_SERVER, switch(value) {
@@ -59,7 +60,7 @@ public class ConfigScreen extends GameOptionsScreen {
                 Text.literal(K_CURRENT_SERVER),
                 (button, value) -> {
                     this.changed = true;
-                    ConfigManager.CONFIG.setEffectForServer(EffectManager.uniqueId, value);
+                    Manager.CONFIG.setEffectForServer(EffectManager.uniqueId, value);
                 }
             );
         serverEffectButton.active = ingame;
@@ -68,7 +69,7 @@ public class ConfigScreen extends GameOptionsScreen {
         this.addDrawableChild(ButtonWidget.builder(CommonTexts.DONE,
             button -> {
                 if (this.changed) {
-                    ConfigManager.CONFIG.save();
+                    Manager.CONFIG.save();
                 }
                 this.client.setScreen(this.parent);
             })
