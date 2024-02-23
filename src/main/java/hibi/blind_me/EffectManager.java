@@ -1,5 +1,7 @@
 package hibi.blind_me;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 import org.quiltmc.qsl.networking.api.PacketSender;
 
@@ -13,6 +15,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.effect.StatusEffectInstance.FactorData;
 
 public final class EffectManager {
 
@@ -50,7 +53,8 @@ public final class EffectManager {
         StatusEffectInstance ef = new StatusEffectInstance(
             desiredEffect,
             StatusEffectInstance.INFINITE_DURATION, 0,
-            true, false, false
+            true, false, false,
+            (StatusEffectInstance) null, Optional.of(new FactorData(22, 0f, 1f, 1f, 2000, 1f, true))
         );
         if (player.addStatusEffect(ef)) {
             effect = ef;
