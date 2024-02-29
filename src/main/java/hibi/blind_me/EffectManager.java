@@ -144,4 +144,8 @@ public final class EffectManager {
             return;
         }
     }
+
+    public static @Nullable StatusEffectInstance getModEffect() {
+        return effect;
+    }
 }
