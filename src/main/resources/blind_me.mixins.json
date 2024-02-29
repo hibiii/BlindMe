@@ -5,7 +5,9 @@
     "compatibilityLevel": "JAVA_17",
     "client": [
         "IntegratedServerMixin",
-        "ClientPlayerEntityMixin"
+        "ClientPlayerEntityMixin",
+        "LivingEntityAccessor",
+        "StatusEffectInstanceAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

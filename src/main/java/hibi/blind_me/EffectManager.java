@@ -1,5 +1,6 @@
 package hibi.blind_me;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
@@ -7,6 +8,8 @@ import org.quiltmc.qsl.networking.api.PacketSender;
 
 import hibi.blind_me.config.Manager;
 import hibi.blind_me.config.Enums.ServerEffect;
+import hibi.blind_me.mix.LivingEntityAccessor;
+import hibi.blind_me.mix.StatusEffectInstanceAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -31,10 +34,7 @@ public final class EffectManager {
     public static void tickCallback(MinecraftClient client, ClientWorld world) {
         ClientPlayerEntity player = client.player;
         if (effectChanged) {
-            if (effect != null) {
-                player.removeStatusEffect(effect.getEffectType());
-                effect = null;
-            }
+            removeModEffect(player);
             effectChanged = false;
         }
         if (desiredEffect == null) {
@@ -42,7 +42,7 @@ public final class EffectManager {
         }
         if (skipCreative && player.isCreative() || skipSpectator && player.isSpectator()) {
             if (effect != null && player.hasStatusEffect(desiredEffect)) {
-                player.removeStatusEffect(desiredEffect);
+                removeModEffect(player);
                 effect = null;
             }
             return;
@@ -108,5 +108,40 @@ public final class EffectManager {
 
     public static @Nullable String getUniqueId() {
         return uniqueId;
+    }
+
+    private static void removeModEffect(ClientPlayerEntity player) {
+        if (effect == null) {
+            return;
+        }
+        Map<StatusEffect, StatusEffectInstance> map = ((LivingEntityAccessor)player).getActiveStatusEffects();
+        StatusEffect type = effect.getEffectType();
+        StatusEffectInstance ef = player.getStatusEffect(type);
+        if (ef == null) {
+            return;
+        }
+        if (ef == effect) {
+            if (((StatusEffectInstanceAccessor)ef).getHiddenEffect() instanceof StatusEffectInstance shadowed) {
+                ef = shadowed;
+                map.put(type, shadowed);
+            } else {
+                map.remove(type);
+            }
+            return;
+        }
+        ef = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+        while (ef != null) {
+            StatusEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+            if (shadowed == null) {
+                return;
+            }
+            if (shadowed != effect) {
+                ef = shadowed;
+                continue;
+            }
+            StatusEffectInstance shadowed2 = ((StatusEffectInstanceAccessor)shadowed).getHiddenEffect();
+            ((StatusEffectInstanceAccessor)ef).setHiddenEffect(shadowed2);
+            return;
+        }
     }
 }
