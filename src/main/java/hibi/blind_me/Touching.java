@@ -18,6 +18,7 @@ public final class Touching {
     Touching() {}
 
     public static final KeyBind TOUCH_KEY;
+    private static boolean swingHand = true;
 
     public static void tickCallback(MinecraftClient client, ClientWorld world) {
         if (client.crosshairTarget == null) {
@@ -25,12 +26,13 @@ public final class Touching {
         }
         Main.touchTextRenderer.tick();
         if (TOUCH_KEY.wasPressed()) {
-            client.player.swingHand(Hand.field_5808);
+            if (swingHand) {
+                client.player.swingHand(Hand.field_5808);
+            }
             HitResult hit = client.crosshairTarget;
             // TODO: upgrade to instanceof switch when JAVA 21 hits prod
             Text text = null, subtitle = null;
             double distance = client.cameraEntity.getCameraPosVec(0).distanceTo(hit.getPos());
-            System.err.println(hit.getType());
             switch(hit.getType()) {
                 // Miss
                 case field_1333 -> { return; }
@@ -50,6 +52,10 @@ public final class Touching {
             }
             Main.touchTextRenderer.setText(text,  subtitle, distance);
         }
+    }
+
+    public static void setHandSwings(boolean swingHand) {
+        Touching.swingHand = swingHand;
     }
 
     static {

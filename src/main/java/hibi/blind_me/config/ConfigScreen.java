@@ -1,6 +1,7 @@
 package hibi.blind_me.config;
 
 import hibi.blind_me.EffectManager;
+import hibi.blind_me.Touching;
 import hibi.blind_me.config.Enums.ServerEffect;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
@@ -40,6 +41,18 @@ public class ConfigScreen extends GameOptionsScreen {
                 Manager.CONFIG.spectatorBypass.setValue(set, false);
             }
         ));
+        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.swingHandOnTouch.getRealValue())
+        .tooltip((bool) -> Tooltip.create(Text.translatable(K_SWING_ON_TOUCH_TOOLTIP)))
+        .build(
+            this.width / 2 - 155, this.height / 6 + 48,
+            310, 20,
+            Text.translatable(K_SWING_ON_TOUCH),
+            (button, set) -> {
+                this.changed = true;
+                Manager.CONFIG.swingHandOnTouch.setValue(set, false);
+                Touching.setHandSwings(set);
+            }
+        ));
         boolean ingame = this.client.world != null;
         ServerEffect initial = ingame
             ? Manager.CONFIG.getEffectForServer(EffectManager.getUniqueId())
@@ -55,7 +68,7 @@ public class ConfigScreen extends GameOptionsScreen {
             .tooltip(effect -> Tooltip.create(Text.translatable(K_SERVER_EFFECT_TOOLTIP + effect.toString())))
             .omitKeyText()
             .build(
-                this.width / 2 - 155, this.height / 6 + 48,
+                this.width / 2 - 155, this.height / 6 + 72,
                 310, 20,
                 Text.literal(K_CURRENT_SERVER),
                 (button, value) -> {
@@ -68,14 +81,18 @@ public class ConfigScreen extends GameOptionsScreen {
 
         this.addDrawableChild(ButtonWidget.builder(CommonTexts.DONE,
             button -> {
-                if (this.changed) {
-                    Manager.CONFIG.save();
-                }
+                this.save();
                 this.client.setScreen(this.parent);
             })
-            .positionAndSize(this.width / 2 - 100, this.height / 6 + 72, 200, 20)
+            .positionAndSize(this.width / 2 - 100, this.height / 6 + 96, 200, 20)
             .build()
         );
+    }
+
+    @Override
+    public void closeScreen() {
+        this.save();
+        super.closeScreen();
     }
 
     public void render(GuiGraphics graphics, int mX, int mY, float delta) {
@@ -84,10 +101,18 @@ public class ConfigScreen extends GameOptionsScreen {
         super.render(graphics, mX, mY, delta);
     }
 
+    protected void save() {
+        if (this.changed) {
+            Manager.CONFIG.save();
+        }
+    }
+
     private static final String
         K_TITLE = "blindme.options.title",
         K_CREATIVE_BYPASS = "blindme.options.creative_bypass",
         K_SPECTATOR_BYPASS = "blindme.options.spectator_bypass",
+        K_SWING_ON_TOUCH = "blindme.options.swing_hand_on_touch",
+        K_SWING_ON_TOUCH_TOOLTIP = "blindme.options.swing_hand_on_touch.tooltip",
         K_CURRENT_SERVER = "blindme.options.current_world_effect",
         K_SERVER_EFFECT_TOOLTIP = "blindme.options.current_world_effect.tooltip."
     ;

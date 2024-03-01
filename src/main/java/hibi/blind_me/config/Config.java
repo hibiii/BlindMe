@@ -21,6 +21,9 @@ public class Config extends ReflectiveConfig {
     public final TrackedValue<ValueMap<ServerEffect>> servers = this.value(
         ValueMap.builder(ServerEffect.BLINDNESS).build());
 
+    @Comment("If set to false, your player character won't swing their arm when using the touch mechanic")
+    public final TrackedValue<Boolean> swingHandOnTouch = this.value(true);
+
     public ServerEffect getEffectForServer(String uniqueId) {
         return this.servers.getRealValue().getOrDefault(uniqueId, ServerEffect.BLINDNESS);
     }
