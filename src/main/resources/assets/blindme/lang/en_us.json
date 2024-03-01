@@ -10,5 +10,6 @@
     "blindme.options.current_world_effect.tooltip.BLINDNESS": "Blindness: Blocks and entities are only visible in a small radius",
     "blindme.options.current_world_effect.tooltip.DARKNESS": "Darkness: Blocks and entities are visible in a medium radius",
     "modmenu.descriptionTranslation.blindme": "A client-sided mod that enforces the Blindness effect on the player, configurable per world.",
-    "modmenu.blindme.users_manual": "User's Manual"
+    "modmenu.blindme.users_manual": "User's Manual",
+    "key.blindme.touch": "Touch"
 }

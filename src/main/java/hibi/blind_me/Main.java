@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import hibi.blind_me.config.Manager;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 
 public class Main {
@@ -22,5 +23,6 @@ public class Main {
         ClientPlayConnectionEvents.DISCONNECT.register(EffectManager::disconnectCallback);
         ClientPlayConnectionEvents.JOIN.register(EffectManager::joinCallback);
         ClientCommandRegistrationCallback.EVENT.register(Command::registerCallback);
+        KeyBindingHelper.registerKeyBinding(Touching.TOUCH_KEY);
     }
 }
