@@ -5,5 +5,6 @@ public class Enums {
         OFF,
         BLINDNESS,
         DARKNESS,
+        TRULY_BLIND
     }
 }

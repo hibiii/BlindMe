@@ -92,17 +92,12 @@ public final class EffectManager {
     }
 
     public static void setDesiredEffect(ServerEffect serverEffect) {
-        switch(serverEffect) {
-            case BLINDNESS -> {
-                desiredEffect = StatusEffects.field_5919;
-            }
-            case DARKNESS -> {
-                desiredEffect = StatusEffects.field_38092;
-            }
-            case OFF -> {
-                desiredEffect = null;
-            }
-        }
+        desiredEffect = switch(serverEffect) {
+            case BLINDNESS -> StatusEffects.field_5919;
+            case DARKNESS -> StatusEffects.field_38092;
+            case TRULY_BLIND -> Main.TRULY_BLIND;
+            case OFF ->  null;
+        };
         effectChanged = true;
     }
 

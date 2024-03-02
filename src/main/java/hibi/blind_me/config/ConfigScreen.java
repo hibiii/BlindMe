@@ -62,6 +62,7 @@ public class ConfigScreen extends GameOptionsScreen {
                 case OFF -> CommonTexts.OFF;
                 case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
                 case DARKNESS -> Text.translatable("effect.minecraft.darkness");
+                case TRULY_BLIND -> Text.translatable("effect.blindme.truly_blind");
             }))
             .values(ServerEffect.values())
             .initially(initial)
