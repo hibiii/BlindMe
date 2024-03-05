@@ -18,6 +18,7 @@
         ],
         "intermediate_mappings": "net.fabricmc:intermediary",
         "entrypoints": {
+            "main": "hibi.blind_me.Main::serverInit",
             "client": "hibi.blind_me.Main::clientInit",
             "modmenu": "hibi.blind_me.MenuInteg"
         },
