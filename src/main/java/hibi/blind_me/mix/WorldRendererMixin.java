@@ -19,7 +19,8 @@ public class WorldRendererMixin {
         cancellable = true
     )
     void trulyBlindBlocksSky(Camera camera, CallbackInfoReturnable<Boolean> info) {
-        if (EffectManager.getModEffect() instanceof StatusEffectInstance ef && ef.getEffectType() == Main.TRULY_BLIND) {
+        StatusEffectInstance ef = EffectManager.getModEffect();
+        if (ef != null && ef.getEffectType() == Main.TRULY_BLIND) {
             info.setReturnValue(true);
         }
     }

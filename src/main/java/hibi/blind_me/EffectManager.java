@@ -117,7 +117,8 @@ public final class EffectManager {
             return;
         }
         if (ef == effect) {
-            if (((StatusEffectInstanceAccessor)ef).getHiddenEffect() instanceof StatusEffectInstance shadowed) {
+            StatusEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+            if (shadowed != null) {
                 ef = shadowed;
                 map.put(type, shadowed);
             } else {
