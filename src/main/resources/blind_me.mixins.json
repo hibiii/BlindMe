@@ -8,7 +8,9 @@
         "ClientPlayerEntityMixin",
         "LivingEntityAccessor",
         "StatusEffectInstanceAccessor",
-        "IngameHudMixin"
+        "IngameHudMixin",
+        "BackgroundRendererMixin",
+        "WorldRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

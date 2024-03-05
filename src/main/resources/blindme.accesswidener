@@ -1,0 +1,4 @@
+accessWidener v2 named
+extendable class net/minecraft/client/render/BackgroundRenderer$FogEffect
+accessible class net/minecraft/client/render/BackgroundRenderer$FogParameters
+accessible field net/minecraft/client/render/BackgroundRenderer FOG_EFFECTS Ljava/util/List;

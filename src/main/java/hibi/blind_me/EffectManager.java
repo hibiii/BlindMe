@@ -36,6 +36,7 @@ public final class EffectManager {
         if (effectChanged) {
             removeModEffect(player);
             effectChanged = false;
+            effect = null;
         }
         if (desiredEffect == null) {
             return;
@@ -128,6 +129,7 @@ public final class EffectManager {
         while (ef != null) {
             StatusEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
             if (shadowed == null) {
+                effect = null;
                 return;
             }
             if (shadowed != effect) {
@@ -136,6 +138,7 @@ public final class EffectManager {
             }
             StatusEffectInstance shadowed2 = ((StatusEffectInstanceAccessor)shadowed).getHiddenEffect();
             ((StatusEffectInstanceAccessor)ef).setHiddenEffect(shadowed2);
+            effect = null;
             return;
         }
     }
