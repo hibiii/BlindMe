@@ -19,13 +19,16 @@ public class Config extends ReflectiveConfig {
 
     @Comment("The list of servers/worlds and configuration for each individually")
     public final TrackedValue<ValueMap<ServerEffect>> servers = this.value(
-        ValueMap.builder(ServerEffect.BLINDNESS).build());
+        ValueMap.builder(ServerEffect.OFF).build());
 
     @Comment("If set to false, your player character won't swing their arm when using the touch mechanic")
     public final TrackedValue<Boolean> swingHandOnTouch = this.value(true);
 
+    @Comment("If set to true, the Darkness effect will not pulse the brightness when it is applied by the mod")
+    public final TrackedValue<Boolean> disableDarknessPulse = this.value(true);
+
     public ServerEffect getEffectForServer(String uniqueId) {
-        return this.servers.getRealValue().getOrDefault(uniqueId, ServerEffect.BLINDNESS);
+        return this.servers.getRealValue().getOrDefault(uniqueId, ServerEffect.OFF);
     }
 
     public void setEffectForServer(String uniqueId, ServerEffect ef) {
