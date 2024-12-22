@@ -16,10 +16,6 @@ dependencies {
     }
 }
 
-loom {
-    accessWidenerPath = file "src/main/resources/blindme.accesswidener"
-}
-
 processResources {
     filesMatching(['quilt.mod.json', 'fabric.mod.json']) {
         expand (

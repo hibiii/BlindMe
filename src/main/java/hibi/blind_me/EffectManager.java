@@ -96,7 +96,6 @@ public final class EffectManager {
         desiredEffect = switch(serverEffect) {
             case BLINDNESS -> StatusEffects.field_5919;
             case DARKNESS -> StatusEffects.field_38092;
-            case TRULY_BLIND -> Main.TRULY_BLIND;
             case OFF ->  null;
         };
         effectChanged = true;

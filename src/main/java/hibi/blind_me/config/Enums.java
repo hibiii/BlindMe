@@ -4,7 +4,6 @@ public class Enums {
     public enum ServerEffect {
         OFF,
         BLINDNESS,
-        DARKNESS,
-        TRULY_BLIND
+        DARKNESS
     }
 }

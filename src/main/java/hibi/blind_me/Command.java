@@ -18,7 +18,7 @@ public final class Command {
 
     public static void registerCallback(CommandDispatcher<QuiltClientCommandSource> dispatcher, CommandBuildContext ctx, RegistrationEnvironment env) {
         dispatcher.register(ClientCommandManager.literal("blindme")
-            .then(ClientCommandManager.argument("effect", new EnumArgumentType("off", "blindness", "darkness", "truly_blind"))
+            .then(ClientCommandManager.argument("effect", new EnumArgumentType("off", "blindness", "darkness"))
                 .executes(Command::worldSubcommand)
             )
         );
@@ -29,7 +29,6 @@ public final class Command {
             case "off" -> ServerEffect.OFF;
             case "blindness" -> ServerEffect.BLINDNESS;
             case "darkness" -> ServerEffect.DARKNESS;
-            case "truly_blind" -> ServerEffect.TRULY_BLIND;
             default -> throw new IllegalStateException("Unreachable code executed");
         };
 
@@ -46,7 +45,6 @@ public final class Command {
             case OFF -> Text.translatable(K_EFFECT_OFF);
             case BLINDNESS -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.minecraft.blindness"));
             case DARKNESS -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.minecraft.darkness"));
-            case TRULY_BLIND -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.blindme.truly_blind"));
         });
         return 0;
     }
