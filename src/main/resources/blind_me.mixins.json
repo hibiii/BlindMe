@@ -8,7 +8,8 @@
         "ClientPlayerEntityMixin",
         "LivingEntityAccessor",
         "StatusEffectInstanceAccessor",
-        "IngameHudMixin"
+        "IngameHudMixin",
+        "LightmapTextureManagerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

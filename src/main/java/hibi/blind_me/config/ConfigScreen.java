@@ -62,7 +62,7 @@ public class ConfigScreen extends GameOptionsScreen {
             Text.translatable(K_DISABLE_PULSE),
             (button, set) -> {
                 this.changed = true;
-                Manager.CONFIG.swingHandOnTouch.setValue(set, false);
+                Manager.CONFIG.disableDarknessPulse.setValue(set, false);
             }
         ));
 

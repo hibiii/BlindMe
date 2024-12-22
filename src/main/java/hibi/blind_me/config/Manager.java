@@ -6,6 +6,8 @@ import hibi.blind_me.EffectManager;
 import hibi.blind_me.Touching;
 
 public final class Manager {
+
+    private static boolean pulseM;
     
     public static final Config CONFIG = QuiltConfig.create("BlindMe", "config", Config.class);
 
@@ -19,6 +21,11 @@ public final class Manager {
         EffectManager.setDisabledSpectator(CONFIG.spectatorBypass.getRealValue());
         Touching.setHandSwings(CONFIG.swingHandOnTouch.getRealValue());
         EffectManager.setDesiredEffect(CONFIG.getEffectForServer(EffectManager.getUniqueId()));
+        pulseM = !CONFIG.disableDarknessPulse.getRealValue();
+    }
+
+    public static boolean hasDarknessPulse() {
+        return pulseM;
     }
 
     private Manager() {}
