@@ -10,9 +10,8 @@ Licensed under MIT, made by hibi.
 
 ## Using
 
-By default, new worlds and servers don't have any effects turned on by default.
-To change this, use the settings screen (accessible through Mod Menu), or use the `/blindme` command.
-A world can have the blindness effect disabled, too.
+By default, new worlds and servers don't have any effects turned on.
+To change this, use the `/blindme` command, or use the settings screen, accessible through Mod Menu or through the `/blindme settings` subcommand.
 
 ## Requirements
 

@@ -8,7 +8,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
 import hibi.blind_me.config.Manager;
+import hibi.blind_me.config.ConfigScreen;
 import hibi.blind_me.config.Enums.ServerEffect;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
 import net.minecraft.text.Text;
@@ -18,10 +20,18 @@ public final class Command {
 
     public static void registerCallback(CommandDispatcher<QuiltClientCommandSource> dispatcher, CommandBuildContext ctx, RegistrationEnvironment env) {
         dispatcher.register(ClientCommandManager.literal("blindme")
+            .then(ClientCommandManager.literal("settings")
+                .executes(Command::settingsSubcommand)
+            )
             .then(ClientCommandManager.argument("effect", new EnumArgumentType("off", "blindness", "darkness"))
                 .executes(Command::worldSubcommand)
             )
         );
+    }
+
+    private static int settingsSubcommand(CommandContext<QuiltClientCommandSource> cmd) {
+        cmd.getSource().getClient().send(() -> MinecraftClient.getInstance().setScreen(new ConfigScreen(null)));
+        return 0;
     }
 
     private static int worldSubcommand(CommandContext<QuiltClientCommandSource> cmd) {
