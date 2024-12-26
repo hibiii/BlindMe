@@ -1,24 +1,20 @@
 package hibi.blind_me;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
-import org.quiltmc.qsl.networking.api.PacketSender;
 
 import hibi.blind_me.config.Manager;
 import hibi.blind_me.config.Enums.ServerEffect;
-import hibi.blind_me.mix.LivingEntityAccessor;
 import hibi.blind_me.mix.StatusEffectInstanceAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.effect.StatusEffectInstance.FactorData;
+import net.minecraft.registry.Holder;
 
 public final class EffectManager {
 
@@ -26,13 +22,16 @@ public final class EffectManager {
     private static StatusEffectInstance effect = null;
     private static boolean skipCreative = false;
     private static boolean skipSpectator = true;
-    private static StatusEffect desiredEffect = StatusEffects.field_5919;
+    private static Holder<StatusEffect> desiredEffect = null;
     private static boolean effectChanged = false;
 
     private EffectManager() {};
 
-    public static void tickCallback(MinecraftClient client, ClientWorld world) {
+    public static void tickCallback(MinecraftClient client) {
         ClientPlayerEntity player = client.player;
+        if (player == null) {
+            return;
+        }
         if (effectChanged) {
             removeModEffect(player);
             effectChanged = false;
@@ -55,7 +54,7 @@ public final class EffectManager {
             desiredEffect,
             StatusEffectInstance.INFINITE_DURATION, 0,
             true, false, false,
-            (StatusEffectInstance) null, Optional.of(new FactorData(22, 0f, 1f, 1f, 2000, 1f, true))
+            (StatusEffectInstance) null
         );
         if (player.addStatusEffect(ef)) {
             effect = ef;
@@ -66,7 +65,7 @@ public final class EffectManager {
         effect = null;
     }
 
-    public static void joinCallback(ClientPlayNetworkHandler handler, PacketSender<?> sender, MinecraftClient client) {
+    public static void joinCallback(ClientPlayNetworkHandler handler, Object packetSender, MinecraftClient client) {
         if (client.isSingleplayer()) {
             return;
         }
@@ -94,8 +93,8 @@ public final class EffectManager {
 
     public static void setDesiredEffect(ServerEffect serverEffect) {
         desiredEffect = switch(serverEffect) {
-            case BLINDNESS -> StatusEffects.field_5919;
-            case DARKNESS -> StatusEffects.field_38092;
+            case BLINDNESS -> StatusEffects.BLINDNESS;
+            case DARKNESS -> StatusEffects.DARKNESS;
             case OFF ->  null;
         };
         effectChanged = true;
@@ -109,8 +108,8 @@ public final class EffectManager {
         if (effect == null) {
             return;
         }
-        Map<StatusEffect, StatusEffectInstance> map = ((LivingEntityAccessor)player).getActiveStatusEffects();
-        StatusEffect type = effect.getEffectType();
+        Map<Holder<StatusEffect>, StatusEffectInstance> map = player.getActiveStatusEffects();
+        Holder<StatusEffect> type = effect.getEffectType();
         StatusEffectInstance ef = player.getStatusEffect(type);
         if (ef == null) {
             return;

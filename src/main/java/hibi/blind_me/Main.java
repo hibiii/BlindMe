@@ -1,12 +1,12 @@
 package hibi.blind_me;
 
-import org.quiltmc.qsl.command.api.client.ClientCommandRegistrationCallback;
-import org.quiltmc.qsl.lifecycle.api.client.event.ClientWorldTickEvents;
-import org.quiltmc.qsl.networking.api.client.ClientPlayConnectionEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import hibi.blind_me.config.Manager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
 public class Main {
 
@@ -14,7 +14,7 @@ public class Main {
 
     public static void clientInit() {
         Manager.init();
-        ClientWorldTickEvents.START.register(EffectManager::tickCallback);
+        ClientTickEvents.START_CLIENT_TICK.register(EffectManager::tickCallback);
         ClientPlayConnectionEvents.DISCONNECT.register(EffectManager::disconnectCallback);
         ClientPlayConnectionEvents.JOIN.register(EffectManager::joinCallback);
         ClientCommandRegistrationCallback.EVENT.register(Command::registerCallback);

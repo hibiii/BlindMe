@@ -1,47 +1,43 @@
 package hibi.blind_me;
 
-import org.quiltmc.qsl.command.api.EnumArgumentType;
-import org.quiltmc.qsl.command.api.client.ClientCommandManager;
-import org.quiltmc.qsl.command.api.client.QuiltClientCommandSource;
-
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
 import hibi.blind_me.config.Manager;
 import hibi.blind_me.config.ConfigScreen;
 import hibi.blind_me.config.Enums.ServerEffect;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandBuildContext;
-import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
 import net.minecraft.text.Text;
 
 public final class Command {
     private Command() {};
 
-    public static void registerCallback(CommandDispatcher<QuiltClientCommandSource> dispatcher, CommandBuildContext ctx, RegistrationEnvironment env) {
+    public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext ctx) {
         dispatcher.register(ClientCommandManager.literal("blindme")
             .then(ClientCommandManager.literal("settings")
                 .executes(Command::settingsSubcommand)
             )
-            .then(ClientCommandManager.argument("effect", new EnumArgumentType("off", "blindness", "darkness"))
-                .executes(Command::worldSubcommand)
+            .then(ClientCommandManager.literal("off")
+                .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))
+            )
+            .then(ClientCommandManager.literal("blindness")
+                .executes((src) -> Command.worldSubcommand(src, ServerEffect.BLINDNESS))
+            )
+            .then(ClientCommandManager.literal("darkness")
+                .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
             )
         );
     }
 
-    private static int settingsSubcommand(CommandContext<QuiltClientCommandSource> cmd) {
+    private static int settingsSubcommand(CommandContext<FabricClientCommandSource> cmd) {
         cmd.getSource().getClient().send(() -> MinecraftClient.getInstance().setScreen(new ConfigScreen(null)));
         return 0;
     }
 
-    private static int worldSubcommand(CommandContext<QuiltClientCommandSource> cmd) {
-        ServerEffect ef = switch(cmd.getArgument("effect", String.class)) {
-            case "off" -> ServerEffect.OFF;
-            case "blindness" -> ServerEffect.BLINDNESS;
-            case "darkness" -> ServerEffect.DARKNESS;
-            default -> throw new IllegalStateException("Unreachable code executed");
-        };
-
+    private static int worldSubcommand(CommandContext<FabricClientCommandSource> cmd, ServerEffect ef) {
         String uniqueId = EffectManager.getUniqueId();
         if (uniqueId == null) {
             throw new IllegalStateException("Command called outside of a world");

@@ -10,6 +10,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.Holder;
 
 @Mixin(LightmapTextureManager.class)
 public class LightmapTextureManagerMixin {
@@ -18,10 +19,10 @@ public class LightmapTextureManagerMixin {
         method = "getDarknessGamma(F)F",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/network/ClientPlayerEntity;getStatusEffect(Lnet/minecraft/entity/effect/StatusEffect;)Lnet/minecraft/entity/effect/StatusEffectInstance;"
+            target = "Lnet/minecraft/client/network/ClientPlayerEntity;getStatusEffect(Lnet/minecraft/registry/Holder;)Lnet/minecraft/entity/effect/StatusEffectInstance;"
         )
     )
-    StatusEffectInstance pulseIgnoresDarkness(ClientPlayerEntity that, StatusEffect effect) {
+    StatusEffectInstance pulseIgnoresDarkness(ClientPlayerEntity that, Holder<StatusEffect> effect) {
         StatusEffectInstance playerEf = that.getStatusEffect(effect);
         if (Manager.hasDarknessPulse()) {
             return playerEf;
