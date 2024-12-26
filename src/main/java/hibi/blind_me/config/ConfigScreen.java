@@ -6,8 +6,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.button.ButtonWidget;
+import net.minecraft.client.gui.widget.button.CyclingButtonWidget;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Text;
 
@@ -20,7 +20,7 @@ public class ConfigScreen extends GameOptionsScreen {
     }
 
     protected void init() {
-        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.creativeBypass.getRealValue())
+        this.addDrawableSelectableElement(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.creativeBypass.getRealValue())
         .build(
             this.width / 2 - 155, this.height / 6,
             310, 20,
@@ -30,7 +30,7 @@ public class ConfigScreen extends GameOptionsScreen {
                 Manager.CONFIG.creativeBypass.setValue(set, false);
             }
         ));
-        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.spectatorBypass.getRealValue())
+        this.addDrawableSelectableElement(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.spectatorBypass.getRealValue())
         .build(
             this.width / 2 - 155, this.height / 6 + 24,
             310, 20,
@@ -40,7 +40,7 @@ public class ConfigScreen extends GameOptionsScreen {
                 Manager.CONFIG.spectatorBypass.setValue(set, false);
             }
         ));
-        this.addDrawableChild(CyclingButtonWidget
+        this.addDrawableSelectableElement(CyclingButtonWidget
         .onOffBuilder(Manager.CONFIG.disableDarknessPulse.getRealValue())
         .tooltip((bool) -> Tooltip.create(Text.translatable(K_DISABLE_PULSE_TOOLTIP)))
         .build(
@@ -77,9 +77,9 @@ public class ConfigScreen extends GameOptionsScreen {
                 }
             );
         serverEffectButton.active = ingame;
-        this.addDrawableChild(serverEffectButton);
+        this.addDrawableSelectableElement(serverEffectButton);
 
-        this.addDrawableChild(ButtonWidget.builder(CommonTexts.DONE,
+        this.addDrawableSelectableElement(ButtonWidget.builder(CommonTexts.DONE,
             button -> {
                 this.save();
                 this.client.setScreen(this.parent);
@@ -96,9 +96,8 @@ public class ConfigScreen extends GameOptionsScreen {
     }
 
     public void render(GuiGraphics graphics, int mX, int mY, float delta) {
-        this.renderBackground(graphics);
-        graphics.drawCenteredShadowedText(this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(graphics, mX, mY, delta);
+        graphics.drawCenteredShadowedText(this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
     }
 
     protected void save() {

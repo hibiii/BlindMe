@@ -66,7 +66,7 @@ public final class EffectManager {
         effect = null;
     }
 
-    public static void joinCallback(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+    public static void joinCallback(ClientPlayNetworkHandler handler, PacketSender<?> sender, MinecraftClient client) {
         if (client.isSingleplayer()) {
             return;
         }
