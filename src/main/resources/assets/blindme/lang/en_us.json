@@ -13,8 +13,6 @@
     "blindme.options.current_world_effect.tooltip.DARKNESS": "Darkness: Blocks and entities are visible in a medium radius",
     "blindme.options.disable_darkness_pulse": "Disable the pulsing effect from Darkness",
     "blindme.options.disable_darkness_pulse.tooltip": "Removes the pulsing effect from Darkness when it's applied by BlindMe",
-    "blindme.touch.distance": "%s m",
     "modmenu.descriptionTranslation.blindme": "A client-sided mod that enforces the Blindness effect on the player, configurable per world.",
-    "modmenu.blindme.users_manual": "User's Manual",
-    "key.blindme.touch": "Touch"
+    "modmenu.blindme.users_manual": "User's Manual"
 }
