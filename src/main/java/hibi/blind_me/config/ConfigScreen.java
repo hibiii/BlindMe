@@ -2,11 +2,11 @@ package hibi.blind_me.config;
 
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.config.Enums.ServerEffect;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.button.ButtonWidget;
 import net.minecraft.client.gui.widget.button.CyclingButtonWidget;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Text;
@@ -16,77 +16,58 @@ public class ConfigScreen extends GameOptionsScreen {
     private boolean changed = false;
 
     public ConfigScreen(Screen parent) {
-        super(parent, null, Text.translatable(K_TITLE));
+        super(parent, MinecraftClient.getInstance().options, Text.translatable(K_TITLE));
     }
 
-    protected void init() {
-        this.addDrawableSelectableElement(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.creativeBypass.getRealValue())
-        .build(
-            this.width / 2 - 155, this.height / 6,
-            310, 20,
-            Text.translatable(K_CREATIVE_BYPASS),
+    protected void initOptionButtons() {
+        var creativeBypassButton = CyclingButtonWidget.onOffBuilder(Manager.CONFIG.creativeBypass.getRealValue())
+        .build(Text.translatable(K_CREATIVE_BYPASS),
             (button, set) -> {
                 this.changed = true;
                 Manager.CONFIG.creativeBypass.setValue(set, false);
             }
-        ));
-        this.addDrawableSelectableElement(CyclingButtonWidget.onOffBuilder(Manager.CONFIG.spectatorBypass.getRealValue())
-        .build(
-            this.width / 2 - 155, this.height / 6 + 24,
-            310, 20,
-            Text.translatable(K_SPECTATOR_BYPASS),
+        );
+        var spectatorBypassButton = CyclingButtonWidget.onOffBuilder(Manager.CONFIG.spectatorBypass.getRealValue())
+        .build(Text.translatable(K_SPECTATOR_BYPASS),
             (button, set) -> {
                 this.changed = true;
                 Manager.CONFIG.spectatorBypass.setValue(set, false);
             }
-        ));
-        this.addDrawableSelectableElement(CyclingButtonWidget
+        );
+        this.buttonList.addEntry(creativeBypassButton, spectatorBypassButton);
+
+        var darknessPulseButton = CyclingButtonWidget
         .onOffBuilder(Manager.CONFIG.disableDarknessPulse.getRealValue())
-        .tooltip((bool) -> Tooltip.create(Text.translatable(K_DISABLE_PULSE_TOOLTIP)))
-        .build(
-            this.width / 2 - 155, this.height / 6 + 48,
-            310, 20,
-            Text.translatable(K_DISABLE_PULSE),
+        .tooltip(((bool) -> Tooltip.create(Text.translatable(K_DISABLE_PULSE_TOOLTIP))))
+        .build(Text.translatable(K_DISABLE_PULSE),
             (button, set) -> {
                 this.changed = true;
                 Manager.CONFIG.disableDarknessPulse.setValue(set, false);
             }
-        ));
+        );
+        darknessPulseButton.setWidth(310);
+        this.buttonList.addEntry(darknessPulseButton, null);
 
         boolean ingame = this.client.world != null;
         ServerEffect initial = ingame
             ? Manager.CONFIG.getEffectForServer(EffectManager.getUniqueId())
             : ServerEffect.OFF;
-        CyclingButtonWidget<ServerEffect> serverEffectButton = CyclingButtonWidget
-            .builder((ServerEffect value) -> Text.translatable(K_CURRENT_SERVER, switch(value) {
+        var serverEffectButton = CyclingButtonWidget
+            .builder((ServerEffect effect) -> switch(effect) {
                 case OFF -> CommonTexts.OFF;
                 case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
                 case DARKNESS -> Text.translatable("effect.minecraft.darkness");
-            }))
+            })
             .values(ServerEffect.values())
             .initially(initial)
             .tooltip(effect -> Tooltip.create(Text.translatable(K_SERVER_EFFECT_TOOLTIP + effect.toString())))
-            .omitKeyText()
-            .build(
-                this.width / 2 - 155, this.height / 6 + 72,
-                310, 20,
-                Text.literal(K_CURRENT_SERVER),
-                (button, value) -> {
-                    this.changed = true;
-                    Manager.CONFIG.setEffectForServer(EffectManager.getUniqueId(), value);
-                }
-            );
+            .build(Text.translatable(K_CURRENT_SERVER), (button, value) -> {
+                this.changed = true;
+                Manager.CONFIG.setEffectForServer(EffectManager.getUniqueId(), value);
+            });
         serverEffectButton.active = ingame;
-        this.addDrawableSelectableElement(serverEffectButton);
-
-        this.addDrawableSelectableElement(ButtonWidget.builder(CommonTexts.DONE,
-            button -> {
-                this.save();
-                this.client.setScreen(this.parent);
-            })
-            .positionAndSize(this.width / 2 - 100, this.height / 6 + 96, 200, 20)
-            .build()
-        );
+        serverEffectButton.setWidth(310);
+        this.buttonList.addEntry(serverEffectButton, null);
     }
 
     @Override
@@ -95,7 +76,7 @@ public class ConfigScreen extends GameOptionsScreen {
         super.closeScreen();
     }
 
-    public void render(GuiGraphics graphics, int mX, int mY, float delta) {
+    public void render2(GuiGraphics graphics, int mX, int mY, float delta) {
         super.render(graphics, mX, mY, delta);
         graphics.drawCenteredShadowedText(this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
     }

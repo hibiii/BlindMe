@@ -17,8 +17,9 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.deps__minecraft}"
     mappings "org.quiltmc:quilt-mappings:${project.deps__mappings}:intermediary-v2"
     modImplementation "org.quiltmc:quilt-loader:${project.deps__loader}"
-    modImplementation "org.quiltmc:qsl:${project.deps__stdlib}"
-    modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${project.deps__legacy_stdlib}"
+    // modImplementation "org.quiltmc:qsl:${project.deps__stdlib}"
+    // modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${project.deps__legacy_stdlib}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.deps__legacy_stdlib}"
     modImplementation ("com.terraformersmc:modmenu:${project.deps__modmenu}") {
         exclude(group: 'net.fabricmc')
     }

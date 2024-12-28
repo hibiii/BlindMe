@@ -4,11 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
 import hibi.blind_me.config.Manager;
-import hibi.blind_me.config.ConfigScreen;
 import hibi.blind_me.config.Enums.ServerEffect;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandBuildContext;
 import net.minecraft.text.Text;
 
@@ -17,9 +15,6 @@ public final class Command {
 
     public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext ctx) {
         dispatcher.register(ClientCommandManager.literal("blindme")
-            .then(ClientCommandManager.literal("settings")
-                .executes(Command::settingsSubcommand)
-            )
             .then(ClientCommandManager.literal("off")
                 .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))
             )
@@ -30,11 +25,6 @@ public final class Command {
                 .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
             )
         );
-    }
-
-    private static int settingsSubcommand(CommandContext<FabricClientCommandSource> cmd) {
-        cmd.getSource().getClient().send(() -> MinecraftClient.getInstance().setScreen(new ConfigScreen(null)));
-        return 0;
     }
 
     private static int worldSubcommand(CommandContext<FabricClientCommandSource> cmd, ServerEffect ef) {
