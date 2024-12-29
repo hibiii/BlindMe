@@ -56,6 +56,7 @@ public final class EffectManager {
             true, false, false,
             (StatusEffectInstance) null
         );
+        ef.skipBlending();
         if (player.addStatusEffect(ef)) {
             effect = ef;
         }
