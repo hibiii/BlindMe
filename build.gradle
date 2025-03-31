@@ -1,5 +1,5 @@
 plugins {
-    id 'org.quiltmc.loom' version '1.8.+'
+    id 'fabric-loom' version '1.10.+'
 }
 
 loom.mods {
@@ -14,13 +14,11 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.deps__minecraft}"
-    mappings "org.quiltmc:quilt-mappings:${project.deps__mappings}:intermediary-v2"
-    modImplementation "org.quiltmc:quilt-loader:${project.deps__loader}"
-    // modImplementation "org.quiltmc:qsl:${project.deps__stdlib}"
-    // modImplementation "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${project.deps__legacy_stdlib}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.deps__legacy_stdlib}"
-    modImplementation ("com.terraformersmc:modmenu:${project.deps__modmenu}") {
+    minecraft "com.mojang:minecraft:${project.deps_minecraft}"
+    mappings "net.fabricmc:yarn:${project.deps_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.deps_loader}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.deps_stdlib}"
+    modImplementation ("com.terraformersmc:modmenu:${project.deps_modmenu}") {
         exclude(group: 'net.fabricmc')
     }
 }
@@ -29,8 +27,6 @@ processResources {
     filesMatching(['quilt.mod.json', 'fabric.mod.json']) {
         expand (
             'mod_version': project.version,
-            'minecraft_version': ">=${project.deps__minecraft}",
-            'qsl_version': ">=${project.deps__stdlib}"
         )
     }
 }

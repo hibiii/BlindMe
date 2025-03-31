@@ -7,13 +7,13 @@ import hibi.blind_me.config.Manager;
 import hibi.blind_me.config.Enums.ServerEffect;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.command.CommandBuildContext;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.text.Text;
 
 public final class Command {
     private Command() {};
 
-    public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext ctx) {
+    public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess access) {
         dispatcher.register(ClientCommandManager.literal("blindme")
             .then(ClientCommandManager.literal("off")
                 .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))

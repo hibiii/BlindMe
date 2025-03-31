@@ -1,0 +1,21 @@
+{
+    "schemaVersion": 1,
+    "id": "blindme",
+    "version": "1.0",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "hibi.blind_me.Main::clientInit"
+        ],
+        "modmenu": [
+            "hibi.blind_me.MenuInteg"
+        ]
+    },
+    "mixins": [
+        "blind_me.mixins.json"
+    ],
+    "depends": {
+        "fabric": "*",
+        "minecraft": ">=1.21.5"
+    }
+}

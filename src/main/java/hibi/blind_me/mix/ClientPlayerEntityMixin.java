@@ -14,7 +14,7 @@ import net.minecraft.entity.effect.StatusEffects;
 public class ClientPlayerEntityMixin {
 
     @Inject(
-        method = "method_65525()Z",
+        method = "isBlind()Z",
         at = @At("HEAD"),
         cancellable = true
     )

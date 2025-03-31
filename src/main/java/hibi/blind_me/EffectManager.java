@@ -14,7 +14,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.Holder;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public final class EffectManager {
 
@@ -22,7 +22,7 @@ public final class EffectManager {
     private static StatusEffectInstance effect = null;
     private static boolean skipCreative = false;
     private static boolean skipSpectator = true;
-    private static Holder<StatusEffect> desiredEffect = null;
+    private static RegistryEntry<StatusEffect> desiredEffect = null;
     private static boolean effectChanged = false;
 
     private EffectManager() {};
@@ -52,11 +52,11 @@ public final class EffectManager {
         }
         StatusEffectInstance ef = new StatusEffectInstance(
             desiredEffect,
-            StatusEffectInstance.INFINITE_DURATION, 0,
+            StatusEffectInstance.INFINITE, 0,
             true, false, false,
             (StatusEffectInstance) null
         );
-        ef.skipBlending();
+        ef.skipFading();
         if (player.addStatusEffect(ef)) {
             effect = ef;
         }
@@ -67,7 +67,7 @@ public final class EffectManager {
     }
 
     public static void joinCallback(ClientPlayNetworkHandler handler, Object packetSender, MinecraftClient client) {
-        if (client.isSingleplayer()) {
+        if (client.isInSingleplayer()) {
             return;
         }
         ServerInfo info = handler.getServerInfo();
@@ -101,6 +101,10 @@ public final class EffectManager {
         effectChanged = true;
     }
 
+    public static RegistryEntry<StatusEffect> getDesiredEffect() {
+        return desiredEffect;
+    }
+
     public static @Nullable String getUniqueId() {
         return uniqueId;
     }
@@ -109,8 +113,8 @@ public final class EffectManager {
         if (effect == null) {
             return;
         }
-        Map<Holder<StatusEffect>, StatusEffectInstance> map = player.getActiveStatusEffects();
-        Holder<StatusEffect> type = effect.getEffectType();
+        Map<RegistryEntry<StatusEffect>, StatusEffectInstance> map = player.getActiveStatusEffects();
+        RegistryEntry<StatusEffect> type = effect.getEffectType();
         StatusEffectInstance ef = player.getStatusEffect(type);
         if (ef == null) {
             return;
