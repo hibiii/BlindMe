@@ -24,6 +24,7 @@ public final class Command {
             .then(ClientCommandManager.literal("darkness")
                 .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
             )
+            .executes((src) -> Command.printSubcommand(src))
         );
     }
 
@@ -45,9 +46,21 @@ public final class Command {
         return 0;
     }
 
+    private static int printSubcommand(CommandContext<FabricClientCommandSource> cmd) {
+        String uniqueId = EffectManager.getUniqueId();
+        cmd.getSource().sendFeedback(switch(Manager.CONFIG.getEffectForServer(uniqueId)) {
+            case BLINDNESS -> Text.translatable(K_PRINT_SET, Text.translatable("effect.minecraft.blindness"));
+            case DARKNESS -> Text.translatable(K_PRINT_SET, Text.translatable("effect.minecraft.darkness"));
+            case OFF -> Text.translatable(K_PRINT_NONE);
+        });
+        return 0;
+    }
+
     private static final String
         K_EFFECT_ALREADY_SET = "blindme.command.effect_already_set",
         K_EFFECT_SET = "blindme.command.set_effect",
-        K_EFFECT_OFF = "blindme.command.disable_effect"
+        K_EFFECT_OFF = "blindme.command.disable_effect",
+        K_PRINT_SET = "blindme.command.current",
+        K_PRINT_NONE = "blindme.command.current.none"
     ;
 }

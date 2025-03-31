@@ -3,6 +3,7 @@ package hibi.blind_me.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import hibi.blind_me.EffectManager;
 import hibi.blind_me.config.Enums.ServerEffect;
 
 public class Config {
@@ -25,6 +26,8 @@ public class Config {
 
     public void setEffectForServer(String uniqueId, ServerEffect ef) {
         this.servers.put(uniqueId, ef);
+        EffectManager.setDesiredEffect(ef);
+        this.save();
     }
 
     public void save() {
