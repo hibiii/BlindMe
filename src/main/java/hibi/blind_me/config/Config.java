@@ -35,9 +35,9 @@ public class Config {
 
     public void save() {
         var props = new Properties();
-        props.put("creativeBypass", this.creativeBypass);
-        props.put("spectatorBypass", this.spectatorBypass);
-        props.put("disableDarknessPulse", this.disableDarknessPulse);
+        props.put("creativeBypass", Boolean.toString(this.creativeBypass));
+        props.put("spectatorBypass", Boolean.toString(this.spectatorBypass));
+        props.put("disableDarknessPulse", Boolean.toString(this.disableDarknessPulse));
         this.servers.forEach((key, value) -> props.put(key, value.toString()));
         ConfigSerde.saveToFile(props, CONFIG_FILE);
     }

@@ -19,7 +19,6 @@ public final class ConfigSerde {
             return props;
         } catch (Exception e) {
             Main.LOGGER.error("Could not load config file: ", e);
-            e.printStackTrace();
             return null;
         }
     }
@@ -29,7 +28,6 @@ public final class ConfigSerde {
             prop.store(writer, null);
         } catch (Exception e) {
             Main.LOGGER.error("Could not save config file: ", e);
-            e.printStackTrace();
         }
     }
 
