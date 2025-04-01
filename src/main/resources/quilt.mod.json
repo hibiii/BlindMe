@@ -7,7 +7,7 @@
         "depends": [
             {
                 "id": "minecraft",
-                "version": "${minecraft_version}"
+                "version": ">=1.21.5"
             },
             { "id": "fabric" }
         ],
