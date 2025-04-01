@@ -5,7 +5,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import hibi.blind_me.config.Manager;
-import hibi.blind_me.config.Enums.ServerEffect;
+import hibi.blind_me.config.ServerEffect;
 import hibi.blind_me.mix.StatusEffectInstanceAccessor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;

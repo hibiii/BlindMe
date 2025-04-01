@@ -9,7 +9,6 @@
                 "id": "minecraft",
                 "version": "${minecraft_version}"
             },
-            { "id": "quilt_loader" },
             { "id": "fabric" }
         ],
         "intermediate_mappings": "net.fabricmc:intermediary",

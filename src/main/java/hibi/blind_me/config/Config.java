@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.Main;
-import hibi.blind_me.config.Enums.ServerEffect;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
@@ -55,12 +54,7 @@ public class Config {
             if ((key.charAt(0) != 's' || key.charAt(0) != 'm') && key.charAt(1) != '@') {
                 return;
             }
-            var val = switch((String)val1) {
-                case "BLINDNESS" -> ServerEffect.BLINDNESS;
-                case "DARKNESS" -> ServerEffect.DARKNESS;
-                case "OFF" -> ServerEffect.OFF;
-                default ->  null;
-            };
+            var val = ServerEffect.parse(val1);
             if (val == null) {
                 Main.LOGGER.error("Unable to parse config entry \""+key+"\" = \""+val1+"\", defaulting to OFF");
                 return;

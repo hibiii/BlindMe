@@ -1,7 +1,6 @@
 package hibi.blind_me.config;
 
 import hibi.blind_me.EffectManager;
-import hibi.blind_me.config.Enums.ServerEffect;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
@@ -55,8 +54,8 @@ public class ConfigScreen extends GameOptionsScreen {
         var serverEffectButton = CyclingButtonWidget
             .builder((ServerEffect ef) -> {
                 return switch(ef) {
-                    case BLINDNESS -> Text.literal("blid");
-                    case DARKNESS -> Text.literal("dork");
+                    case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
+                    case DARKNESS -> Text.translatable("effect.minecraft.darkness");
                     case OFF -> ScreenTexts.OFF;
                 };
             })
@@ -70,9 +69,6 @@ public class ConfigScreen extends GameOptionsScreen {
         serverEffectButton.active = ingame;
         serverEffectButton.setWidth(310);
         this.body.addWidgetEntry(serverEffectButton, null);
-    }
-
-    protected void initOptionButtons() {
     }
 
     @Override
