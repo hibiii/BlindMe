@@ -17,7 +17,8 @@ public class LightmapTextureManagerMixin {
     
     @Inject(
         method = "getDarkness",
-        at = @At("HEAD")
+        at = @At("HEAD"),
+        cancellable = true
     )
     void pulseIgnoresDarkness(LivingEntity entity, float factor, float progress, CallbackInfoReturnable<Float> info) {
         if (Manager.CONFIG.disableDarknessPulse

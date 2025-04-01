@@ -2,9 +2,12 @@ package hibi.blind_me.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import hibi.blind_me.EffectManager;
+import hibi.blind_me.Main;
 import hibi.blind_me.config.Enums.ServerEffect;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
 
@@ -31,10 +34,44 @@ public class Config {
     }
 
     public void save() {
-        // TODO: unimplemented
+        var props = new Properties();
+        props.put("creativeBypass", this.creativeBypass);
+        props.put("spectatorBypass", this.spectatorBypass);
+        props.put("disableDarknessPulse", this.disableDarknessPulse);
+        this.servers.forEach((key, value) -> props.put(key, value.toString()));
+        ConfigSerde.saveToFile(props, CONFIG_FILE);
     }
 
     public void load() {
-        // TODO: unimplemented
+        var props = ConfigSerde.loadFromFile(CONFIG_FILE);
+        if (props == null) {
+            return;
+        }
+        this.creativeBypass = Boolean.parseBoolean((String)props.get("creativeBypass"));
+        this.spectatorBypass = Boolean.parseBoolean((String)props.getOrDefault("spectatorBypass", "true"));
+        this.disableDarknessPulse = Boolean.parseBoolean((String)props.getOrDefault("disableDarknessPulse", "true"));
+        props.forEach((key1, val1) -> {
+            var key = (String) key1;
+            if ((key.charAt(0) != 's' || key.charAt(0) != 'm') && key.charAt(1) != '@') {
+                return;
+            }
+            var val = switch((String)val1) {
+                case "BLINDNESS" -> ServerEffect.BLINDNESS;
+                case "DARKNESS" -> ServerEffect.DARKNESS;
+                case "OFF" -> ServerEffect.OFF;
+                default ->  null;
+            };
+            if (val == null) {
+                Main.LOGGER.error("Unable to parse config entry \""+key+"\" = \""+val1+"\", defaulting to OFF");
+                return;
+            }
+            this.servers.put(key, val);
+        });
+    }
+
+    private static final String CONFIG_FILE;
+
+    static {
+        CONFIG_FILE = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve("blindme.prop").toString();
     }
 }
