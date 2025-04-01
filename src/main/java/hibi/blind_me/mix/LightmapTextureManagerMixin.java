@@ -24,6 +24,7 @@ public class LightmapTextureManagerMixin {
         if (Manager.CONFIG.disableDarknessPulse
             && EffectManager.getDesiredEffect() == StatusEffects.DARKNESS
             && EffectManager.getModEffect() instanceof StatusEffectInstance modEf
+            && entity.getStatusEffect(StatusEffects.DARKNESS) == modEf
             && ((StatusEffectInstanceAccessor)modEf).getHiddenEffect() == null
         ) {
             info.setReturnValue(0f);
