@@ -87,6 +87,7 @@ public class ConfigScreen extends GameOptionsScreen {
         this.body.addWidgetEntry(button, null);
     }
 
+    // TODO: Organize this MESS
     private void addButtonsForCurrentServer() {
         var initiallyLocked = this.serverOptions.locked();
         var effectButton = CyclingButtonWidget

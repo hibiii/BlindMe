@@ -39,16 +39,15 @@ public final class Command {
         if (uniqueId == null) {
             throw new IllegalStateException("Command called outside of a world");
         }
-        if (Main.CONFIG.getServerOptions(uniqueId).locked()) {
+        var opts = Main.CONFIG.getServerOptions(uniqueId);
+        if (opts.locked()) {
             cmd.getSource().sendFeedback(Text.translatable(K_OPTIONS_LOCKED).formatted(Formatting.RED));
             return 0;
         }
-        if (ef == null && Main.CONFIG.servers.get(uniqueId) == null) {
-            cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_UNSET));
-            return 0;
-        }
-        if (Main.CONFIG.getEffectForServer(uniqueId) == ef) {
-            cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_SET));
+        if (opts.effect() == ef) {
+            cmd.getSource().sendFeedback(Text.translatable(
+                (ef == null) ? K_EFFECT_ALREADY_UNSET : K_EFFECT_ALREADY_SET
+            ));
             return 0;
         }
         Main.CONFIG.setEffectForServer(uniqueId, ef);

@@ -3,7 +3,11 @@ package hibi.blind_me.config;
 import org.jetbrains.annotations.Nullable;
 
 public record ServerOptions(
+    // The effect for this server.
+    // `null` in this context refers to defer to the default effect.
     @Nullable ServerEffect effect,
+
+    // If locked, the options cannot be modified.
     boolean locked
 ) {
     public ServerOptions withEffect(@Nullable ServerEffect effect) {
