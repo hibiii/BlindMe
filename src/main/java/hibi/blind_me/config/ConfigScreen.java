@@ -1,6 +1,7 @@
 package hibi.blind_me.config;
 
 import hibi.blind_me.EffectManager;
+import hibi.blind_me.Main;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
@@ -19,29 +20,29 @@ public class ConfigScreen extends GameOptionsScreen {
 
     @Override
     protected void addOptions() {
-        var creativeBypassButton = CyclingButtonWidget.onOffBuilder(Manager.CONFIG.creativeBypass)
+        var creativeBypassButton = CyclingButtonWidget.onOffBuilder(Main.CONFIG.creativeBypass)
         .build(Text.translatable(K_CREATIVE_BYPASS),
             (button, set) -> {
                 this.changed = true;
-                Manager.CONFIG.creativeBypass = set;
+                Main.CONFIG.creativeBypass = set;
             }
         );
-        var spectatorBypassButton = CyclingButtonWidget.onOffBuilder(Manager.CONFIG.spectatorBypass)
+        var spectatorBypassButton = CyclingButtonWidget.onOffBuilder(Main.CONFIG.spectatorBypass)
         .build(Text.translatable(K_SPECTATOR_BYPASS),
             (button, set) -> {
                 this.changed = true;
-                Manager.CONFIG.spectatorBypass = set;
+                Main.CONFIG.spectatorBypass = set;
             }
         );
         this.body.addWidgetEntry(creativeBypassButton, spectatorBypassButton);
 
         var darknessPulseButton = CyclingButtonWidget
-        .onOffBuilder(Manager.CONFIG.disableDarknessPulse)
+        .onOffBuilder(Main.CONFIG.disableDarknessPulse)
         .tooltip(((bool) -> Tooltip.of(Text.translatable(K_DISABLE_PULSE_TOOLTIP))))
         .build(Text.translatable(K_DISABLE_PULSE),
             (button, set) -> {
                 this.changed = true;
-                Manager.CONFIG.disableDarknessPulse = set;
+                Main.CONFIG.disableDarknessPulse = set;
             }
         );
         darknessPulseButton.setWidth(310);
@@ -49,7 +50,7 @@ public class ConfigScreen extends GameOptionsScreen {
 
         boolean ingame = this.client.world != null;
         ServerEffect initial = ingame
-            ? Manager.CONFIG.getEffectForServer(EffectManager.getUniqueId())
+            ? Main.CONFIG.getEffectForServer(EffectManager.getUniqueId())
             : ServerEffect.OFF;
         var serverEffectButton = CyclingButtonWidget
             .builder((ServerEffect ef) -> {
@@ -64,7 +65,7 @@ public class ConfigScreen extends GameOptionsScreen {
             .tooltip(effect -> Tooltip.of(Text.translatable(K_SERVER_EFFECT_TOOLTIP + effect.toString())))
             .build(Text.translatable(K_CURRENT_SERVER), (button, value) -> {
                 this.changed = true;
-                Manager.CONFIG.setEffectForServer(EffectManager.getUniqueId(), value);
+                Main.CONFIG.setEffectForServer(EffectManager.getUniqueId(), value);
             });
         serverEffectButton.active = ingame;
         serverEffectButton.setWidth(310);
@@ -79,7 +80,8 @@ public class ConfigScreen extends GameOptionsScreen {
 
     protected void save() {
         if (this.changed) {
-            Manager.save();
+            Main.CONFIG.configureInstance();
+            ConfigFile.save(Main.CONFIG);
         }
     }
 

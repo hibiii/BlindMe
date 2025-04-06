@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import hibi.blind_me.EffectManager;
-import hibi.blind_me.config.Manager;
+import hibi.blind_me.Main;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -21,7 +21,7 @@ public class LightmapTextureManagerMixin {
         cancellable = true
     )
     void pulseIgnoresDarkness(LivingEntity entity, float factor, float progress, CallbackInfoReturnable<Float> info) {
-        if (Manager.CONFIG.disableDarknessPulse
+        if (Main.CONFIG.disableDarknessPulse
             && EffectManager.getDesiredEffect() == StatusEffects.DARKNESS
             && EffectManager.getModEffect() instanceof StatusEffectInstance modEf
             && entity.getStatusEffect(StatusEffects.DARKNESS) == modEf

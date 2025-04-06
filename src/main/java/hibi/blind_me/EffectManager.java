@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
-import hibi.blind_me.config.Manager;
 import hibi.blind_me.config.ServerEffect;
 import hibi.blind_me.mix.StatusEffectInstanceAccessor;
 import net.minecraft.client.MinecraftClient;
@@ -81,7 +80,7 @@ public final class EffectManager {
     }
 
     private static void getEffectForServer() {
-        EffectManager.setDesiredEffect(Manager.CONFIG.getEffectForServer(uniqueId));
+        EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(uniqueId));
     }
 
     public static void setDisabledCreative(boolean skipsCreative) {

@@ -28,4 +28,10 @@ public class Config {
         EffectManager.setDesiredEffect(ef);
         ConfigFile.save(this);
     }
+
+    public void configureInstance() {
+        EffectManager.setDisabledCreative(this.creativeBypass);
+        EffectManager.setDisabledSpectator(this.spectatorBypass);
+        EffectManager.setDesiredEffect(this.getEffectForServer(EffectManager.getUniqueId()));
+    }
 }
