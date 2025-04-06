@@ -30,7 +30,8 @@ public class Config {
     }
 
     public void setEffectForServer(String uniqueId, @Nullable ServerEffect ef) {
-        var opts = this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT).withEffect(ef);
+        var opts = this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT);
+        opts = opts.withEffect(ef);
         this.servers.put(uniqueId, opts);
         ConfigFile.save(this);
         if (ef == null) {
@@ -38,6 +39,15 @@ public class Config {
         } else {
             EffectManager.setDesiredEffect(ef);
         }
+    }
+
+    public void setServerOptions(String uniqueId, ServerOptions opts) {
+        this.servers.put(uniqueId, opts);
+        ConfigFile.save(this);
+    }
+
+    public ServerOptions getServerOptions(String uniqueId) {
+        return this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT);
     }
 
     public void configureInstance() {

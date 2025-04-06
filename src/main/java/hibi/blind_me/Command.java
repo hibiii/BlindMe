@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public final class Command {
     private Command() {};
@@ -37,6 +38,10 @@ public final class Command {
         String uniqueId = EffectManager.getUniqueId();
         if (uniqueId == null) {
             throw new IllegalStateException("Command called outside of a world");
+        }
+        if (Main.CONFIG.getServerOptions(uniqueId).locked()) {
+            cmd.getSource().sendFeedback(Text.translatable(K_OPTIONS_LOCKED).formatted(Formatting.RED));
+            return 0;
         }
         if (ef == null && Main.CONFIG.servers.get(uniqueId) == null) {
             cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_UNSET));
@@ -72,6 +77,7 @@ public final class Command {
         K_EFFECT_SET = "blindme.command.set_effect",
         K_EFFECT_OFF = "blindme.command.disable_effect",
         K_EFFECT_UNSET = "blindme.command.unset_effect",
+        K_OPTIONS_LOCKED = "blindme.command.options_locked",
         K_PRINT_SET = "blindme.command.current",
         K_PRINT_NONE = "blindme.command.current.none"
     ;
