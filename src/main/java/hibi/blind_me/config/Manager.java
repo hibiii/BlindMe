@@ -6,10 +6,10 @@ public final class Manager {
 
     private static boolean pulseM;
     
-    public static final Config CONFIG = new Config();
+    public static Config CONFIG = new Config();
 
     public static void init() {
-        CONFIG.load();
+        CONFIG = ConfigFile.load();
         Manager.configureInstance();
     }
 
@@ -25,7 +25,7 @@ public final class Manager {
     }
 
     public static void save() {
-        CONFIG.save();
+        ConfigFile.save(CONFIG);
         Manager.configureInstance();
     }
 
