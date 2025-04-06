@@ -1,5 +1,10 @@
 package hibi.blind_me.config;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.jetbrains.annotations.Nullable;
+
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.Main;
 import net.minecraft.client.MinecraftClient;
@@ -47,12 +52,12 @@ public class ConfigScreen extends GameOptionsScreen {
         );
         darknessPulseButton.setWidth(310);
         this.body.addWidgetEntry(darknessPulseButton, null);
+        this.addDefaultEffectButton();
+        this.addCurrentServerEffectButton();
+    }
 
-        boolean ingame = this.client.world != null;
-        ServerEffect initial = ingame
-            ? Main.CONFIG.getEffectForServer(EffectManager.getUniqueId())
-            : ServerEffect.OFF;
-        var serverEffectButton = CyclingButtonWidget
+    public void addDefaultEffectButton() {
+        var button = CyclingButtonWidget
             .builder((ServerEffect ef) -> {
                 return switch(ef) {
                     case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
@@ -61,15 +66,49 @@ public class ConfigScreen extends GameOptionsScreen {
                 };
             })
             .values(ServerEffect.values())
-            .initially(initial)
-            .tooltip(effect -> Tooltip.of(Text.translatable(K_SERVER_EFFECT_TOOLTIP + effect.toString())))
-            .build(Text.translatable(K_CURRENT_SERVER), (button, value) -> {
+            .initially(Main.CONFIG.defaultServerEffect)
+            .tooltip(effect -> Tooltip.of(Text.translatable(K_EFFECT_DETAILS_TOOLTIP + effect.toString())))
+            .build(Text.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
                 this.changed = true;
-                Main.CONFIG.setEffectForServer(EffectManager.getUniqueId(), value);
+                Main.CONFIG.defaultServerEffect = value;
             });
-        serverEffectButton.active = ingame;
-        serverEffectButton.setWidth(310);
-        this.body.addWidgetEntry(serverEffectButton, null);
+        button.setWidth(310);
+        this.body.addWidgetEntry(button, null);
+    }
+
+    public void addCurrentServerEffectButton() {
+        boolean ingame = this.client.world != null;
+        var button = CyclingButtonWidget
+            .builder((Optional<ServerEffect> ef) -> {
+                if (ef.isEmpty()) {
+                    return Text.translatable("effect.blindme.default");
+                }
+                return switch(ef.get()) {
+                    case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
+                    case DARKNESS -> Text.translatable("effect.minecraft.darkness");
+                    case OFF -> ScreenTexts.OFF;
+                };
+            })
+            .values(List.of(
+                Optional.empty(),
+                Optional.of(ServerEffect.BLINDNESS),
+                Optional.of(ServerEffect.DARKNESS),
+                Optional.of(ServerEffect.OFF)
+            ))
+            .initially(Optional.ofNullable(Main.CONFIG.servers.get(EffectManager.getUniqueId())))
+            .tooltip(optional -> {
+                var effect = optional.orElse(null);
+                return Tooltip.of(Text.translatable(K_EFFECT_DETAILS_TOOLTIP
+                    + ((effect != null) ? effect.toString() : "default")
+                ));
+            })
+            .build(Text.translatable(K_CURRENT_SERVER), (_button, value) -> {
+                this.changed = true;
+                Main.CONFIG.setEffectForServer(EffectManager.getUniqueId(), value.orElse(null));
+            });
+        button.active = ingame;
+        button.setWidth(310);
+        this.body.addWidgetEntry(button, null);
     }
 
     @Override
@@ -90,7 +129,8 @@ public class ConfigScreen extends GameOptionsScreen {
         K_CREATIVE_BYPASS = "blindme.options.creative_bypass",
         K_SPECTATOR_BYPASS = "blindme.options.spectator_bypass",
         K_CURRENT_SERVER = "blindme.options.current_world_effect",
-        K_SERVER_EFFECT_TOOLTIP = "blindme.options.current_world_effect.tooltip.",
+        K_DEFAULT_EFFECT = "blindme.options.default_effect",
+        K_EFFECT_DETAILS_TOOLTIP = "blindme.options.world_effect.tooltip.",
         K_DISABLE_PULSE = "blindme.options.disable_darkness_pulse",
         K_DISABLE_PULSE_TOOLTIP = "blindme.options.disable_darkness_pulse.tooltip"
     ;

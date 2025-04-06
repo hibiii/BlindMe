@@ -1,5 +1,7 @@
 package hibi.blind_me;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
@@ -13,6 +15,7 @@ public final class Command {
     private Command() {};
 
     public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess access) {
+        // TODO: Subcommand for opening config screen
         dispatcher.register(ClientCommandManager.literal("blindme")
             .then(ClientCommandManager.literal("off")
                 .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))
@@ -23,14 +26,21 @@ public final class Command {
             .then(ClientCommandManager.literal("darkness")
                 .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
             )
+            .then(ClientCommandManager.literal("default")
+                .executes((src) -> Command.worldSubcommand(src, null))
+            )
             .executes((src) -> Command.printSubcommand(src))
         );
     }
 
-    private static int worldSubcommand(CommandContext<FabricClientCommandSource> cmd, ServerEffect ef) {
+    private static int worldSubcommand(CommandContext<FabricClientCommandSource> cmd, @Nullable ServerEffect ef) {
         String uniqueId = EffectManager.getUniqueId();
         if (uniqueId == null) {
             throw new IllegalStateException("Command called outside of a world");
+        }
+        if (ef == null && Main.CONFIG.servers.get(uniqueId) == null) {
+            cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_UNSET));
+            return 0;
         }
         if (Main.CONFIG.getEffectForServer(uniqueId) == ef) {
             cmd.getSource().sendFeedback(Text.translatable(K_EFFECT_ALREADY_SET));
@@ -41,6 +51,7 @@ public final class Command {
             case OFF -> Text.translatable(K_EFFECT_OFF);
             case BLINDNESS -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.minecraft.blindness"));
             case DARKNESS -> Text.translatable(K_EFFECT_SET, Text.translatable("effect.minecraft.darkness"));
+            case null -> Text.translatable(K_EFFECT_UNSET);
         });
         return 0;
     }
@@ -57,8 +68,10 @@ public final class Command {
 
     private static final String
         K_EFFECT_ALREADY_SET = "blindme.command.effect_already_set",
+        K_EFFECT_ALREADY_UNSET = "blindme.command.effect_already_unset",
         K_EFFECT_SET = "blindme.command.set_effect",
         K_EFFECT_OFF = "blindme.command.disable_effect",
+        K_EFFECT_UNSET = "blindme.command.unset_effect",
         K_PRINT_SET = "blindme.command.current",
         K_PRINT_NONE = "blindme.command.current.none"
     ;
