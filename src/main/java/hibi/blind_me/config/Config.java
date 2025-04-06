@@ -6,7 +6,6 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import hibi.blind_me.EffectManager;
-import net.minecraft.block.Portal.Effect;
 
 public class Config {
 
@@ -17,7 +16,7 @@ public class Config {
     public boolean spectatorBypass = true;
 
     // The list of servers/worlds and configuration for each individually
-    public Map<String, @Nullable ServerEffect> servers = new HashMap<String, @Nullable ServerEffect>();
+    public Map<String, ServerOptions> servers = new HashMap<String, ServerOptions>();
 
     // If set to true, the Darkness effect will not pulse the brightness when it is applied by the mod
     public boolean disableDarknessPulse = true;
@@ -26,12 +25,13 @@ public class Config {
     public ServerEffect defaultServerEffect = ServerEffect.OFF;
 
     public ServerEffect getEffectForServer(String uniqueId) {
-        var ef = this.servers.get(uniqueId);
+        var ef = this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT).effect();
         return (ef == null) ? this.defaultServerEffect : ef;
     }
 
     public void setEffectForServer(String uniqueId, @Nullable ServerEffect ef) {
-        this.servers.put(uniqueId, ef);
+        var opts = this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT).withEffect(ef);
+        this.servers.put(uniqueId, opts);
         ConfigFile.save(this);
         if (ef == null) {
             EffectManager.setDesiredEffect(this.defaultServerEffect);

@@ -3,8 +3,6 @@ package hibi.blind_me.config;
 import java.util.List;
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.Main;
 import net.minecraft.client.MinecraftClient;
@@ -95,7 +93,10 @@ public class ConfigScreen extends GameOptionsScreen {
                 Optional.of(ServerEffect.DARKNESS),
                 Optional.of(ServerEffect.OFF)
             ))
-            .initially(Optional.ofNullable(Main.CONFIG.servers.get(EffectManager.getUniqueId())))
+            .initially(Optional.ofNullable(
+                Main.CONFIG.servers.getOrDefault(EffectManager.getUniqueId(), ServerOptions.DEFAULT)
+                .effect()
+            ))
             .tooltip(optional -> {
                 var effect = optional.orElse(null);
                 return Tooltip.of(Text.translatable(K_EFFECT_DETAILS_TOOLTIP
