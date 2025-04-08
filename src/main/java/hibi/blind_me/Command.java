@@ -16,7 +16,6 @@ public final class Command {
     private Command() {};
 
     public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess access) {
-        // TODO: Subcommand for opening config screen
         dispatcher.register(ClientCommandManager.literal("blindme")
             .then(ClientCommandManager.literal("off")
                 .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))

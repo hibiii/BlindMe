@@ -16,8 +16,6 @@ import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
-// TODO MAJOR: make changing the effect instantly reflect on the world behind the screen
-// WHY: Screen is transparent, and the transparency would serve as a preview of the effect
 public class ConfigScreen extends GameOptionsScreen {
 
     private boolean changed = false;
@@ -82,6 +80,7 @@ public class ConfigScreen extends GameOptionsScreen {
             .build(Text.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
                 this.changed = true;
                 Main.CONFIG.defaultServerEffect = value;
+                EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(EffectManager.getUniqueId()));
             });
         button.setWidth(310);
         this.body.addWidgetEntry(button, null);
@@ -119,6 +118,7 @@ public class ConfigScreen extends GameOptionsScreen {
             .build(Text.translatable(K_CURRENT_SERVER), (_button, value) -> {
                 this.changed = true;
                 this.serverOptions = this.serverOptions.withEffect(value.orElse(null));
+                EffectManager.setDesiredEffect(value.orElse(Main.CONFIG.defaultServerEffect));
             });
         effectButton.active = ingame && !initiallyLocked;
         effectButton.setWidth(310);
@@ -176,13 +176,13 @@ public class ConfigScreen extends GameOptionsScreen {
     @Override
     public void close() {
         this.save();
+        Main.CONFIG.configureInstance();
         super.close();
     }
 
     protected void save() {
         if (this.changed) {
             Main.CONFIG.setServerOptions(EffectManager.getUniqueId(), this.serverOptions);
-            Main.CONFIG.configureInstance();
             ConfigFile.save(Main.CONFIG);
         }
     }
