@@ -29,6 +29,9 @@
     "blindme.options.world_effect.tooltip.DARKNESS": "Darkness: Blocks and entities are visible in a medium radius",
     "blindme.options.world_effect.tooltip.default": "Default: use the effect set as default for all worlds",
     
+    "blindme.error.save": "Saving BlindMe configuration failed",
+    "blindme.error.save.description": "Please try saving again. If the error persists, check the logs",
+
     "modmenu.descriptionTranslation.blindme": "A client-sided mod that enforces the Blindness effect on the player, configurable per world.",
     "modmenu.blindme.users_manual": "User's Manual"
 }

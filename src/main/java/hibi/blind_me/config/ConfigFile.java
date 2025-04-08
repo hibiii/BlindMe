@@ -14,10 +14,12 @@ import com.google.gson.JsonSyntaxException;
 
 import hibi.blind_me.Main;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.toast.SystemToast;
+import net.minecraft.text.Text;
 
 public final class ConfigFile {
 
-    // FIXME: #7
     /**
      * Loads the configuration from disk.
      * When an error occours, this function returns a default configuration instead.
@@ -33,26 +35,32 @@ public final class ConfigFile {
         }
     }
 
-    // TODO: Error notifications
     /**
      * Serializes the configuration to disk.
      * When an error occours, this function fails silently.
-     * @param config
      */
     public static void save(Config config) {
         try (var writer = new BufferedWriter(new FileWriter(PATH))) {
             var json = new Gson().toJson(config);
             writer.write(json);
         } catch (Exception e) {
-            Main.LOGGER.error("Could not save config file: ", e);
+            Main.LOGGER.error("Could not save the config file", e);
+            var client = MinecraftClient.getInstance();
+            client.getToastManager().add(SystemToast.create(
+                client, new SystemToast.Type(10_000L),
+                Text.translatable(K_SAVE_ERROR), Text.translatable(K_SAVE_ERROR_DESCRIPTION)
+            ));
         }
     }
 
     private ConfigFile() {}
 
     private static final String PATH;
+    private static final String K_SAVE_ERROR, K_SAVE_ERROR_DESCRIPTION;
 
     static {
         PATH = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve("blindme.json").toString();
+        K_SAVE_ERROR = "blindme.error.save";
+        K_SAVE_ERROR_DESCRIPTION = "blindme.error.save.description";
     }
 }
