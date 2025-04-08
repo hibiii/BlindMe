@@ -71,16 +71,12 @@ public final class EffectManager {
         }
         ServerInfo info = handler.getServerInfo();
         uniqueId = "m@" + info.address;
-        getEffectForServer();
+        Main.CONFIG.configureInstance();
     }
     
     public static void joinSingleplayerCallback(String worldName) {
         uniqueId = "s@" + worldName;
-        getEffectForServer();
-    }
-
-    private static void getEffectForServer() {
-        EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(uniqueId));
+        Main.CONFIG.configureInstance();
     }
 
     public static void setDisabledCreative(boolean skipsCreative) {

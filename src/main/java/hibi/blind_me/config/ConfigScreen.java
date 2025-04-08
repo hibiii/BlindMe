@@ -1,6 +1,5 @@
 package hibi.blind_me.config;
 
-import java.util.List;
 import java.util.Optional;
 
 import hibi.blind_me.EffectManager;
@@ -21,6 +20,9 @@ public class ConfigScreen extends GameOptionsScreen {
     private boolean changed = false;
     private ServerOptions serverOptions;
     private boolean ingame = false;
+    private CyclingButtonWidget<Optional<ServerEffect>> effectButton = null;
+    private CyclingButtonWidget<Optional<Boolean>> worldCreativeBypassButton = null;
+    private CyclingButtonWidget<Optional<Boolean>> worldSpectatorBypassButton = null;
     private ButtonWidget lockButton = null;
 
     public ConfigScreen(Screen parent) {
@@ -36,6 +38,7 @@ public class ConfigScreen extends GameOptionsScreen {
             (button, set) -> {
                 this.changed = true;
                 Main.CONFIG.creativeBypass = set;
+                EffectManager.setDisabledCreative(this.serverOptions.creativeBypass() instanceof Boolean b? b : set);
             }
         );
         var spectatorBypassButton = CyclingButtonWidget.onOffBuilder(Main.CONFIG.spectatorBypass)
@@ -43,6 +46,7 @@ public class ConfigScreen extends GameOptionsScreen {
             (button, set) -> {
                 this.changed = true;
                 Main.CONFIG.spectatorBypass = set;
+                EffectManager.setDisabledSpectator(this.serverOptions.spectatorBypass() instanceof Boolean b? b : set);
             }
         );
         this.body.addWidgetEntry(creativeBypassButton, spectatorBypassButton);
@@ -59,9 +63,6 @@ public class ConfigScreen extends GameOptionsScreen {
         darknessPulseButton.setWidth(310);
         this.body.addWidgetEntry(darknessPulseButton, null);
         this.addDefaultEffectButton();
-        var worldSettings = new TextWidget(310, 27, Text.translatable(K_WORLD_SETTINGS_SUBTITLE), this.textRenderer)
-            .alignCenter();
-        this.body.addWidgetEntry(worldSettings, null);
         this.addButtonsForCurrentServer();
     }
 
@@ -86,9 +87,11 @@ public class ConfigScreen extends GameOptionsScreen {
         this.body.addWidgetEntry(button, null);
     }
 
-    // TODO: Organize this MESS
     private void addButtonsForCurrentServer() {
-        var initiallyLocked = this.serverOptions.locked();
+        var worldSettings = new TextWidget(310, 27, Text.translatable(K_WORLD_SETTINGS_SUBTITLE), this.textRenderer)
+            .alignCenter();
+        this.body.addWidgetEntry(worldSettings, null);
+
         var effectButton = CyclingButtonWidget
             .builder((Optional<ServerEffect> ef) -> {
                 if (ef.isEmpty()) {
@@ -100,12 +103,8 @@ public class ConfigScreen extends GameOptionsScreen {
                     case OFF -> ScreenTexts.OFF;
                 };
             })
-            .values(List.of(
-                Optional.empty(),
-                Optional.of(ServerEffect.BLINDNESS),
-                Optional.of(ServerEffect.DARKNESS),
-                Optional.of(ServerEffect.OFF)
-            ))
+            .values(Optional.empty(), Optional.of(ServerEffect.BLINDNESS), Optional.of(ServerEffect.DARKNESS), Optional.of(ServerEffect.OFF)
+            )
             .initially(Optional.ofNullable(
                 this.serverOptions.effect()
             ))
@@ -120,44 +119,74 @@ public class ConfigScreen extends GameOptionsScreen {
                 this.serverOptions = this.serverOptions.withEffect(value.orElse(null));
                 EffectManager.setDesiredEffect(value.orElse(Main.CONFIG.defaultServerEffect));
             });
-        effectButton.active = ingame && !initiallyLocked;
         effectButton.setWidth(310);
         this.body.addWidgetEntry(effectButton, null);
+        this.effectButton = effectButton;
+        
+        var creativeBypassButton = CyclingButtonWidget
+        .builder((Optional<Boolean> bypass) -> {
+            if (bypass.isEmpty()) {
+                return Text.translatable("effect.blindme.default");
+            }
+            return (bypass.get())? ScreenTexts.ON : ScreenTexts.OFF;
+        })
+        .values(Optional.empty(), Optional.of(true), Optional.of(false))
+        .initially(Optional.ofNullable(this.serverOptions.creativeBypass()))
+        .tooltip(optional -> Tooltip.of(Text.translatable(K_WORLD_SPECIFIC_OPTION)))
+        .build(Text.translatable(K_WORLD_CREATIVE_BYPASS), (btn, value) -> {
+            this.changed = true;
+            this.serverOptions = this.serverOptions.withCreativeBypass(value.orElse(null));
+            EffectManager.setDisabledCreative(value.orElse(Main.CONFIG.creativeBypass));
+        });
+        this.worldCreativeBypassButton = creativeBypassButton;
+        
+        var spectatorBypassButton = CyclingButtonWidget
+        .builder((Optional<Boolean> bypass) -> {
+            if (bypass.isEmpty()) {
+                return Text.translatable("effect.blindme.default");
+            }
+            return (bypass.get())? ScreenTexts.ON : ScreenTexts.OFF;
+        })
+        .values(Optional.empty(), Optional.of(true), Optional.of(false))
+        .initially(Optional.ofNullable(this.serverOptions.spectatorBypass()))
+        .tooltip(optional -> Tooltip.of(Text.translatable(K_WORLD_SPECIFIC_OPTION)))
+        .build(Text.translatable(K_WORLD_SPECTATOR_BYPASS), (btn, value) -> {
+            this.changed = true;
+            this.serverOptions = this.serverOptions.withSpectatorBypass(value.orElse(null));
+            EffectManager.setDisabledSpectator(value.orElse(Main.CONFIG.spectatorBypass));
+        });
+        this.worldSpectatorBypassButton = spectatorBypassButton;
+        
+        this.body.addWidgetEntry(worldCreativeBypassButton, spectatorBypassButton);
+        this.addLockButton();
+        this.toggleWorldButtons(this.serverOptions.locked());
+    }
 
+    private void addLockButton() {
+        var initiallyLocked = this.serverOptions.locked();
         var lockButton = ButtonWidget.builder(Text.translatable(
             initiallyLocked ? K_UNLOCK_BUTTON : K_LOCK_BUTTON
-        ), (btn) -> {
-            if (!this.serverOptions.locked()) {
-                var scr = new ConfirmScreen(
-                    lock -> {
-                        if (lock) {
-                            this.serverOptions = this.serverOptions.butLocked();
-                            this.changed = true;
-                            effectButton.active = false;
-                            btn.setMessage(Text.translatable(K_UNLOCK_BUTTON));
-                            btn.setTooltip(Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP)));
-                            btn.active = false;
-                        }
-                        this.client.setScreen(this);
-                    },
-                    Text.translatable(K_LOCK_SCREEN_TITLE),
-                    Text.translatable(K_LOCK_SCREEN_MESSAGE)
-                );
-                scr.disableButtons(20);
-                this.client.setScreen(scr);
-            } else {
+        ), (lockBtn) -> {
+            if (this.serverOptions.locked()) {
                 this.serverOptions = this.serverOptions.butUnlocked();
                 this.changed = true;
-                effectButton.active = true;
-                btn.setMessage(Text.translatable(K_LOCK_BUTTON));
-                btn.setTooltip(null);
-                btn.active = true;
+                this.toggleWorldButtons(false);
+                return;
             }
+            var scr = new ConfirmScreen(shouldLock -> {
+                if (shouldLock) {
+                    this.serverOptions = this.serverOptions.butLocked();
+                    this.changed = true;
+                    this.toggleWorldButtons(true);
+                }
+                this.client.setScreen(this);
+            },
+            Text.translatable(K_LOCK_SCREEN_TITLE),
+            Text.translatable(K_LOCK_SCREEN_MESSAGE)
+            );
+            this.client.setScreen(scr);
+            scr.disableButtons(10);
         }).build();
-        if (initiallyLocked) {
-            lockButton.setTooltip(Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP)));
-        }
-        lockButton.active = ingame && !this.serverOptions.locked();
         this.body.addWidgetEntry(lockButton, null);
         this.lockButton = lockButton;
     }
@@ -201,6 +230,21 @@ public class ConfigScreen extends GameOptionsScreen {
         K_LOCK_SCREEN_MESSAGE = "blindme.options.lock_world.screen.message",
         K_UNLOCK_BUTTON = "blindme.options.unlock_world",
         K_UNLOCK_BUTTON_TOOLTIP = "blindme.options.unlock_world.tooltip",
-        K_WORLD_SETTINGS_SUBTITLE = "blindme.options.subtitle.world_specific"
+        K_WORLD_SETTINGS_SUBTITLE = "blindme.options.subtitle.world_specific",
+        K_WORLD_SPECIFIC_OPTION = "blindme.options.world_specific.tooltip",
+        K_WORLD_CREATIVE_BYPASS = "blindme.options.world.creative_bypass",
+        K_WORLD_SPECTATOR_BYPASS = "blindme.options.world.spectator_bypass"
     ;
+
+    private void toggleWorldButtons(boolean locked) {
+        var active = !locked & this.ingame;
+        this.effectButton.active = active;
+        this.worldCreativeBypassButton.active = active;
+        this.worldSpectatorBypassButton.active = active;
+        this.lockButton.active = active;
+        var lockButtonText = (locked)? Text.translatable(K_UNLOCK_BUTTON) : Text.translatable(K_LOCK_BUTTON);
+        var lockButtonTooltip = (locked)? Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP)) : null;
+        this.lockButton.setMessage(lockButtonText);
+        this.lockButton.setTooltip(lockButtonTooltip);
+    }
 }

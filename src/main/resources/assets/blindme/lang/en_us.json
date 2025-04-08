@@ -17,6 +17,9 @@
     
     "blindme.options.subtitle.world_specific": "World-specific Options",
     "blindme.options.current_world_effect": "Effect for current world",
+    "blindme.options.world_specific.tooltip": "This option only affects the current world.",
+    "blindme.options.world.creative_bypass": "Disable in Creative here",
+    "blindme.options.world.spectator_bypass": "Disable in Spectator here",
     "blindme.options.lock_world": "Lock world options",
     "blindme.options.lock_world.screen.title": "Are you sure you want to lock the world options?",
     "blindme.options.lock_world.screen.message": "You will be unable to to change any settings for this world until you unlock them again.",

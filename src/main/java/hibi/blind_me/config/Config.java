@@ -64,8 +64,9 @@ public class Config {
 
     // Refreshes settings and configurations in other parts of the code base.
     public void configureInstance() {
-        EffectManager.setDisabledCreative(this.creativeBypass);
-        EffectManager.setDisabledSpectator(this.spectatorBypass);
-        EffectManager.setDesiredEffect(this.getEffectForServer(EffectManager.getUniqueId()));
+        var opts = this.getServerOptions(EffectManager.getUniqueId());
+        EffectManager.setDisabledCreative(opts.creativeBypass() instanceof Boolean b? b: this.creativeBypass);
+        EffectManager.setDisabledSpectator(opts.spectatorBypass() instanceof Boolean b? b: this.spectatorBypass);
+        EffectManager.setDesiredEffect(opts.effect() instanceof ServerEffect e? e: this.defaultServerEffect);
     }
 }
