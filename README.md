@@ -5,7 +5,6 @@ Configurable per world and server.
 
 ![Screenshot of an already built-up world but with the BlindMe mod active](.github/screenshot.png)
 
-Currently a beta version, there might be some bugs.
 Licensed under MIT, made by hibi.
 
 ## Using
