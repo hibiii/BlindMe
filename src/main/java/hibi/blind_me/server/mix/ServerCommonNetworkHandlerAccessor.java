@@ -9,6 +9,6 @@ import net.minecraft.server.network.ServerCommonNetworkHandler;
 @Mixin(ServerCommonNetworkHandler.class)
 public interface ServerCommonNetworkHandlerAccessor {
 
-    @Accessor("connection")
+    @Accessor
     public ClientConnection getConnection();
 }
