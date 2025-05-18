@@ -13,6 +13,7 @@
         ],
         "intermediate_mappings": "net.fabricmc:intermediary",
         "entrypoints": {
+            "main": "hibi.blind_me.server.Main::serverInit",
             "client": "hibi.blind_me.Main::clientInit",
             "modmenu": "hibi.blind_me.MenuInteg"
         },
@@ -32,7 +33,10 @@
         }
     },
     "mixin": [
-        "blind_me.mixins.json"
+        {
+            "config": "blind_me.mixins.json",
+            "environment": "client"
+        }
     ],
     "modmenu": {
         "links": {
