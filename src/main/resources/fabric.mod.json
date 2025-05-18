@@ -17,10 +17,6 @@
         {
             "config": "blind_me.mixins.json",
             "environment": "client"
-        },
-        {
-            "config": "blind_me.server.mixins.json",
-            "environment": "server"
         }
     ],
     "depends": {

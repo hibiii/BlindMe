@@ -1,10 +1,10 @@
 package hibi.blind_me.server;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.WeakHashMap;
 
 import hibi.blind_me.config.ServerEffect;
-import hibi.blind_me.server.mix.ServerCommonNetworkHandlerAccessor;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -14,7 +14,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking.Context;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerConfigurationNetworkHandler;
@@ -23,7 +22,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class Networking {
     
-    private static Map<ClientConnection,Boolean> acknowledgements = new WeakHashMap<>();
+    // Undefined Behavior when: a connection's game profile is changed
+    private static Map<UUID,Boolean> acknowledgements = new WeakHashMap<>();
 
     public static void register() {
         PayloadTypeRegistry.configurationS2C().register(ForceEffectPayload.ID, ForceEffectPayload.CODEC);
@@ -43,8 +43,8 @@ public class Networking {
     }
 
     public static void acknowledgeForcingCallback(AcknowledgeForcePayload _1, Context ctx) {
-        var con = ((ServerCommonNetworkHandlerAccessor)ctx.networkHandler()).getConnection();
-        Networking.acknowledgements.put(con, true);
+       var uuid = ctx.networkHandler().getDebugProfile().getId();
+       Networking.acknowledgements.put(uuid, true);
     }
 
     static void initFallbackEffect(ServerPlayNetworkHandler handler, PacketSender sender, MinecraftServer server) {
@@ -56,8 +56,8 @@ public class Networking {
     }
 
     private static void applyPhantomEffect(ServerPlayNetworkHandler handler) {
-        var con = ((ServerCommonNetworkHandlerAccessor)handler).getConnection();
-        if (Networking.acknowledgements.getOrDefault(con, false)) {
+        var uuid = handler.getDebugProfile().getId();
+        if (Networking.acknowledgements.getOrDefault(uuid, false)) {
             return;
         }
         var blindness = new StatusEffectInstance(StatusEffects.BLINDNESS, StatusEffectInstance.INFINITE, 0, true, false);
