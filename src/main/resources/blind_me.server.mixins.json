@@ -3,7 +3,7 @@
     "minVersion": "0.8",
     "package": "hibi.blind_me.server.mix",
     "compatibilityLevel": "JAVA_21",
-    "client": [
+    "server": [
         "ServerCommonNetworkHandlerAccessor"
     ],
     "injectors": {
