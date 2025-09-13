@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-import hibi.blind_me.config.ServerEffect;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
@@ -36,7 +35,7 @@ public class Networking {
         if (server.isSingleplayer()) {
             return;
         }
-        var forcePayload = new ForceEffectPayload(ServerEffect.BLINDNESS);
+        var forcePayload = new ForceEffectPayload(Main.CONFIG.effect);
         handler.sendPacket(ServerConfigurationNetworking.createS2CPacket(forcePayload));
     }
 
@@ -58,7 +57,12 @@ public class Networking {
         if (Networking.acknowledgements.getOrDefault(uuid, false)) {
             return;
         }
-        var blindness = new StatusEffectInstance(StatusEffects.BLINDNESS, StatusEffectInstance.INFINITE, 0, true, false);
+        var type = switch(Main.CONFIG.effect) {
+            case BLINDNESS -> StatusEffects.BLINDNESS;
+            case DARKNESS -> StatusEffects.DARKNESS;
+            case OFF -> null;            
+        };
+        var blindness = new StatusEffectInstance(type, StatusEffectInstance.INFINITE, 0, true, false);
         var packet = new EntityStatusEffectS2CPacket(handler.player.getId(), blindness, false);
         handler.sendPacket(packet);
     }
