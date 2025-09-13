@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "hibi.blind_me.server.mix",
+    "compatibilityLevel": "JAVA_21",
+    "server": [
+        "PlayerManagerMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

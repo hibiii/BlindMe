@@ -5,7 +5,6 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 
 import hibi.blind_me.config.ServerEffect;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
@@ -31,7 +30,6 @@ public class Networking {
         ServerConfigurationNetworking.registerGlobalReceiver(AcknowledgeForcePayload.ID, Networking::acknowledgeForcingCallback);
         ServerConfigurationConnectionEvents.CONFIGURE.register(Networking::configureCallback);
         ServerPlayConnectionEvents.JOIN.register(Networking::initFallbackEffect);
-        ServerPlayerEvents.AFTER_RESPAWN.register(Networking::fallbackEffectManager);
     }
 
     public static void configureCallback(ServerConfigurationNetworkHandler handler, MinecraftServer server) {
@@ -55,7 +53,7 @@ public class Networking {
         applyPhantomEffect(newPlayer.networkHandler);
     }
 
-    private static void applyPhantomEffect(ServerPlayNetworkHandler handler) {
+    public static void applyPhantomEffect(ServerPlayNetworkHandler handler) {
         var uuid = handler.getDebugProfile().getId();
         if (Networking.acknowledgements.getOrDefault(uuid, false)) {
             return;
