@@ -11,7 +11,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking.Context;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerConfigurationNetworkHandler;
@@ -57,11 +56,7 @@ public class Networking {
         if (Networking.acknowledgements.getOrDefault(uuid, false)) {
             return;
         }
-        var type = switch(Main.CONFIG.effect) {
-            case BLINDNESS -> StatusEffects.BLINDNESS;
-            case DARKNESS -> StatusEffects.DARKNESS;
-            case OFF -> null;            
-        };
+        var type = Main.CONFIG.effect.getType();
         var blindness = new StatusEffectInstance(type, StatusEffectInstance.INFINITE, 0, true, false);
         var packet = new EntityStatusEffectS2CPacket(handler.player.getId(), blindness, false);
         handler.sendPacket(packet);

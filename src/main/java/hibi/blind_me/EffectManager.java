@@ -12,7 +12,6 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public final class EffectManager {
@@ -88,11 +87,7 @@ public final class EffectManager {
     }
 
     public static void setDesiredEffect(ServerEffect serverEffect) {
-        desiredEffect = switch(serverEffect) {
-            case BLINDNESS -> StatusEffects.BLINDNESS;
-            case DARKNESS -> StatusEffects.DARKNESS;
-            case OFF ->  null;
-        };
+        desiredEffect = serverEffect.getType();
         effectChanged = true;
     }
 
