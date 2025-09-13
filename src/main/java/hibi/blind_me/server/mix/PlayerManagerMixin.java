@@ -15,7 +15,7 @@ public class PlayerManagerMixin {
     
     @Inject(
         method = "sendStatusEffects(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/server/network/ServerPlayNetworkHandler;)V",
-        at = @At("TAIL")
+        at = @At("HEAD")
     )
     void attachPhantomEffectAlways(LivingEntity _1, ServerPlayNetworkHandler handler, CallbackInfo info) {
         Networking.applyPhantomEffect(handler);
