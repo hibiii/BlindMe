@@ -25,10 +25,14 @@ public class ConfigScreen extends GameOptionsScreen {
     private CyclingButtonWidget<Optional<Boolean>> worldCreativeBypassButton = null;
     private CyclingButtonWidget<Optional<Boolean>> worldSpectatorBypassButton = null;
     private ButtonWidget lockButton = null;
+    private boolean serverEnforced = false;
+    private ServerOptions defaults = ServerOptions.DEFAULT;
 
     public ConfigScreen(Screen parent) {
         super(parent, MinecraftClient.getInstance().options, Text.translatable(K_TITLE));
         this.serverOptions = Networking.getServerOptions();
+        this.serverEnforced = Networking.serverEnforced;
+        this.defaults = Main.CONFIG.getDefaults();
     }
 
     @Override
@@ -96,7 +100,7 @@ public class ConfigScreen extends GameOptionsScreen {
         var effectButton = CyclingButtonWidget
             .builder((Optional<ServerEffect> ef) -> {
                 if (ef.isEmpty()) {
-                    return Text.translatable("effect.blindme.default");
+                    return Text.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
                 }
                 return switch(ef.get()) {
                     case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
@@ -112,8 +116,9 @@ public class ConfigScreen extends GameOptionsScreen {
             .tooltip(optional -> {
                 var effect = optional.orElse(null);
                 Text text;
-                if (Networking.serverEnforced) {
-                    text = Text.translatable(K_SERVER_ENFORCED_TOOLTIP);
+                if (serverEnforced) {
+                    text = Text.translatable((Networking.isOpForBypass)?
+                        K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP);
                 } else {
                     text = Text.translatable(K_EFFECT_DETAILS_TOOLTIP
                         + ((effect != null) ? effect.toString() : "default")
@@ -124,7 +129,7 @@ public class ConfigScreen extends GameOptionsScreen {
             .build(Text.translatable(K_CURRENT_SERVER), (_button, value) -> {
                 this.changed = true;
                 this.serverOptions = this.serverOptions.withEffect(value.orElse(null));
-                EffectManager.setDesiredEffect(value.orElse(Main.CONFIG.defaultServerEffect));
+                EffectManager.setDesiredEffect(value.orElse(defaults.effect()));
             });
         effectButton.setWidth(310);
         this.body.addWidgetEntry(effectButton, null);
@@ -133,40 +138,42 @@ public class ConfigScreen extends GameOptionsScreen {
         var creativeBypassButton = CyclingButtonWidget
         .builder((Optional<Boolean> bypass) -> {
             if (bypass.isEmpty()) {
-                return Text.translatable("effect.blindme.default");
+                return Text.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
             }
             return (bypass.get())? ScreenTexts.ON : ScreenTexts.OFF;
         })
         .values(Optional.empty(), Optional.of(true), Optional.of(false))
         .initially(Optional.ofNullable(this.serverOptions.creativeBypass()))
         .tooltip(optional -> Tooltip.of(Text.translatable(
-            Networking.serverEnforced?
-            K_SERVER_ENFORCED_TOOLTIP : K_WORLD_SPECIFIC_OPTION
+            serverEnforced? ((Networking.isOpForBypass)?
+                K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP)
+            : K_WORLD_SPECIFIC_OPTION
         )))
         .build(Text.translatable(K_WORLD_CREATIVE_BYPASS), (btn, value) -> {
             this.changed = true;
             this.serverOptions = this.serverOptions.withCreativeBypass(value.orElse(null));
-            EffectManager.setDisabledCreative(value.orElse(Main.CONFIG.creativeBypass));
+            EffectManager.setDisabledCreative(value.orElse(defaults.creativeBypass()));
         });
         this.worldCreativeBypassButton = creativeBypassButton;
         
         var spectatorBypassButton = CyclingButtonWidget
         .builder((Optional<Boolean> bypass) -> {
             if (bypass.isEmpty()) {
-                return Text.translatable("effect.blindme.default");
+                return Text.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
             }
             return (bypass.get())? ScreenTexts.ON : ScreenTexts.OFF;
         })
         .values(Optional.empty(), Optional.of(true), Optional.of(false))
         .initially(Optional.ofNullable(this.serverOptions.spectatorBypass()))
         .tooltip(optional -> Tooltip.of(Text.translatable(
-            Networking.serverEnforced?
-            K_SERVER_ENFORCED_TOOLTIP : K_WORLD_SPECIFIC_OPTION
+            Networking.serverEnforced?((Networking.isOpForBypass)?
+                K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP)
+            : K_WORLD_SPECIFIC_OPTION
         )))
         .build(Text.translatable(K_WORLD_SPECTATOR_BYPASS), (btn, value) -> {
             this.changed = true;
             this.serverOptions = this.serverOptions.withSpectatorBypass(value.orElse(null));
-            EffectManager.setDisabledSpectator(value.orElse(Main.CONFIG.spectatorBypass));
+            EffectManager.setDisabledSpectator(value.orElse(defaults.spectatorBypass()));
         });
         this.worldSpectatorBypassButton = spectatorBypassButton;
         
@@ -211,10 +218,7 @@ public class ConfigScreen extends GameOptionsScreen {
             this.lockButton.active = ingame && (
                 !this.serverOptions.locked()
                 || (this.serverOptions.locked() && Screen.hasShiftDown())
-            ) && (
-                !Networking.serverEnforced
-                || (Networking.opsBypass && ingame && this.client.player.hasPermissionLevel(2))
-            );
+            ) && (!Networking.serverEnforced);
         }
     }
 
@@ -247,19 +251,21 @@ public class ConfigScreen extends GameOptionsScreen {
         K_UNLOCK_BUTTON = "blindme.options.unlock_world",
         K_UNLOCK_BUTTON_TOOLTIP = "blindme.options.unlock_world.tooltip",
         K_LOCK_BUTTON_SERVER_ENFORCED = "blindme.options.lock_world.server_enforced",
+        K_LOCK_BUTTON_SERVER_ENFORCED_TOOLTIP = "blindme.options.lock_world.server_enforced.tooltip",
         K_WORLD_SETTINGS_SUBTITLE = "blindme.options.subtitle.world_specific",
         K_WORLD_SPECIFIC_OPTION = "blindme.options.world_specific.tooltip",
         K_WORLD_CREATIVE_BYPASS = "blindme.options.world.creative_bypass",
         K_WORLD_SPECTATOR_BYPASS = "blindme.options.world.spectator_bypass",
-        K_SERVER_ENFORCED_TOOLTIP = "blindme.options.server_enforced.tooltip"
+        K_SERVER_ENFORCED_TOOLTIP = "blindme.options.server_enforced.tooltip",
+        K_OP_BYPASS_ALLOWED = "blindme.options.server_enforced.ops_bypass.tooltip"
     ;
 
     private void toggleWorldButtons(boolean locked) {
-        var active = !locked & this.ingame & !Networking.serverEnforced;
+        var active = this.ingame && !locked && (!Networking.serverEnforced || Networking.isOpForBypass);
         this.effectButton.active = active;
         this.worldCreativeBypassButton.active = active;
         this.worldSpectatorBypassButton.active = active;
-        this.lockButton.active = active;
+        // this.lockButton.active = active;
         var lockButtonText = 
             (Networking.serverEnforced)?
                 Text.translatable(K_LOCK_BUTTON_SERVER_ENFORCED)
@@ -268,7 +274,14 @@ public class ConfigScreen extends GameOptionsScreen {
             :
                 Text.translatable(K_LOCK_BUTTON)
         ;
-        var lockButtonTooltip = (locked && !Networking.serverEnforced)? Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP)) : null;
+        var lockButtonTooltip = 
+            (Networking.serverEnforced)?
+                Tooltip.of(Text.translatable(K_LOCK_BUTTON_SERVER_ENFORCED_TOOLTIP))
+            : (locked) ?
+                Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP))
+            :
+                null
+        ;
         this.lockButton.setMessage(lockButtonText);
         this.lockButton.setTooltip(lockButtonTooltip);
     }

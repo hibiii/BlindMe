@@ -27,9 +27,12 @@
     "blindme.options.unlock_world": "Unlock world options",
     "blindme.options.unlock_world.tooltip": "Hold SHIFT to be enable unlocking",
     "blindme.options.lock_world.server_enforced": "Options enforced by server",
+    "blindme.options.lock_world.server_enforced.tooltip": "Locking is not supported on server-enforced options",
     "blindme.options.server_enforced.tooltip": "This option is currently controlled by the server.",
+    "blindme.options.server_enforced.ops_bypass.tooltip": "This server, while in control of world-specific options, allows for operators like yourself to change your personal settings",
     
     "effect.blindme.default": "Default",
+    "effect.blindme.server_default": "Server-defined default",
     "blindme.options.world_effect.tooltip.OFF": "OFF: Disable any vision-impairing effects",
     "blindme.options.world_effect.tooltip.BLINDNESS": "Blindness: Blocks and entities are only visible in a small radius",
     "blindme.options.world_effect.tooltip.DARKNESS": "Darkness: Blocks and entities are visible in a medium radius",

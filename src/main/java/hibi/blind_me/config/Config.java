@@ -63,11 +63,20 @@ public class Config {
         return this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT);
     }
 
+    public ServerOptions getDefaults() {
+        if (Networking.serverEnforced) {
+            return new ServerOptions(Networking.effect, false, Networking.creativeBypass, Networking.spectatorBypass);
+        } else {
+            return new ServerOptions(this.defaultServerEffect, false, this.creativeBypass, this.spectatorBypass);
+        }
+    }
+
     // Refreshes settings and configurations in other parts of the code base.
     public void configureInstance() {
         var opts = Networking.getServerOptions();
-        EffectManager.setDisabledCreative(opts.creativeBypass() instanceof Boolean b? b: this.creativeBypass);
-        EffectManager.setDisabledSpectator(opts.spectatorBypass() instanceof Boolean b? b: this.spectatorBypass);
-        EffectManager.setDesiredEffect(opts.effect() instanceof ServerEffect e? e: this.defaultServerEffect);
+        var defaultOpts = getDefaults();
+        EffectManager.setDisabledCreative(opts.creativeBypass() instanceof Boolean b? b: defaultOpts.creativeBypass());
+        EffectManager.setDisabledSpectator(opts.spectatorBypass() instanceof Boolean b? b: defaultOpts.spectatorBypass());
+        EffectManager.setDesiredEffect(opts.effect() instanceof ServerEffect e? e: defaultOpts.effect());
     }
 }
