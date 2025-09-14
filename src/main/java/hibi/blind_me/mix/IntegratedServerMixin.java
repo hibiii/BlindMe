@@ -1,6 +1,6 @@
 package hibi.blind_me.mix;
 
-import hibi.blind_me.EffectManager;
+import hibi.blind_me.Networking;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,6 +23,6 @@ public class IntegratedServerMixin {
         at = @At("TAIL")
     )
     void extractWorldName(Thread _1, MinecraftClient _2, Session session, ResourcePackManager _3, SaveLoader _4, ApiServices _5, WorldGenerationProgressListenerFactory _6, CallbackInfo ci) {
-        EffectManager.joinSingleplayerCallback(session.getDirectoryName());
+        Networking.joinSingleplayerCallback(session.getDirectoryName());
     }
 }

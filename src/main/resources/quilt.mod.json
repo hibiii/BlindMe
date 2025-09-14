@@ -39,7 +39,7 @@
         },
         {
             "config": "blind_me.server.mixins.json",
-            "environment": "server"
+            "environment": "dedicated_server"
         }
     ],
     "modmenu": {

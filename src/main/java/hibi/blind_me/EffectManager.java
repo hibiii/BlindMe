@@ -7,16 +7,13 @@ import org.jetbrains.annotations.Nullable;
 import hibi.blind_me.config.ServerEffect;
 import hibi.blind_me.mix.StatusEffectInstanceAccessor;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ServerInfo;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public final class EffectManager {
 
-    private static String uniqueId = null;
     private static StatusEffectInstance effect = null;
     private static boolean skipCreative = false;
     private static boolean skipSpectator = true;
@@ -60,24 +57,6 @@ public final class EffectManager {
         }
     }
 
-    public static void disconnectCallback(ClientPlayNetworkHandler handler, MinecraftClient client) {
-        effect = null;
-    }
-
-    public static void joinCallback(ClientPlayNetworkHandler handler, Object packetSender, MinecraftClient client) {
-        if (client.isInSingleplayer()) {
-            return;
-        }
-        ServerInfo info = handler.getServerInfo();
-        uniqueId = "m@" + info.address;
-        Main.CONFIG.configureInstance();
-    }
-    
-    public static void joinSingleplayerCallback(String worldName) {
-        uniqueId = "s@" + worldName;
-        Main.CONFIG.configureInstance();
-    }
-
     public static void setDisabledCreative(boolean skipsCreative) {
         skipCreative = skipsCreative;
     }
@@ -93,10 +72,6 @@ public final class EffectManager {
 
     public static RegistryEntry<StatusEffect> getDesiredEffect() {
         return desiredEffect;
-    }
-
-    public static @Nullable String getUniqueId() {
-        return uniqueId;
     }
 
     private static void removeModEffect(ClientPlayerEntity player) {

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import hibi.blind_me.EffectManager;
+import hibi.blind_me.Networking;
 
 public class Config {
 
@@ -59,12 +60,22 @@ public class Config {
     // Returns options for a given server.
     // If it doesn't have specific optons, then defaults are returned.
     public ServerOptions getServerOptions(String uniqueId) {
-        return this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT);
+        ServerOptions opts;
+        if (Networking.serverEnforced) {
+            if (Networking.goodSettings) {
+                opts = new ServerOptions(Networking.effect, false, Networking.creativeBypass, Networking.spectatorBypass);
+            } else {
+                opts = new ServerOptions(ServerEffect.OFF, false, false, false);
+            }
+        } else {
+            opts = this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT);
+        }
+        return opts;
     }
 
     // Refreshes settings and configurations in other parts of the code base.
     public void configureInstance() {
-        var opts = this.getServerOptions(EffectManager.getUniqueId());
+        var opts = this.getServerOptions(Networking.uniqueId);
         EffectManager.setDisabledCreative(opts.creativeBypass() instanceof Boolean b? b: this.creativeBypass);
         EffectManager.setDisabledSpectator(opts.spectatorBypass() instanceof Boolean b? b: this.spectatorBypass);
         EffectManager.setDesiredEffect(opts.effect() instanceof ServerEffect e? e: this.defaultServerEffect);

@@ -5,6 +5,14 @@ import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
+/**
+ * The packet representing a positive acknowledgement from a client. Clients sending this packet MUST meet the
+ * following requirements: <ul>
+ * <li> The client has understood the server's intentions on gameplay in their entirety;
+ * <li> The client must be willing to enforce the restrictions. </ul>
+ * 
+ * Clients must <b>NOT</b> send this packet if those points are not satisfied, even if partially.
+ */
 public class AcknowledgeForcePayload implements CustomPayload {
 
     public static final PacketCodec<PacketByteBuf, AcknowledgeForcePayload> CODEC = CustomPayload.codecOf(AcknowledgeForcePayload::write, AcknowledgeForcePayload::new);
@@ -22,5 +30,4 @@ public class AcknowledgeForcePayload implements CustomPayload {
     public Id<? extends CustomPayload> getId() {
         return ID;
     }
-    
 }

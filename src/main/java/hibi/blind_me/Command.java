@@ -34,7 +34,7 @@ public final class Command {
     }
 
     private static int worldSubcommand(CommandContext<FabricClientCommandSource> cmd, @Nullable ServerEffect ef) {
-        String uniqueId = EffectManager.getUniqueId();
+        String uniqueId = Networking.uniqueId;
         if (uniqueId == null) {
             throw new IllegalStateException("Command called outside of a world");
         }
@@ -60,7 +60,7 @@ public final class Command {
     }
 
     private static int printSubcommand(CommandContext<FabricClientCommandSource> cmd) {
-        String uniqueId = EffectManager.getUniqueId();
+        String uniqueId = Networking.uniqueId;
         cmd.getSource().sendFeedback(switch(Main.CONFIG.getEffectForServer(uniqueId)) {
             case BLINDNESS -> Text.translatable(K_PRINT_SET, Text.translatable("effect.minecraft.blindness"));
             case DARKNESS -> Text.translatable(K_PRINT_SET, Text.translatable("effect.minecraft.darkness"));

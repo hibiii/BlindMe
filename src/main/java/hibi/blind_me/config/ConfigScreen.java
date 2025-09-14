@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.Main;
+import hibi.blind_me.Networking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,7 +28,7 @@ public class ConfigScreen extends GameOptionsScreen {
 
     public ConfigScreen(Screen parent) {
         super(parent, MinecraftClient.getInstance().options, Text.translatable(K_TITLE));
-        this.serverOptions = Main.CONFIG.getServerOptions(EffectManager.getUniqueId());
+        this.serverOptions = Main.CONFIG.getServerOptions(Networking.uniqueId);
     }
 
     @Override
@@ -81,7 +82,7 @@ public class ConfigScreen extends GameOptionsScreen {
             .build(Text.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
                 this.changed = true;
                 Main.CONFIG.defaultServerEffect = value;
-                EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(EffectManager.getUniqueId()));
+                EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(Networking.uniqueId));
             });
         button.setWidth(310);
         this.body.addWidgetEntry(button, null);
@@ -110,9 +111,15 @@ public class ConfigScreen extends GameOptionsScreen {
             ))
             .tooltip(optional -> {
                 var effect = optional.orElse(null);
-                return Tooltip.of(Text.translatable(K_EFFECT_DETAILS_TOOLTIP
-                    + ((effect != null) ? effect.toString() : "default")
-                ));
+                Text text;
+                if (Networking.serverEnforced) {
+                    text = Text.translatable(K_SERVER_ENFORCED_TOOLTIP);
+                } else {
+                    text = Text.translatable(K_EFFECT_DETAILS_TOOLTIP
+                        + ((effect != null) ? effect.toString() : "default")
+                    );
+                }
+                return Tooltip.of(text);
             })
             .build(Text.translatable(K_CURRENT_SERVER), (_button, value) -> {
                 this.changed = true;
@@ -132,7 +139,10 @@ public class ConfigScreen extends GameOptionsScreen {
         })
         .values(Optional.empty(), Optional.of(true), Optional.of(false))
         .initially(Optional.ofNullable(this.serverOptions.creativeBypass()))
-        .tooltip(optional -> Tooltip.of(Text.translatable(K_WORLD_SPECIFIC_OPTION)))
+        .tooltip(optional -> Tooltip.of(Text.translatable(
+            Networking.serverEnforced?
+            K_SERVER_ENFORCED_TOOLTIP : K_WORLD_SPECIFIC_OPTION
+        )))
         .build(Text.translatable(K_WORLD_CREATIVE_BYPASS), (btn, value) -> {
             this.changed = true;
             this.serverOptions = this.serverOptions.withCreativeBypass(value.orElse(null));
@@ -149,7 +159,10 @@ public class ConfigScreen extends GameOptionsScreen {
         })
         .values(Optional.empty(), Optional.of(true), Optional.of(false))
         .initially(Optional.ofNullable(this.serverOptions.spectatorBypass()))
-        .tooltip(optional -> Tooltip.of(Text.translatable(K_WORLD_SPECIFIC_OPTION)))
+        .tooltip(optional -> Tooltip.of(Text.translatable(
+            Networking.serverEnforced?
+            K_SERVER_ENFORCED_TOOLTIP : K_WORLD_SPECIFIC_OPTION
+        )))
         .build(Text.translatable(K_WORLD_SPECTATOR_BYPASS), (btn, value) -> {
             this.changed = true;
             this.serverOptions = this.serverOptions.withSpectatorBypass(value.orElse(null));
@@ -198,6 +211,9 @@ public class ConfigScreen extends GameOptionsScreen {
             this.lockButton.active = ingame && (
                 !this.serverOptions.locked()
                 || (this.serverOptions.locked() && Screen.hasShiftDown())
+            ) && (
+                !Networking.serverEnforced
+                || (Networking.opsBypass && ingame && this.client.player.hasPermissionLevel(2))
             );
         }
     }
@@ -211,7 +227,7 @@ public class ConfigScreen extends GameOptionsScreen {
 
     protected void save() {
         if (this.changed) {
-            Main.CONFIG.setServerOptions(EffectManager.getUniqueId(), this.serverOptions);
+            Main.CONFIG.setServerOptions(Networking.uniqueId, this.serverOptions);
             ConfigFile.save(Main.CONFIG);
         }
     }
@@ -230,20 +246,29 @@ public class ConfigScreen extends GameOptionsScreen {
         K_LOCK_SCREEN_MESSAGE = "blindme.options.lock_world.screen.message",
         K_UNLOCK_BUTTON = "blindme.options.unlock_world",
         K_UNLOCK_BUTTON_TOOLTIP = "blindme.options.unlock_world.tooltip",
+        K_LOCK_BUTTON_SERVER_ENFORCED = "blindme.options.lock_world.server_enforced",
         K_WORLD_SETTINGS_SUBTITLE = "blindme.options.subtitle.world_specific",
         K_WORLD_SPECIFIC_OPTION = "blindme.options.world_specific.tooltip",
         K_WORLD_CREATIVE_BYPASS = "blindme.options.world.creative_bypass",
-        K_WORLD_SPECTATOR_BYPASS = "blindme.options.world.spectator_bypass"
+        K_WORLD_SPECTATOR_BYPASS = "blindme.options.world.spectator_bypass",
+        K_SERVER_ENFORCED_TOOLTIP = "blindme.options.server_enforced.tooltip"
     ;
 
     private void toggleWorldButtons(boolean locked) {
-        var active = !locked & this.ingame;
+        var active = !locked & this.ingame & !Networking.serverEnforced;
         this.effectButton.active = active;
         this.worldCreativeBypassButton.active = active;
         this.worldSpectatorBypassButton.active = active;
         this.lockButton.active = active;
-        var lockButtonText = (locked)? Text.translatable(K_UNLOCK_BUTTON) : Text.translatable(K_LOCK_BUTTON);
-        var lockButtonTooltip = (locked)? Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP)) : null;
+        var lockButtonText = 
+            (Networking.serverEnforced)?
+                Text.translatable(K_LOCK_BUTTON_SERVER_ENFORCED)
+            : (locked)?
+                Text.translatable(K_UNLOCK_BUTTON)
+            :
+                Text.translatable(K_LOCK_BUTTON)
+        ;
+        var lockButtonTooltip = (locked && !Networking.serverEnforced)? Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP)) : null;
         this.lockButton.setMessage(lockButtonText);
         this.lockButton.setTooltip(lockButtonTooltip);
     }

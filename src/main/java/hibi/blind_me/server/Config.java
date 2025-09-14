@@ -22,7 +22,7 @@ public class Config {
 
     // Controls if OPs can disregard server settings and change the effect on
     // their clients.
-    public boolean opsCanDisregardSettings = true;
+    public boolean opsBypass = true;
 
     public boolean creativeBypass = false;
     public boolean spectatorBypass = true;

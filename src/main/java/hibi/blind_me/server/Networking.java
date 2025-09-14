@@ -20,7 +20,7 @@ public class Networking {
     private static Map<UUID,Boolean> acknowledgements = new WeakHashMap<>();
 
     public static void register() {
-        PayloadTypeRegistry.configurationS2C().register(ForceEffectPayload.ID, ForceEffectPayload.CODEC);
+        PayloadTypeRegistry.configurationS2C().register(ForceSettingsPayload.ID, ForceSettingsPayload.CODEC);
         PayloadTypeRegistry.configurationC2S().register(AcknowledgeForcePayload.ID, AcknowledgeForcePayload.CODEC);
         ServerConfigurationNetworking.registerGlobalReceiver(AcknowledgeForcePayload.ID, Networking::acknowledgeForcingCallback);
         ServerConfigurationConnectionEvents.CONFIGURE.register(Networking::configureCallback);
@@ -30,7 +30,7 @@ public class Networking {
         if (server.isSingleplayer()) {
             return;
         }
-        var forcePayload = new ForceEffectPayload(Main.CONFIG.effect);
+        var forcePayload = new ForceSettingsPayload(Main.CONFIG.effect, Main.CONFIG.opsBypass, Main.CONFIG.creativeBypass, Main.CONFIG.spectatorBypass);
         handler.sendPacket(ServerConfigurationNetworking.createS2CPacket(forcePayload));
     }
 
