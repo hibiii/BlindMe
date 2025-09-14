@@ -28,7 +28,7 @@ public class Config {
     // Returns *any* `ServerEffect` for the given server.
     // If there isn't a server-specific mapping, this function returns the default one.
     public ServerEffect getEffectForServer(String uniqueId) {
-        var ef = this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT).effect();
+        var ef = this.getServerOptions(uniqueId).effect();
         return (ef == null) ? this.defaultServerEffect : ef;
     }
 
@@ -60,22 +60,12 @@ public class Config {
     // Returns options for a given server.
     // If it doesn't have specific optons, then defaults are returned.
     public ServerOptions getServerOptions(String uniqueId) {
-        ServerOptions opts;
-        if (Networking.serverEnforced) {
-            if (Networking.goodSettings) {
-                opts = new ServerOptions(Networking.effect, false, Networking.creativeBypass, Networking.spectatorBypass);
-            } else {
-                opts = new ServerOptions(ServerEffect.OFF, false, false, false);
-            }
-        } else {
-            opts = this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT);
-        }
-        return opts;
+        return this.servers.getOrDefault(uniqueId, ServerOptions.DEFAULT);
     }
 
     // Refreshes settings and configurations in other parts of the code base.
     public void configureInstance() {
-        var opts = this.getServerOptions(Networking.uniqueId);
+        var opts = Networking.getServerOptions();
         EffectManager.setDisabledCreative(opts.creativeBypass() instanceof Boolean b? b: this.creativeBypass);
         EffectManager.setDisabledSpectator(opts.spectatorBypass() instanceof Boolean b? b: this.spectatorBypass);
         EffectManager.setDesiredEffect(opts.effect() instanceof ServerEffect e? e: this.defaultServerEffect);

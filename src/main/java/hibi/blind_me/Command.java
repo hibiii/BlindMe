@@ -38,7 +38,11 @@ public final class Command {
         if (uniqueId == null) {
             throw new IllegalStateException("Command called outside of a world");
         }
-        var opts = Main.CONFIG.getServerOptions(uniqueId);
+        if (Networking.serverEnforced && !Networking.isOpForBypass) {
+            cmd.getSource().sendFeedback(Text.translatable(K_ENFORCED_BY_SERVER).formatted(Formatting.RED));
+            return 0;
+        }
+        var opts = Networking.getServerOptions();
         if (opts.locked()) {
             cmd.getSource().sendFeedback(Text.translatable(K_OPTIONS_LOCKED).formatted(Formatting.RED));
             return 0;
@@ -76,6 +80,7 @@ public final class Command {
         K_EFFECT_OFF = "blindme.command.disable_effect",
         K_EFFECT_UNSET = "blindme.command.unset_effect",
         K_OPTIONS_LOCKED = "blindme.command.options_locked",
+        K_ENFORCED_BY_SERVER = "blindme.command.enforced_by_server",
         K_PRINT_SET = "blindme.command.current",
         K_PRINT_NONE = "blindme.command.current.none"
     ;

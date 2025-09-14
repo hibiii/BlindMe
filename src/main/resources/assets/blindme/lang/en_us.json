@@ -5,6 +5,7 @@
     "blindme.command.unset_effect": "Disabled world-specific effect",
     "blindme.command.effect_already_unset": "There already isn't an effect set specifically for this world",
     "blindme.command.options_locked": "The options for this world are locked, and cannot be changed",
+    "blindme.command.enforced_by_server": "The options for this world are set by the server and cannot be changed",
     "blindme.command.current": "The active effect is %s",
     "blindme.command.current.none": "The is no effect currently active",
 

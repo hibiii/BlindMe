@@ -28,7 +28,7 @@ public class ConfigScreen extends GameOptionsScreen {
 
     public ConfigScreen(Screen parent) {
         super(parent, MinecraftClient.getInstance().options, Text.translatable(K_TITLE));
-        this.serverOptions = Main.CONFIG.getServerOptions(Networking.uniqueId);
+        this.serverOptions = Networking.getServerOptions();
     }
 
     @Override
