@@ -26,7 +26,7 @@ public class ServerPlayerEntityMixin {
         )
     )
     boolean preventApplication(ServerPlayNetworkHandler handler, Packet<?> packet) {
-        if (Networking.acknowledgements.contains(Networking.connectionFromHandler(handler))) {
+        if (!Main.enabled || Networking.acknowledgements.contains(Networking.connectionFromHandler(handler))) {
             return true;
         }
         var pack = (EntityStatusEffectS2CPacket)packet; // Packet will always be EntityStatusEffectS2CPacket
@@ -43,7 +43,7 @@ public class ServerPlayerEntityMixin {
     // IMPORTANT IMPLEMENTATION DETAIL: Blindness and Darkness effects do not change when upgraded, therefore, we can
     // take a shortcut and disable upgrading those straight up.
     boolean preventUpgrade(ServerPlayNetworkHandler handler, Packet<?> packet) {
-        if (Networking.acknowledgements.contains(Networking.connectionFromHandler(handler))) {
+        if (!Main.enabled || Networking.acknowledgements.contains(Networking.connectionFromHandler(handler))) {
             return true;
         }
         var pack = (EntityStatusEffectS2CPacket)packet; // Packet will always be EntityStatusEffectS2CPacket
@@ -58,7 +58,7 @@ public class ServerPlayerEntityMixin {
         )
     )
     boolean preventRemoval(ServerPlayNetworkHandler handler, Packet<?> packet) {
-        if (Networking.acknowledgements.contains(Networking.connectionFromHandler(handler))) {
+        if (!Main.enabled || Networking.acknowledgements.contains(Networking.connectionFromHandler(handler))) {
             return true;
         }
         var pack = (RemoveEntityStatusEffectS2CPacket)packet; // Packet will always be RemoveEntityStatusEffectS2CPacket

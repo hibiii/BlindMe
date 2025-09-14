@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import hibi.blind_me.server.Main;
 import hibi.blind_me.server.Networking;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.PlayerManager;
@@ -18,6 +19,8 @@ public class PlayerManagerMixin {
         at = @At("HEAD")
     )
     void attachPhantomEffectAlways(LivingEntity _1, ServerPlayNetworkHandler handler, CallbackInfo info) {
-        Networking.applyPhantomEffect(handler);
+        if (Main.enabled) {
+            Networking.applyPhantomEffect(handler);
+        }
     }
 }
