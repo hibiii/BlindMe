@@ -3,7 +3,9 @@ package hibi.blind_me;
 import org.jetbrains.annotations.Nullable;
 
 import hibi.blind_me.config.ServerEffect;
+import hibi.blind_me.server.AcknowledgeForcePayload;
 import hibi.blind_me.server.ForceSettingsPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking.Context;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -32,6 +34,7 @@ public class Networking {
             Networking.creativeBypass = creativeBypass;
             Networking.spectatorBypass = spectatorBypass;
             goodSettings = true;
+            ClientConfigurationNetworking.send(new AcknowledgeForcePayload());
         }
     }
 

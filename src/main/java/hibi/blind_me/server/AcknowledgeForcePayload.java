@@ -18,6 +18,10 @@ public class AcknowledgeForcePayload implements CustomPayload {
     public static final PacketCodec<PacketByteBuf, AcknowledgeForcePayload> CODEC = CustomPayload.codecOf(AcknowledgeForcePayload::write, AcknowledgeForcePayload::new);
     public static final Id<AcknowledgeForcePayload> ID = new Id<AcknowledgeForcePayload>(Identifier.of("blindme","acknowledge_force"));
 
+    public AcknowledgeForcePayload() {
+        // Empty constructor body
+    }
+
     private AcknowledgeForcePayload(PacketByteBuf buf) {
         // Empty constructor body
     }
