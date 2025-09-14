@@ -65,7 +65,7 @@ public class Config {
         }
     }
 
-    private static final String PATH = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve("blindme.server.json").toString();
+    private static final String PATH = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve("blindme.server.properties").toString();
 
     private static final String DEFAULT_CONFIG_FILE = """
         # The selected vision-impairing effect for this server.
