@@ -5,9 +5,11 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
+import hibi.blind_me.config.ConfigScreen;
 import hibi.blind_me.config.ServerEffect;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -17,19 +19,24 @@ public final class Command {
 
     public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess access) {
         dispatcher.register(ClientCommandManager.literal("blindme")
-            .then(ClientCommandManager.literal("off")
-                .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))
+            .then(ClientCommandManager.literal("set")
+                .then(ClientCommandManager.literal("off")
+                    .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))
+                )
+                .then(ClientCommandManager.literal("blindness")
+                    .executes((src) -> Command.worldSubcommand(src, ServerEffect.BLINDNESS))
+                )
+                .then(ClientCommandManager.literal("darkness")
+                    .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
+                )
+                .then(ClientCommandManager.literal("default")
+                    .executes((src) -> Command.worldSubcommand(src, null))
+                )
             )
-            .then(ClientCommandManager.literal("blindness")
-                .executes((src) -> Command.worldSubcommand(src, ServerEffect.BLINDNESS))
+            .then(ClientCommandManager.literal("query")
+                .executes(Command::printSubcommand)
             )
-            .then(ClientCommandManager.literal("darkness")
-                .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
-            )
-            .then(ClientCommandManager.literal("default")
-                .executes((src) -> Command.worldSubcommand(src, null))
-            )
-            .executes((src) -> Command.printSubcommand(src))
+            .executes(Command::settingsSubcommand)
         );
     }
 
@@ -69,6 +76,14 @@ public final class Command {
             case BLINDNESS -> Text.translatable(K_PRINT_SET, Text.translatable("effect.minecraft.blindness"));
             case DARKNESS -> Text.translatable(K_PRINT_SET, Text.translatable("effect.minecraft.darkness"));
             case OFF -> Text.translatable(K_PRINT_NONE);
+        });
+        return 0;
+    }
+
+    private static int settingsSubcommand(CommandContext<FabricClientCommandSource> cmd) {
+        var client = MinecraftClient.getInstance();
+        client.send(() -> {
+            client.setScreen(new ConfigScreen(null));
         });
         return 0;
     }
