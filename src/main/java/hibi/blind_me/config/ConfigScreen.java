@@ -93,8 +93,7 @@ public class ConfigScreen extends GameOptionsScreen {
     }
 
     private void addButtonsForCurrentServer() {
-        var worldSettings = new TextWidget(310, 27, Text.translatable(K_WORLD_SETTINGS_SUBTITLE), this.textRenderer)
-            .alignCenter();
+        var worldSettings = new TextWidget(310, 27, Text.translatable(K_WORLD_SETTINGS_SUBTITLE), this.textRenderer);
         this.body.addWidgetEntry(worldSettings, null);
 
         var effectButton = CyclingButtonWidget
@@ -217,7 +216,7 @@ public class ConfigScreen extends GameOptionsScreen {
         if (this.lockButton != null) {
             this.lockButton.active = ingame && (
                 !this.serverOptions.locked()
-                || (this.serverOptions.locked() && Screen.hasShiftDown())
+                || (this.serverOptions.locked() && this.client.isShiftPressed())
             ) && (!Networking.serverEnforced);
         }
     }

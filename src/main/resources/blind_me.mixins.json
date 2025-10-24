@@ -6,6 +6,7 @@
     "client": [
         "IntegratedServerMixin",
         "ClientPlayerEntityMixin",
+        "PlayerEntityMixin",
         "StatusEffectInstanceAccessor",
         "LightmapTextureManagerMixin"
     ],
