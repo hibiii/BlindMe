@@ -17,21 +17,27 @@ import hibi.blind_me.Networking;
 
 public class ConfigScreen extends OptionsSubScreen {
 
-    private boolean changed = false;
-    private ServerOptions serverOptions;
-    private boolean ingame = false;
-    private CycleButton<Optional<ServerEffect>> effectButton = null;
-    private CycleButton<Optional<Boolean>> worldCreativeBypassButton = null;
-    private CycleButton<Optional<Boolean>> worldSpectatorBypassButton = null;
-    private Button lockButton = null;
-    private boolean serverEnforced = false;
-    private ServerOptions defaults = ServerOptions.DEFAULT;
+    protected boolean changed = false;
+    protected ServerOptions serverOptions;
+    protected boolean ingame = false;
+    protected CycleButton<Optional<ServerEffect>> effectButton = null;
+    protected CycleButton<Optional<Boolean>> worldCreativeBypassButton = null;
+    protected CycleButton<Optional<Boolean>> worldSpectatorBypassButton = null;
+    protected Button lockButton = null;
+    protected boolean serverEnforced = false;
+    protected ServerOptions defaults = ServerOptions.DEFAULT;
+    protected String uniqueId;
 
     public ConfigScreen(Screen parent) {
-        super(parent, Minecraft.getInstance().options, Component.translatable(K_TITLE));
-        this.serverOptions = Networking.getServerOptions();
+        this(parent, Networking.uniqueId, Component.translatable(K_TITLE));
+    }
+
+    public ConfigScreen(Screen parent, String uniqueId, Component text) {
+        super(parent, Minecraft.getInstance().options, text);
+        this.serverOptions = Networking.getServerOptions(uniqueId);
         this.serverEnforced = Networking.serverEnforced;
         this.defaults = Main.CONFIG.getDefaults();
+        this.uniqueId = uniqueId;
     }
 
     @Override
@@ -85,13 +91,13 @@ public class ConfigScreen extends OptionsSubScreen {
             .create(Component.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
                 this.changed = true;
                 Main.CONFIG.defaultServerEffect = value;
-                EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(Networking.uniqueId));
+                EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(this.uniqueId));
             });
         button.setWidth(310);
         this.list.addSmall(button, null);
     }
 
-    private void addButtonsForCurrentServer() {
+    protected void addButtonsForCurrentServer() {
         var worldSettings = new StringWidget(310, 27, Component.translatable(K_WORLD_SETTINGS_SUBTITLE), this.font);
         this.list.addSmall(worldSettings, null);
 
@@ -200,7 +206,7 @@ public class ConfigScreen extends OptionsSubScreen {
                 );
                 this.minecraft.setScreen(scr);
                 scr.setDelay(10);
-            return;
+                return;
             }
             var scr = new ConfirmScreen(
                 shouldLock -> {
@@ -241,7 +247,7 @@ public class ConfigScreen extends OptionsSubScreen {
 
     protected void save() {
         if (this.changed) {
-            Main.CONFIG.setServerOptions(Networking.uniqueId, this.serverOptions);
+            Main.CONFIG.setServerOptions(this.uniqueId, this.serverOptions);
             ConfigFile.save(Main.CONFIG);
         }
     }

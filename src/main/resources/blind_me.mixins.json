@@ -8,7 +8,10 @@
         "LocalPlayerMixin",
         "PlayerMixin",
         "MobEffectInstanceAccessor",
-        "LightTextureMixin"
+        "LightTextureMixin",
+        "ManageServerScreenMixin",
+        "DirectJoinServerScreenMixin",
+        "EditWorldScreenMixin"
     ],
     "injectors": {
         "defaultRequire": 1

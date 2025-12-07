@@ -32,6 +32,10 @@
     "blindme.options.lock_world.server_enforced.tooltip": "Locking is not supported on server-enforced options",
     "blindme.options.server_enforced.tooltip": "This option is currently controlled by the server.",
     "blindme.options.server_enforced.ops_bypass.tooltip": "This server, while in control of world-specific options, allows for operators like yourself to change your personal settings",
+
+    "blindme.server_options.title": "Specific BlindMe settings",
+    "blindme.server_options.button.tooltip.multiplayer": "Change the specific settings for this server. These settings will be instantly applied once you join it.",
+    "blindme.server_options.button.tooltip.singleplayer": "Change the specific settings for this world. These settings will be instantly applied once you open it.",
     
     "effect.blindme.default": "Default",
     "effect.blindme.server_default": "Server-defined default",

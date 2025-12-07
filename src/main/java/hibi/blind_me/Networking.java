@@ -24,6 +24,10 @@ public class Networking {
     public static boolean isOpForBypass = false;
 
     public static ServerOptions getServerOptions() {
+        return getServerOptions(Networking.uniqueId);
+    }
+
+    public static ServerOptions getServerOptions(String uniqueId) {
         ServerOptions opts;
         if (serverEnforced) {
             if (goodSettings) {
