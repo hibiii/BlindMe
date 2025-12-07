@@ -1,9 +1,9 @@
 package hibi.blind_me.server;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * The packet representing a positive acknowledgement from a client. Clients sending this packet MUST meet the
@@ -13,25 +13,25 @@ import net.minecraft.util.Identifier;
  * 
  * Clients must <b>NOT</b> send this packet if those points are not satisfied, even if partially.
  */
-public class AcknowledgeForcePayload implements CustomPayload {
+public class AcknowledgeForcePayload implements CustomPacketPayload {
 
-    public static final PacketCodec<PacketByteBuf, AcknowledgeForcePayload> CODEC = CustomPayload.codecOf(AcknowledgeForcePayload::write, AcknowledgeForcePayload::new);
-    public static final Id<AcknowledgeForcePayload> ID = new Id<AcknowledgeForcePayload>(Identifier.of("blindme","acknowledge_force"));
+    public static final StreamCodec<FriendlyByteBuf, AcknowledgeForcePayload> CODEC = CustomPacketPayload.codec(AcknowledgeForcePayload::write, AcknowledgeForcePayload::new);
+    public static final Type<AcknowledgeForcePayload> ID = new Type<AcknowledgeForcePayload>(ResourceLocation.fromNamespaceAndPath("blindme","acknowledge_force"));
 
     public AcknowledgeForcePayload() {
         // Empty constructor body
     }
 
-    private AcknowledgeForcePayload(PacketByteBuf buf) {
+    private AcknowledgeForcePayload(FriendlyByteBuf buf) {
         // Empty constructor body
     }
 
-    private void write(PacketByteBuf buf) {
+    private void write(FriendlyByteBuf buf) {
         // Empty function body
     }
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }

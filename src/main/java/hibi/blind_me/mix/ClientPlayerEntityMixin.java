@@ -6,13 +6,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import hibi.blind_me.Main;
 import hibi.blind_me.Networking;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.player.LocalPlayer;
 
-@Mixin(ClientPlayerEntity.class)
+@Mixin(LocalPlayer.class)
 public class ClientPlayerEntityMixin {
 
     @Inject(
-        method = "setClientPermissionLevel",
+        method = "setPermissionLevel",
         at = @At("HEAD")
     )
     void updateOpOverride(int level, CallbackInfo info) {

@@ -1,15 +1,14 @@
 package hibi.blind_me.server.mix;
 
+import net.minecraft.network.Connection;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.network.ServerCommonNetworkHandler;
-
-@Mixin(ServerCommonNetworkHandler.class)
+@Mixin(ServerCommonPacketListenerImpl.class)
 public interface ServerCommonNetworkHandlerAccessor {
     
     @Accessor @Final
-    public ClientConnection getConnection();
+    public Connection getConnection();
 }

@@ -7,24 +7,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.Main;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 
-@Mixin(LightmapTextureManager.class)
+@Mixin(LightTexture.class)
 public class LightmapTextureManagerMixin {
     
     @Inject(
-        method = "getDarkness",
+        method = "calculateDarknessScale",
         at = @At("HEAD"),
         cancellable = true
     )
     void pulseIgnoresDarkness(LivingEntity entity, float factor, float progress, CallbackInfoReturnable<Float> info) {
         if (Main.CONFIG.disableDarknessPulse
-            && EffectManager.getDesiredEffect() == StatusEffects.DARKNESS
-            && EffectManager.getModEffect() instanceof StatusEffectInstance modEf
-            && entity.getStatusEffect(StatusEffects.DARKNESS) == modEf
+            && EffectManager.getDesiredEffect() == MobEffects.DARKNESS
+            && EffectManager.getModEffect() instanceof MobEffectInstance modEf
+            && entity.getEffect(MobEffects.DARKNESS) == modEf
             && ((StatusEffectInstanceAccessor)modEf).getHiddenEffect() == null
         ) {
             info.setReturnValue(0f);

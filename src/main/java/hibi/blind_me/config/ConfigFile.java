@@ -14,9 +14,9 @@ import com.google.gson.JsonSyntaxException;
 
 import hibi.blind_me.Main;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.network.chat.Component;
 
 public final class ConfigFile {
 
@@ -45,10 +45,10 @@ public final class ConfigFile {
             writer.write(json);
         } catch (Exception e) {
             Main.LOGGER.error("Could not save the config file", e);
-            var client = MinecraftClient.getInstance();
-            client.getToastManager().add(SystemToast.create(
-                client, new SystemToast.Type(10_000L),
-                Text.translatable(K_SAVE_ERROR), Text.translatable(K_SAVE_ERROR_DESCRIPTION)
+            var client = Minecraft.getInstance();
+            client.getToastManager().addToast(SystemToast.multiline(
+                client, new SystemToast.SystemToastId(10_000L),
+                Component.translatable(K_SAVE_ERROR), Component.translatable(K_SAVE_ERROR_DESCRIPTION)
             ));
         }
     }

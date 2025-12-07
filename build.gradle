@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.deps_minecraft}"
-    mappings "net.fabricmc:yarn:${project.deps_mappings}:v2"
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.deps_loader}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.deps_stdlib}"
     modImplementation ("com.terraformersmc:modmenu:${project.deps_modmenu}") {

@@ -1,29 +1,28 @@
 package hibi.blind_me;
 
 import java.util.Map;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.Nullable;
 
 import hibi.blind_me.config.ServerEffect;
 import hibi.blind_me.mix.StatusEffectInstanceAccessor;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.registry.entry.RegistryEntry;
 
 public final class EffectManager {
 
-    private static StatusEffectInstance effect = null;
+    private static MobEffectInstance effect = null;
     private static boolean skipCreative = false;
     private static boolean skipSpectator = true;
-    private static RegistryEntry<StatusEffect> desiredEffect = null;
+    private static Holder<MobEffect> desiredEffect = null;
     private static boolean effectChanged = false;
 
     private EffectManager() {};
 
-    public static void tickCallback(MinecraftClient client) {
-        ClientPlayerEntity player = client.player;
+    public static void tickCallback(Minecraft client) {
+        LocalPlayer player = client.player;
         if (player == null) {
             return;
         }
@@ -36,23 +35,23 @@ public final class EffectManager {
             return;
         }
         if (skipCreative && player.isCreative() || skipSpectator && player.isSpectator()) {
-            if (effect != null && player.hasStatusEffect(desiredEffect)) {
+            if (effect != null && player.hasEffect(desiredEffect)) {
                 removeModEffect(player);
                 effect = null;
             }
             return;
         }
-        if (effect != null && player.hasStatusEffect(desiredEffect)) {
+        if (effect != null && player.hasEffect(desiredEffect)) {
             return;
         }
-        StatusEffectInstance ef = new StatusEffectInstance(
+        MobEffectInstance ef = new MobEffectInstance(
             desiredEffect,
-            StatusEffectInstance.INFINITE, 0,
+            MobEffectInstance.INFINITE_DURATION, 0,
             true, false, false,
-            (StatusEffectInstance) null
+            (MobEffectInstance) null
         );
-        ef.skipFading();
-        if (player.addStatusEffect(ef)) {
+        ef.skipBlending();
+        if (player.addEffect(ef)) {
             effect = ef;
         }
     }
@@ -70,22 +69,22 @@ public final class EffectManager {
         effectChanged = true;
     }
 
-    public static RegistryEntry<StatusEffect> getDesiredEffect() {
+    public static Holder<MobEffect> getDesiredEffect() {
         return desiredEffect;
     }
 
-    private static void removeModEffect(ClientPlayerEntity player) {
+    private static void removeModEffect(LocalPlayer player) {
         if (effect == null) {
             return;
         }
-        Map<RegistryEntry<StatusEffect>, StatusEffectInstance> map = player.getActiveStatusEffects();
-        RegistryEntry<StatusEffect> type = effect.getEffectType();
-        StatusEffectInstance ef = player.getStatusEffect(type);
+        Map<Holder<MobEffect>, MobEffectInstance> map = player.getActiveEffectsMap();
+        Holder<MobEffect> type = effect.getEffect();
+        MobEffectInstance ef = player.getEffect(type);
         if (ef == null) {
             return;
         }
         if (ef == effect) {
-            StatusEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+            MobEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
             if (shadowed != null) {
                 ef = shadowed;
                 map.put(type, shadowed);
@@ -96,7 +95,7 @@ public final class EffectManager {
         }
         ef = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
         while (ef != null) {
-            StatusEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+            MobEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
             if (shadowed == null) {
                 effect = null;
                 return;
@@ -105,14 +104,14 @@ public final class EffectManager {
                 ef = shadowed;
                 continue;
             }
-            StatusEffectInstance shadowed2 = ((StatusEffectInstanceAccessor)shadowed).getHiddenEffect();
+            MobEffectInstance shadowed2 = ((StatusEffectInstanceAccessor)shadowed).getHiddenEffect();
             ((StatusEffectInstanceAccessor)ef).setHiddenEffect(shadowed2);
             effect = null;
             return;
         }
     }
 
-    public static @Nullable StatusEffectInstance getModEffect() {
+    public static @Nullable MobEffectInstance getModEffect() {
         return effect;
     }
 }

@@ -1,35 +1,34 @@
 package hibi.blind_me.config;
 
 import java.util.Optional;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.options.OptionsSubScreen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.Main;
 import hibi.blind_me.Networking;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
 
-public class ConfigScreen extends GameOptionsScreen {
+public class ConfigScreen extends OptionsSubScreen {
 
     private boolean changed = false;
     private ServerOptions serverOptions;
     private boolean ingame = false;
-    private CyclingButtonWidget<Optional<ServerEffect>> effectButton = null;
-    private CyclingButtonWidget<Optional<Boolean>> worldCreativeBypassButton = null;
-    private CyclingButtonWidget<Optional<Boolean>> worldSpectatorBypassButton = null;
-    private ButtonWidget lockButton = null;
+    private CycleButton<Optional<ServerEffect>> effectButton = null;
+    private CycleButton<Optional<Boolean>> worldCreativeBypassButton = null;
+    private CycleButton<Optional<Boolean>> worldSpectatorBypassButton = null;
+    private Button lockButton = null;
     private boolean serverEnforced = false;
     private ServerOptions defaults = ServerOptions.DEFAULT;
 
     public ConfigScreen(Screen parent) {
-        super(parent, MinecraftClient.getInstance().options, Text.translatable(K_TITLE));
+        super(parent, Minecraft.getInstance().options, Component.translatable(K_TITLE));
         this.serverOptions = Networking.getServerOptions();
         this.serverEnforced = Networking.serverEnforced;
         this.defaults = Main.CONFIG.getDefaults();
@@ -37,153 +36,153 @@ public class ConfigScreen extends GameOptionsScreen {
 
     @Override
     protected void addOptions() {
-        this.ingame = this.client.world != null;
-        var creativeBypassButton = CyclingButtonWidget.onOffBuilder(Main.CONFIG.creativeBypass)
-        .build(Text.translatable(K_CREATIVE_BYPASS),
+        this.ingame = this.minecraft.level != null;
+        var creativeBypassButton = CycleButton.onOffBuilder(Main.CONFIG.creativeBypass)
+        .create(Component.translatable(K_CREATIVE_BYPASS),
             (button, set) -> {
                 this.changed = true;
                 Main.CONFIG.creativeBypass = set;
                 EffectManager.setDisabledCreative(this.serverOptions.creativeBypass() instanceof Boolean b? b : set);
             }
         );
-        var spectatorBypassButton = CyclingButtonWidget.onOffBuilder(Main.CONFIG.spectatorBypass)
-        .build(Text.translatable(K_SPECTATOR_BYPASS),
+        var spectatorBypassButton = CycleButton.onOffBuilder(Main.CONFIG.spectatorBypass)
+        .create(Component.translatable(K_SPECTATOR_BYPASS),
             (button, set) -> {
                 this.changed = true;
                 Main.CONFIG.spectatorBypass = set;
                 EffectManager.setDisabledSpectator(this.serverOptions.spectatorBypass() instanceof Boolean b? b : set);
             }
         );
-        this.body.addWidgetEntry(creativeBypassButton, spectatorBypassButton);
+        this.list.addSmall(creativeBypassButton, spectatorBypassButton);
 
-        var darknessPulseButton = CyclingButtonWidget
+        var darknessPulseButton = CycleButton
         .onOffBuilder(Main.CONFIG.disableDarknessPulse)
-        .tooltip(((bool) -> Tooltip.of(Text.translatable(K_DISABLE_PULSE_TOOLTIP))))
-        .build(Text.translatable(K_DISABLE_PULSE),
+        .withTooltip(((bool) -> Tooltip.create(Component.translatable(K_DISABLE_PULSE_TOOLTIP))))
+        .create(Component.translatable(K_DISABLE_PULSE),
             (button, set) -> {
                 this.changed = true;
                 Main.CONFIG.disableDarknessPulse = set;
             }
         );
         darknessPulseButton.setWidth(310);
-        this.body.addWidgetEntry(darknessPulseButton, null);
+        this.list.addSmall(darknessPulseButton, null);
         this.addDefaultEffectButton();
         this.addButtonsForCurrentServer();
     }
 
     private void addDefaultEffectButton() {
-        var button = CyclingButtonWidget
+        var button = CycleButton
             .builder((ServerEffect ef) -> {
                 return switch(ef) {
-                    case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
-                    case DARKNESS -> Text.translatable("effect.minecraft.darkness");
-                    case OFF -> ScreenTexts.OFF;
+                    case BLINDNESS -> Component.translatable("effect.minecraft.blindness");
+                    case DARKNESS -> Component.translatable("effect.minecraft.darkness");
+                    case OFF -> CommonComponents.OPTION_OFF;
                 };
             })
-            .values(ServerEffect.values())
-            .initially(Main.CONFIG.defaultServerEffect)
-            .tooltip(effect -> Tooltip.of(Text.translatable(K_EFFECT_DETAILS_TOOLTIP + effect.toString())))
-            .build(Text.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
+            .withValues(ServerEffect.values())
+            .withInitialValue(Main.CONFIG.defaultServerEffect)
+            .withTooltip(effect -> Tooltip.create(Component.translatable(K_EFFECT_DETAILS_TOOLTIP + effect.toString())))
+            .create(Component.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
                 this.changed = true;
                 Main.CONFIG.defaultServerEffect = value;
                 EffectManager.setDesiredEffect(Main.CONFIG.getEffectForServer(Networking.uniqueId));
             });
         button.setWidth(310);
-        this.body.addWidgetEntry(button, null);
+        this.list.addSmall(button, null);
     }
 
     private void addButtonsForCurrentServer() {
-        var worldSettings = new TextWidget(310, 27, Text.translatable(K_WORLD_SETTINGS_SUBTITLE), this.textRenderer);
-        this.body.addWidgetEntry(worldSettings, null);
+        var worldSettings = new StringWidget(310, 27, Component.translatable(K_WORLD_SETTINGS_SUBTITLE), this.font);
+        this.list.addSmall(worldSettings, null);
 
-        var effectButton = CyclingButtonWidget
+        var effectButton = CycleButton
             .builder((Optional<ServerEffect> ef) -> {
                 if (ef.isEmpty()) {
-                    return Text.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
+                    return Component.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
                 }
                 return switch(ef.get()) {
-                    case BLINDNESS -> Text.translatable("effect.minecraft.blindness");
-                    case DARKNESS -> Text.translatable("effect.minecraft.darkness");
-                    case OFF -> ScreenTexts.OFF;
+                    case BLINDNESS -> Component.translatable("effect.minecraft.blindness");
+                    case DARKNESS -> Component.translatable("effect.minecraft.darkness");
+                    case OFF -> CommonComponents.OPTION_OFF;
                 };
             })
-            .values(Optional.empty(), Optional.of(ServerEffect.BLINDNESS), Optional.of(ServerEffect.DARKNESS), Optional.of(ServerEffect.OFF)
+            .withValues(Optional.empty(), Optional.of(ServerEffect.BLINDNESS), Optional.of(ServerEffect.DARKNESS), Optional.of(ServerEffect.OFF)
             )
-            .initially(Optional.ofNullable(
+            .withInitialValue(Optional.ofNullable(
                 this.serverOptions.effect()
             ))
-            .tooltip(optional -> {
+            .withTooltip(optional -> {
                 var effect = optional.orElse(null);
-                Text text;
+                Component text;
                 if (serverEnforced) {
-                    text = Text.translatable((Networking.isOpForBypass)?
+                    text = Component.translatable((Networking.isOpForBypass)?
                         K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP);
                 } else {
-                    text = Text.translatable(K_EFFECT_DETAILS_TOOLTIP
+                    text = Component.translatable(K_EFFECT_DETAILS_TOOLTIP
                         + ((effect != null) ? effect.toString() : "default")
                     );
                 }
-                return Tooltip.of(text);
+                return Tooltip.create(text);
             })
-            .build(Text.translatable(K_CURRENT_SERVER), (_button, value) -> {
+            .create(Component.translatable(K_CURRENT_SERVER), (_button, value) -> {
                 this.changed = true;
                 this.serverOptions = this.serverOptions.withEffect(value.orElse(null));
                 EffectManager.setDesiredEffect(value.orElse(defaults.effect()));
             });
         effectButton.setWidth(310);
-        this.body.addWidgetEntry(effectButton, null);
+        this.list.addSmall(effectButton, null);
         this.effectButton = effectButton;
         
-        var creativeBypassButton = CyclingButtonWidget
+        var creativeBypassButton = CycleButton
         .builder((Optional<Boolean> bypass) -> {
             if (bypass.isEmpty()) {
-                return Text.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
+                return Component.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
             }
-            return (bypass.get())? ScreenTexts.ON : ScreenTexts.OFF;
+            return (bypass.get())? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF;
         })
-        .values(Optional.empty(), Optional.of(true), Optional.of(false))
-        .initially(Optional.ofNullable(this.serverOptions.creativeBypass()))
-        .tooltip(optional -> Tooltip.of(Text.translatable(
+        .withValues(Optional.empty(), Optional.of(true), Optional.of(false))
+        .withInitialValue(Optional.ofNullable(this.serverOptions.creativeBypass()))
+        .withTooltip(optional -> Tooltip.create(Component.translatable(
             serverEnforced? ((Networking.isOpForBypass)?
                 K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP)
             : K_WORLD_SPECIFIC_OPTION
         )))
-        .build(Text.translatable(K_WORLD_CREATIVE_BYPASS), (btn, value) -> {
+        .create(Component.translatable(K_WORLD_CREATIVE_BYPASS), (btn, value) -> {
             this.changed = true;
             this.serverOptions = this.serverOptions.withCreativeBypass(value.orElse(null));
             EffectManager.setDisabledCreative(value.orElse(defaults.creativeBypass()));
         });
         this.worldCreativeBypassButton = creativeBypassButton;
         
-        var spectatorBypassButton = CyclingButtonWidget
+        var spectatorBypassButton = CycleButton
         .builder((Optional<Boolean> bypass) -> {
             if (bypass.isEmpty()) {
-                return Text.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
+                return Component.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
             }
-            return (bypass.get())? ScreenTexts.ON : ScreenTexts.OFF;
+            return (bypass.get())? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF;
         })
-        .values(Optional.empty(), Optional.of(true), Optional.of(false))
-        .initially(Optional.ofNullable(this.serverOptions.spectatorBypass()))
-        .tooltip(optional -> Tooltip.of(Text.translatable(
+        .withValues(Optional.empty(), Optional.of(true), Optional.of(false))
+        .withInitialValue(Optional.ofNullable(this.serverOptions.spectatorBypass()))
+        .withTooltip(optional -> Tooltip.create(Component.translatable(
             Networking.serverEnforced?((Networking.isOpForBypass)?
                 K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP)
             : K_WORLD_SPECIFIC_OPTION
         )))
-        .build(Text.translatable(K_WORLD_SPECTATOR_BYPASS), (btn, value) -> {
+        .create(Component.translatable(K_WORLD_SPECTATOR_BYPASS), (btn, value) -> {
             this.changed = true;
             this.serverOptions = this.serverOptions.withSpectatorBypass(value.orElse(null));
             EffectManager.setDisabledSpectator(value.orElse(defaults.spectatorBypass()));
         });
         this.worldSpectatorBypassButton = spectatorBypassButton;
         
-        this.body.addWidgetEntry(worldCreativeBypassButton, spectatorBypassButton);
+        this.list.addSmall(worldCreativeBypassButton, spectatorBypassButton);
         this.addLockButton();
         this.toggleWorldButtons(this.serverOptions.locked());
     }
 
     private void addLockButton() {
         var initiallyLocked = this.serverOptions.locked();
-        var lockButton = ButtonWidget.builder(Text.translatable(
+        var lockButton = Button.builder(Component.translatable(
             initiallyLocked ? K_UNLOCK_BUTTON : K_LOCK_BUTTON
         ), (lockBtn) -> {
             if (this.serverOptions.locked()) {
@@ -198,15 +197,15 @@ public class ConfigScreen extends GameOptionsScreen {
                     this.changed = true;
                     this.toggleWorldButtons(true);
                 }
-                this.client.setScreen(this);
+                this.minecraft.setScreen(this);
             },
-            Text.translatable(K_LOCK_SCREEN_TITLE),
-            Text.translatable(K_LOCK_SCREEN_MESSAGE)
+            Component.translatable(K_LOCK_SCREEN_TITLE),
+            Component.translatable(K_LOCK_SCREEN_MESSAGE)
             );
-            this.client.setScreen(scr);
-            scr.disableButtons(10);
+            this.minecraft.setScreen(scr);
+            scr.setDelay(10);
         }).build();
-        this.body.addWidgetEntry(lockButton, null);
+        this.list.addSmall(lockButton, null);
         this.lockButton = lockButton;
     }
 
@@ -216,16 +215,16 @@ public class ConfigScreen extends GameOptionsScreen {
         if (this.lockButton != null) {
             this.lockButton.active = ingame && (
                 !this.serverOptions.locked()
-                || (this.serverOptions.locked() && this.client.isShiftPressed())
+                || (this.serverOptions.locked() && this.minecraft.hasShiftDown())
             ) && (!Networking.serverEnforced);
         }
     }
 
     @Override
-    public void close() {
+    public void onClose() {
         this.save();
         Main.CONFIG.configureInstance();
-        super.close();
+        super.onClose();
     }
 
     protected void save() {
@@ -267,17 +266,17 @@ public class ConfigScreen extends GameOptionsScreen {
         // this.lockButton.active = active;
         var lockButtonText = 
             (Networking.serverEnforced)?
-                Text.translatable(K_LOCK_BUTTON_SERVER_ENFORCED)
+                Component.translatable(K_LOCK_BUTTON_SERVER_ENFORCED)
             : (locked)?
-                Text.translatable(K_UNLOCK_BUTTON)
+                Component.translatable(K_UNLOCK_BUTTON)
             :
-                Text.translatable(K_LOCK_BUTTON)
+                Component.translatable(K_LOCK_BUTTON)
         ;
         var lockButtonTooltip = 
             (Networking.serverEnforced)?
-                Tooltip.of(Text.translatable(K_LOCK_BUTTON_SERVER_ENFORCED_TOOLTIP))
+                Tooltip.create(Component.translatable(K_LOCK_BUTTON_SERVER_ENFORCED_TOOLTIP))
             : (locked) ?
-                Tooltip.of(Text.translatable(K_UNLOCK_BUTTON_TOOLTIP))
+                Tooltip.create(Component.translatable(K_UNLOCK_BUTTON_TOOLTIP))
             :
                 null
         ;

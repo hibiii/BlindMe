@@ -9,17 +9,17 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking.Context;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerCommonNetworkHandler;
-import net.minecraft.server.network.ServerConfigurationNetworkHandler;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
+import net.minecraft.server.network.ServerConfigurationPacketListenerImpl;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.effect.MobEffectInstance;
 
 public class Networking {
 
-    public static Set<ClientConnection> acknowledgements = new HashSet<ClientConnection>();
+    public static Set<Connection> acknowledgements = new HashSet<Connection>();
 
     public static void register() {
         PayloadTypeRegistry.configurationS2C().register(ForceSettingsPayload.ID, ForceSettingsPayload.CODEC);
@@ -30,12 +30,12 @@ public class Networking {
         ServerPlayConnectionEvents.DISCONNECT.register(Networking::cleanupSet);
     }
 
-    public static void configureCallback(ServerConfigurationNetworkHandler handler, MinecraftServer server) {
+    public static void configureCallback(ServerConfigurationPacketListenerImpl handler, MinecraftServer server) {
         if (server.isSingleplayer()) {
             return;
         }
         var forcePayload = new ForceSettingsPayload(Main.CONFIG.effect, Main.CONFIG.opsBypass, Main.CONFIG.creativeBypass, Main.CONFIG.spectatorBypass);
-        handler.sendPacket(ServerConfigurationNetworking.createS2CPacket(forcePayload));
+        handler.send(ServerConfigurationNetworking.createS2CPacket(forcePayload));
     }
 
     public static void acknowledgeForcingCallback(AcknowledgeForcePayload _1, Context ctx) {
@@ -43,21 +43,21 @@ public class Networking {
         acknowledgements.add(connection);
     }
 
-    public static void cleanupSet(ServerCommonNetworkHandler handler, MinecraftServer server) {
+    public static void cleanupSet(ServerCommonPacketListenerImpl handler, MinecraftServer server) {
         acknowledgements.remove(connectionFromHandler(handler));
     }
 
-    public static void applyPhantomEffect(ServerPlayNetworkHandler handler) {
+    public static void applyPhantomEffect(ServerGamePacketListenerImpl handler) {
         if (acknowledgements.contains(Networking.connectionFromHandler(handler))) {
             return;
         }
         var type = Main.CONFIG.effect.getType();
-        var blindness = new StatusEffectInstance(type, StatusEffectInstance.INFINITE, 0, true, false);
-        var packet = new EntityStatusEffectS2CPacket(handler.player.getId(), blindness, false);
-        handler.sendPacket(packet);
+        var blindness = new MobEffectInstance(type, MobEffectInstance.INFINITE_DURATION, 0, true, false);
+        var packet = new ClientboundUpdateMobEffectPacket(handler.player.getId(), blindness, false);
+        handler.send(packet);
     }
 
-    public static ClientConnection connectionFromHandler(ServerCommonNetworkHandler handler) {
+    public static Connection connectionFromHandler(ServerCommonPacketListenerImpl handler) {
         return ((ServerCommonNetworkHandlerAccessor)handler).getConnection();
     }
 }

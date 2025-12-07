@@ -6,21 +6,21 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import hibi.blind_me.EffectManager;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.player.Player;
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 public class PlayerEntityMixin {
 
     @Inject(
-        method = "hasBlindnessEffect()Z",
+        method = "isMobilityRestricted()Z",
         at = @At("HEAD"),
         cancellable = true
     )
     void sprintIgnoresBlindness(CallbackInfoReturnable<Boolean> ci) {
-        StatusEffectInstance modEf = EffectManager.getModEffect();
-        StatusEffectInstance playerEf = ((PlayerEntity)(Object)this).getStatusEffect(StatusEffects.BLINDNESS);
+        MobEffectInstance modEf = EffectManager.getModEffect();
+        MobEffectInstance playerEf = ((Player)(Object)this).getEffect(MobEffects.BLINDNESS);
         if (modEf != null && modEf == playerEf) {
             if (((StatusEffectInstanceAccessor)modEf).getHiddenEffect() == null) {
                 ci.setReturnValue(false);

@@ -1,10 +1,9 @@
 package hibi.blind_me.config;
 
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.registry.entry.RegistryEntry;
 
 public enum ServerEffect {
     OFF, // Represents no vision-impairing effects
@@ -12,11 +11,11 @@ public enum ServerEffect {
     DARKNESS;
     // Additionally in some contexts, `null` means deferral to a default effect
 
-    public @Nullable RegistryEntry<StatusEffect> getType() {
+    public @Nullable Holder<MobEffect> getType() {
         return switch (this) {
             case OFF -> null;
-            case BLINDNESS -> StatusEffects.BLINDNESS;
-            case DARKNESS -> StatusEffects.DARKNESS;
+            case BLINDNESS -> MobEffects.BLINDNESS;
+            case DARKNESS -> MobEffects.DARKNESS;
         };
     }
 }

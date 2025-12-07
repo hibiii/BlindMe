@@ -8,9 +8,9 @@ import hibi.blind_me.server.AcknowledgeForcePayload;
 import hibi.blind_me.server.ForceSettingsPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking.Context;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.ServerData;
 
 public class Networking {
 
@@ -60,15 +60,15 @@ public class Networking {
         }
     }
 
-    public static void joinCallback(ClientPlayNetworkHandler handler, Object packetSender, MinecraftClient client) {
-        if (client.isInSingleplayer()) {
+    public static void joinCallback(ClientPacketListener handler, Object packetSender, Minecraft client) {
+        if (client.isLocalServer()) {
             serverEnforced = false;
             goodSettings = false;
             isOpForBypass = false;
             return;
         }
-        ServerInfo info = handler.getServerInfo();
-        uniqueId = "m@" + info.address;
+        ServerData info = handler.getServerData();
+        uniqueId = "m@" + info.ip;
         Main.CONFIG.configureInstance();
     }
 
@@ -80,7 +80,7 @@ public class Networking {
         Main.CONFIG.configureInstance();
     }
 
-    public static void disconnectCallback(ClientPlayNetworkHandler handler, MinecraftClient client) {
+    public static void disconnectCallback(ClientPacketListener handler, Minecraft client) {
         serverEnforced = false;
         goodSettings = false;
         isOpForBypass = false;

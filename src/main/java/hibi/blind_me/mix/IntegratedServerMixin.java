@@ -1,19 +1,17 @@
 package hibi.blind_me.mix;
 
 import hibi.blind_me.Networking;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.server.Services;
+import net.minecraft.server.WorldStem;
+import net.minecraft.server.level.progress.LevelLoadListener;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.server.SaveLoader;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.ApiServices;
-import net.minecraft.world.chunk.ChunkLoadProgress;
-import net.minecraft.world.level.storage.LevelStorage.Session;
 
 @Mixin(IntegratedServer.class)
 public class IntegratedServerMixin {
@@ -22,7 +20,7 @@ public class IntegratedServerMixin {
         method = "<init>",
         at = @At("TAIL")
     )
-    void extractWorldName(Thread _1, MinecraftClient _2, Session session, ResourcePackManager _3, SaveLoader _4, ApiServices _5, ChunkLoadProgress _6, CallbackInfo ci) {
-        Networking.joinSingleplayerCallback(session.getDirectoryName());
+    void extractWorldName(Thread _1, Minecraft _2, LevelStorageAccess session, PackRepository _3, WorldStem _4, Services _5, LevelLoadListener _6, CallbackInfo ci) {
+        Networking.joinSingleplayerCallback(session.getLevelId());
     }
 }
