@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -38,5 +39,13 @@ public class CreateWorldScreenMixin {
             ConfigFile.save(Main.CONFIG);
             MixinStorage.OPTIONS = null;
         }
+    }
+
+    @Inject(
+        method = "onClose",
+        at = @At("TAIL")
+    )
+    void clearRef(CallbackInfo info) {
+        MixinStorage.OPTIONS = null;
     }
 }
