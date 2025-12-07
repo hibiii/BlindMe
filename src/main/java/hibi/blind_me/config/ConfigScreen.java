@@ -186,21 +186,33 @@ public class ConfigScreen extends OptionsSubScreen {
             initiallyLocked ? K_UNLOCK_BUTTON : K_LOCK_BUTTON
         ), (lockBtn) -> {
             if (this.serverOptions.locked()) {
-                this.serverOptions = this.serverOptions.butUnlocked();
-                this.changed = true;
-                this.toggleWorldButtons(false);
-                return;
+                var scr = new ConfirmScreen(
+                    shouldUnlock -> {
+                        if (shouldUnlock) {
+                            this.serverOptions = this.serverOptions.butUnlocked();
+                            this.changed = true;
+                            this.toggleWorldButtons(false);
+                        }
+                        this.minecraft.setScreen(this);
+                    },
+                    Component.translatable(K_UNLOCK_SCREEN_TITLE),
+                    Component.translatable(K_UNLOCK_SCREEN_MESSAGE)
+                );
+                this.minecraft.setScreen(scr);
+                scr.setDelay(10);
+            return;
             }
-            var scr = new ConfirmScreen(shouldLock -> {
-                if (shouldLock) {
-                    this.serverOptions = this.serverOptions.butLocked();
-                    this.changed = true;
-                    this.toggleWorldButtons(true);
-                }
-                this.minecraft.setScreen(this);
-            },
-            Component.translatable(K_LOCK_SCREEN_TITLE),
-            Component.translatable(K_LOCK_SCREEN_MESSAGE)
+            var scr = new ConfirmScreen(
+                shouldLock -> {
+                    if (shouldLock) {
+                        this.serverOptions = this.serverOptions.butLocked();
+                        this.changed = true;
+                        this.toggleWorldButtons(true);
+                    }
+                    this.minecraft.setScreen(this);
+                },
+                Component.translatable(K_LOCK_SCREEN_TITLE),
+                Component.translatable(K_LOCK_SCREEN_MESSAGE)
             );
             this.minecraft.setScreen(scr);
             scr.setDelay(10);
@@ -246,6 +258,8 @@ public class ConfigScreen extends OptionsSubScreen {
         K_LOCK_BUTTON = "blindme.options.lock_world",
         K_LOCK_SCREEN_TITLE = "blindme.options.lock_world.screen.title",
         K_LOCK_SCREEN_MESSAGE = "blindme.options.lock_world.screen.message",
+        K_UNLOCK_SCREEN_TITLE = "blindme.options.unlock_world.screen.title",
+        K_UNLOCK_SCREEN_MESSAGE = "blindme.options.unlock_world.screen.message",
         K_UNLOCK_BUTTON = "blindme.options.unlock_world",
         K_UNLOCK_BUTTON_TOOLTIP = "blindme.options.unlock_world.tooltip",
         K_LOCK_BUTTON_SERVER_ENFORCED = "blindme.options.lock_world.server_enforced",

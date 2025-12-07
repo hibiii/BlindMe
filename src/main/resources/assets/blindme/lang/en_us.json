@@ -26,6 +26,8 @@
     "blindme.options.lock_world.screen.message": "You will be unable to to change any options for this world until you unlock them again.",
     "blindme.options.unlock_world": "Unlock world options",
     "blindme.options.unlock_world.tooltip": "Hold SHIFT to be enable unlocking",
+    "blindme.options.unlock_world.screen.title": "Are you sure you want to unlock the world options?",
+    "blindme.options.unlock_world.screen.message": "You may fail a self-imposed challenge, or you may get unwanted context or sights on this world!",
     "blindme.options.lock_world.server_enforced": "Options enforced by server",
     "blindme.options.lock_world.server_enforced.tooltip": "Locking is not supported on server-enforced options",
     "blindme.options.server_enforced.tooltip": "This option is currently controlled by the server.",
