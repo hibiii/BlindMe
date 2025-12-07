@@ -11,7 +11,9 @@
         "LightTextureMixin",
         "ManageServerScreenMixin",
         "DirectJoinServerScreenMixin",
-        "EditWorldScreenMixin"
+        "EditWorldScreenMixin",
+        "MoreTabMixin",
+        "CreateWorldScreenMixin"
     ],
     "injectors": {
         "defaultRequire": 1

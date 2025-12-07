@@ -2,10 +2,13 @@ plugins {
     id 'fabric-loom' version '1.14.+'
 }
 
-loom.mods {
-    'blindme' {
-        sourceSet 'main'
+loom {
+    mods {
+        'blindme' {
+            sourceSet 'main'
+        }
     }
+    accessWidenerPath = file("src/main/resources/blindme.classtweaker")
 }
 
 repositories {

@@ -35,11 +35,10 @@ public class ServerScreen extends ConfigScreen {
         K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER = "blindme.server_options.button.tooltip.singleplayer"
     ;
 
-    public static Button getButton(OnPress callback, String tooltip) {
+    public static Button.Builder getButton(OnPress callback, String tooltip) {
         return Button.builder(Component.translatable(ServerScreen.K_BLINDME_BUTTON), callback)
             .bounds(5, 5, 155, 20)
-            .tooltip(Tooltip.create(Component.translatable(tooltip)))
-            .build();
+            .tooltip(Tooltip.create(Component.translatable(tooltip)));
     }
 
     // null options means no change
