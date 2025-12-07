@@ -9,7 +9,7 @@ import hibi.blind_me.Networking;
 import net.minecraft.client.player.LocalPlayer;
 
 @Mixin(LocalPlayer.class)
-public class ClientPlayerEntityMixin {
+public class LocalPlayerMixin {
 
     @Inject(
         method = "setPermissionLevel",

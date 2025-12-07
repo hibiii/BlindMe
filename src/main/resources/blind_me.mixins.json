@@ -5,10 +5,10 @@
     "compatibilityLevel": "JAVA_21",
     "client": [
         "IntegratedServerMixin",
-        "ClientPlayerEntityMixin",
-        "PlayerEntityMixin",
-        "StatusEffectInstanceAccessor",
-        "LightmapTextureManagerMixin"
+        "LocalPlayerMixin",
+        "PlayerMixin",
+        "MobEffectInstanceAccessor",
+        "LightTextureMixin"
     ],
     "injectors": {
         "defaultRequire": 1

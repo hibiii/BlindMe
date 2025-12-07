@@ -4,9 +4,9 @@
     "package": "hibi.blind_me.server.mix",
     "compatibilityLevel": "JAVA_21",
     "server": [
-        "PlayerManagerMixin",
-        "ServerCommonNetworkHandlerAccessor",
-        "ServerPlayerEntityMixin"
+        "PlayerListMixin",
+        "ServerCommonPacketListenerImplAccessor",
+        "ServerPlayerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -11,7 +11,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 
 @Mixin(Player.class)
-public class PlayerEntityMixin {
+public class PlayerMixin {
 
     @Inject(
         method = "isMobilityRestricted()Z",
@@ -22,7 +22,7 @@ public class PlayerEntityMixin {
         MobEffectInstance modEf = EffectManager.getModEffect();
         MobEffectInstance playerEf = ((Player)(Object)this).getEffect(MobEffects.BLINDNESS);
         if (modEf != null && modEf == playerEf) {
-            if (((StatusEffectInstanceAccessor)modEf).getHiddenEffect() == null) {
+            if (((MobEffectInstanceAccessor)modEf).getHiddenEffect() == null) {
                 ci.setReturnValue(false);
             }
         }

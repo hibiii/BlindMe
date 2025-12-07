@@ -9,7 +9,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.Nullable;
 
 import hibi.blind_me.config.ServerEffect;
-import hibi.blind_me.mix.StatusEffectInstanceAccessor;
+import hibi.blind_me.mix.MobEffectInstanceAccessor;
 
 public final class EffectManager {
 
@@ -84,7 +84,7 @@ public final class EffectManager {
             return;
         }
         if (ef == effect) {
-            MobEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+            MobEffectInstance shadowed = ((MobEffectInstanceAccessor)ef).getHiddenEffect();
             if (shadowed != null) {
                 ef = shadowed;
                 map.put(type, shadowed);
@@ -93,9 +93,9 @@ public final class EffectManager {
             }
             return;
         }
-        ef = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+        ef = ((MobEffectInstanceAccessor)ef).getHiddenEffect();
         while (ef != null) {
-            MobEffectInstance shadowed = ((StatusEffectInstanceAccessor)ef).getHiddenEffect();
+            MobEffectInstance shadowed = ((MobEffectInstanceAccessor)ef).getHiddenEffect();
             if (shadowed == null) {
                 effect = null;
                 return;
@@ -104,8 +104,8 @@ public final class EffectManager {
                 ef = shadowed;
                 continue;
             }
-            MobEffectInstance shadowed2 = ((StatusEffectInstanceAccessor)shadowed).getHiddenEffect();
-            ((StatusEffectInstanceAccessor)ef).setHiddenEffect(shadowed2);
+            MobEffectInstance shadowed2 = ((MobEffectInstanceAccessor)shadowed).getHiddenEffect();
+            ((MobEffectInstanceAccessor)ef).setHiddenEffect(shadowed2);
             effect = null;
             return;
         }

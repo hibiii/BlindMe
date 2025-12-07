@@ -13,7 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 @Mixin(ServerPlayer.class)
-public class ServerPlayerEntityMixin {
+public class ServerPlayerMixin {
 
     @Shadow
     public ServerGamePacketListenerImpl connection;

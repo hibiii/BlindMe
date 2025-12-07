@@ -3,7 +3,7 @@ package hibi.blind_me.server;
 import java.util.HashSet;
 import java.util.Set;
 
-import hibi.blind_me.server.mix.ServerCommonNetworkHandlerAccessor;
+import hibi.blind_me.server.mix.ServerCommonPacketListenerImplAccessor;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
@@ -58,6 +58,6 @@ public class Networking {
     }
 
     public static Connection connectionFromHandler(ServerCommonPacketListenerImpl handler) {
-        return ((ServerCommonNetworkHandlerAccessor)handler).getConnection();
+        return ((ServerCommonPacketListenerImplAccessor)handler).getConnection();
     }
 }

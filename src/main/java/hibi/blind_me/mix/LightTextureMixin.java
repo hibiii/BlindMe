@@ -13,7 +13,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 
 @Mixin(LightTexture.class)
-public class LightmapTextureManagerMixin {
+public class LightTextureMixin {
     
     @Inject(
         method = "calculateDarknessScale",
@@ -25,7 +25,7 @@ public class LightmapTextureManagerMixin {
             && EffectManager.getDesiredEffect() == MobEffects.DARKNESS
             && EffectManager.getModEffect() instanceof MobEffectInstance modEf
             && entity.getEffect(MobEffects.DARKNESS) == modEf
-            && ((StatusEffectInstanceAccessor)modEf).getHiddenEffect() == null
+            && ((MobEffectInstanceAccessor)modEf).getHiddenEffect() == null
         ) {
             info.setReturnValue(0f);
         }

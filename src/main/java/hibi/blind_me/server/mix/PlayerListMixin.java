@@ -12,7 +12,7 @@ import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.entity.LivingEntity;
 
 @Mixin(PlayerList.class)
-public class PlayerManagerMixin {
+public class PlayerListMixin {
     
     @Inject(
         method = "sendActiveEffects(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/server/network/ServerGamePacketListenerImpl;)V",
