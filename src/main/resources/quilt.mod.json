@@ -7,7 +7,7 @@
         "depends": [
             {
                 "id": "minecraft",
-                "version": ">=1.21.10"
+                "version": ">=1.21.11"
             },
             { "id": "fabric" }
         ],

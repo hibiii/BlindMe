@@ -7,7 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record ForceSettingsPayload(
     @Nullable ServerEffect effect,
@@ -17,7 +17,7 @@ public record ForceSettingsPayload(
 ) implements CustomPacketPayload {
 
     public static final StreamCodec<FriendlyByteBuf, ForceSettingsPayload> CODEC = CustomPacketPayload.codec(ForceSettingsPayload::write, ForceSettingsPayload::decode);
-    public static final Type<ForceSettingsPayload> ID = new Type<ForceSettingsPayload>(ResourceLocation.fromNamespaceAndPath("blindme","force_effect"));
+    public static final Type<ForceSettingsPayload> ID = new Type<ForceSettingsPayload>(Identifier.fromNamespaceAndPath("blindme","force_effect"));
 
     private static ForceSettingsPayload decode(FriendlyByteBuf buf) {
         var nbt = buf.readNbt();

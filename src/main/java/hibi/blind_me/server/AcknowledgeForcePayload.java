@@ -3,7 +3,7 @@ package hibi.blind_me.server;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * The packet representing a positive acknowledgement from a client. Clients sending this packet MUST meet the
@@ -16,7 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 public class AcknowledgeForcePayload implements CustomPacketPayload {
 
     public static final StreamCodec<FriendlyByteBuf, AcknowledgeForcePayload> CODEC = CustomPacketPayload.codec(AcknowledgeForcePayload::write, AcknowledgeForcePayload::new);
-    public static final Type<AcknowledgeForcePayload> ID = new Type<AcknowledgeForcePayload>(ResourceLocation.fromNamespaceAndPath("blindme","acknowledge_force"));
+    public static final Type<AcknowledgeForcePayload> ID = new Type<AcknowledgeForcePayload>(Identifier.fromNamespaceAndPath("blindme","acknowledge_force"));
 
     public AcknowledgeForcePayload() {
         // Empty constructor body

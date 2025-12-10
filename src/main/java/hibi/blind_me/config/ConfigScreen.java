@@ -78,15 +78,14 @@ public class ConfigScreen extends OptionsSubScreen {
 
     private void addDefaultEffectButton() {
         var button = CycleButton
-            .builder((ServerEffect ef) -> {
+            .<ServerEffect>builder((ServerEffect ef) -> {
                 return switch(ef) {
                     case BLINDNESS -> Component.translatable("effect.minecraft.blindness");
                     case DARKNESS -> Component.translatable("effect.minecraft.darkness");
                     case OFF -> CommonComponents.OPTION_OFF;
                 };
-            })
+            }, Main.CONFIG.defaultServerEffect)
             .withValues(ServerEffect.values())
-            .withInitialValue(Main.CONFIG.defaultServerEffect)
             .withTooltip(effect -> Tooltip.create(Component.translatable(K_EFFECT_DETAILS_TOOLTIP + effect.toString())))
             .create(Component.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
                 this.changed = true;
@@ -102,7 +101,7 @@ public class ConfigScreen extends OptionsSubScreen {
         this.list.addSmall(worldSettings, null);
 
         var effectButton = CycleButton
-            .builder((Optional<ServerEffect> ef) -> {
+            .<Optional<ServerEffect>>builder((Optional<ServerEffect> ef) -> {
                 if (ef.isEmpty()) {
                     return Component.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
                 }
@@ -111,12 +110,10 @@ public class ConfigScreen extends OptionsSubScreen {
                     case DARKNESS -> Component.translatable("effect.minecraft.darkness");
                     case OFF -> CommonComponents.OPTION_OFF;
                 };
-            })
+            },
+            Optional.ofNullable(this.serverOptions.effect()))
             .withValues(Optional.empty(), Optional.of(ServerEffect.BLINDNESS), Optional.of(ServerEffect.DARKNESS), Optional.of(ServerEffect.OFF)
             )
-            .withInitialValue(Optional.ofNullable(
-                this.serverOptions.effect()
-            ))
             .withTooltip(optional -> {
                 var effect = optional.orElse(null);
                 Component text;
@@ -140,14 +137,13 @@ public class ConfigScreen extends OptionsSubScreen {
         this.effectButton = effectButton;
         
         var creativeBypassButton = CycleButton
-        .builder((Optional<Boolean> bypass) -> {
+        .<Optional<Boolean>>builder((Optional<Boolean> bypass) -> {
             if (bypass.isEmpty()) {
                 return Component.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
             }
             return (bypass.get())? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF;
-        })
+        }, Optional.ofNullable(this.serverOptions.creativeBypass()))
         .withValues(Optional.empty(), Optional.of(true), Optional.of(false))
-        .withInitialValue(Optional.ofNullable(this.serverOptions.creativeBypass()))
         .withTooltip(optional -> Tooltip.create(Component.translatable(
             serverEnforced? ((Networking.isOpForBypass)?
                 K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP)
@@ -161,14 +157,13 @@ public class ConfigScreen extends OptionsSubScreen {
         this.worldCreativeBypassButton = creativeBypassButton;
         
         var spectatorBypassButton = CycleButton
-        .builder((Optional<Boolean> bypass) -> {
+        .<Optional<Boolean>>builder((Optional<Boolean> bypass) -> {
             if (bypass.isEmpty()) {
                 return Component.translatable((serverEnforced)? "effect.blindme.server_default" : "effect.blindme.default");
             }
             return (bypass.get())? CommonComponents.OPTION_ON : CommonComponents.OPTION_OFF;
-        })
+        }, Optional.ofNullable(this.serverOptions.spectatorBypass()))
         .withValues(Optional.empty(), Optional.of(true), Optional.of(false))
-        .withInitialValue(Optional.ofNullable(this.serverOptions.spectatorBypass()))
         .withTooltip(optional -> Tooltip.create(Component.translatable(
             Networking.serverEnforced?((Networking.isOpForBypass)?
                 K_OP_BYPASS_ALLOWED : K_SERVER_ENFORCED_TOOLTIP)

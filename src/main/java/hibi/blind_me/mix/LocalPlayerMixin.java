@@ -12,14 +12,14 @@ import net.minecraft.client.player.LocalPlayer;
 public class LocalPlayerMixin {
 
     @Inject(
-        method = "setPermissionLevel",
+        method = "handleEntityEvent",
         at = @At("HEAD")
     )
-    void updateOpOverride(int level, CallbackInfo info) {
+    void updateOpOverride(byte event, CallbackInfo info) {
         if (!Networking.serverEnforced) {
             return;
         }
-        Networking.isOpForBypass = Networking.opsBypass && level >= 2;
+        Networking.isOpForBypass = Networking.opsBypass && event >= 25 && event <= 28;
         Main.CONFIG.configureInstance();
     }
 }
