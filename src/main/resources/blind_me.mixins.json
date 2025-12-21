@@ -13,7 +13,8 @@
         "DirectJoinServerScreenMixin",
         "EditWorldScreenMixin",
         "MoreTabMixin",
-        "CreateWorldScreenMixin"
+        "CreateWorldScreenMixin",
+        "MinecraftMixin"
     ],
     "injectors": {
         "defaultRequire": 1

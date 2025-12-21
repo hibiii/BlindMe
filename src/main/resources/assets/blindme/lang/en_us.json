@@ -43,6 +43,9 @@
     "blindme.options.world_effect.tooltip.BLINDNESS": "Blindness: Blocks and entities are only visible in a small radius",
     "blindme.options.world_effect.tooltip.DARKNESS": "Darkness: Blocks and entities are visible in a medium radius",
     "blindme.options.world_effect.tooltip.default": "Default: use the effect set as default for all worlds",
+
+    "blindme.shaders_warning.title": "BlindMe Compatibility Waning",
+    "blindme.shaders_warning.messsage": "BlindMe has detected that the Iris Shaders mod is currently installed and active. While BlindMe and Iris Shaders do not have compatibility issues themselves, many popular shader packs do not fully consider the Blindness effect or even the fog from the Darkness effect, and will errouneously let you see a larger radius directly or through a transluscent obstacle.\n\nPlease be advised that I, the developer of BlindMe myself, recommend AGAINST using shader packs without considerable and thorough testing, as they can fully nullify the challenge of BlindMe.",
     
     "blindme.error.save": "Saving BlindMe configuration failed",
     "blindme.error.save.description": "Please try saving again. If the error persists, check the logs",

@@ -16,6 +16,10 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.minecraft.client.gui.screens.AlertScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 
 public class Main {
 
@@ -32,5 +36,16 @@ public class Main {
         PayloadTypeRegistry.configurationC2S().register(AcknowledgeForcePayload.ID, AcknowledgeForcePayload.CODEC);
         ClientConfigurationNetworking.registerGlobalReceiver(ForceSettingsPayload.ID, Networking::joinBlindMeServerCallback);
         ClientCommandRegistrationCallback.EVENT.register(Command::registerCallback);
+    }
+
+    public static Screen produceIrisWarningScreen(Runnable runnable) {
+        return new AlertScreen(() -> {
+            CONFIG.hasSeenIrisWarning = true;
+            ConfigFile.save(CONFIG);
+            runnable.run();
+        },
+        Component.translatable("blindme.shaders_warning.title"),
+        Component.translatable("blindme.shaders_warning.messsage"), CommonComponents.GUI_ACKNOWLEDGE,
+        false);
     }
 }

@@ -25,6 +25,8 @@ public class Config {
     // The default effect to apply when connected to a server without a specific setting
     public ServerEffect defaultServerEffect = ServerEffect.OFF;
 
+    public boolean hasSeenIrisWarning = false;
+
     // Returns *any* `ServerEffect` for the given server.
     // If there isn't a server-specific mapping, this function returns the default one.
     public ServerEffect getEffectForServer(String uniqueId) {
