@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "blindme",
-    "version": "1.3+1.21.11",
+    "version": "1.4",
     "entrypoints": {
         "main": [
             "hibi.blind_me.server.Main::serverInit"
@@ -50,8 +50,7 @@
                 "modmenu.blindme.users_manual": "https://hibiscus.pet/mods/blindme/documentation",
                 "modmenu.github_releases": "https://github.com/hibiii/BlindMe/releases/",
                 "modmenu.patreon": "https://www.patreon.com/hibiscvs"
-            },
-            "update_checker": false
+            }
         }
     }
 }

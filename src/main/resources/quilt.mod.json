@@ -47,7 +47,6 @@
             "modmenu.blindme.users_manual": "https://hibiscus.pet/mods/blindme/documentation",
             "modmenu.github_releases": "https://github.com/hibiii/BlindMe/releases/",
             "modmenu.patreon": "https://www.patreon.com/hibiscvs"
-        },
-        "update_checker": false
+        }
     }
 }
