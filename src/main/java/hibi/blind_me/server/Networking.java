@@ -22,8 +22,8 @@ public class Networking {
     public static Set<Connection> acknowledgements = new HashSet<Connection>();
 
     public static void register() {
-        PayloadTypeRegistry.configurationS2C().register(ForceSettingsPayload.ID, ForceSettingsPayload.CODEC);
-        PayloadTypeRegistry.configurationC2S().register(AcknowledgeForcePayload.ID, AcknowledgeForcePayload.CODEC);
+        PayloadTypeRegistry.clientboundConfiguration().register(ForceSettingsPayload.ID, ForceSettingsPayload.CODEC);
+        PayloadTypeRegistry.serverboundConfiguration().register(AcknowledgeForcePayload.ID, AcknowledgeForcePayload.CODEC);
         ServerConfigurationNetworking.registerGlobalReceiver(AcknowledgeForcePayload.ID, Networking::acknowledgeForcingCallback);
         ServerConfigurationConnectionEvents.CONFIGURE.register(Networking::configureCallback);
         ServerConfigurationConnectionEvents.DISCONNECT.register(Networking::cleanupSet);
@@ -35,11 +35,11 @@ public class Networking {
             return;
         }
         var forcePayload = new ForceSettingsPayload(Main.CONFIG.effect, Main.CONFIG.opsBypass, Main.CONFIG.creativeBypass, Main.CONFIG.spectatorBypass);
-        handler.send(ServerConfigurationNetworking.createS2CPacket(forcePayload));
+        handler.send(ServerConfigurationNetworking.createClientboundPacket(forcePayload));
     }
 
     public static void acknowledgeForcingCallback(AcknowledgeForcePayload _1, Context ctx) {
-        var connection = Networking.connectionFromHandler(ctx.networkHandler());
+        var connection = Networking.connectionFromHandler(ctx.packetListener());
         acknowledgements.add(connection);
     }
 

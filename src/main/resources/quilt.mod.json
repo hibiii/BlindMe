@@ -7,9 +7,9 @@
         "depends": [
             {
                 "id": "minecraft",
-                "version": ">=1.21.11"
+                "version": ">=26.1-rc-2"
             },
-            { "id": "fabric" }
+            { "id": "fabric-api" }
         ],
         "intermediate_mappings": "net.fabricmc:intermediary",
         "entrypoints": {

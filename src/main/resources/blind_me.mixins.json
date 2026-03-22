@@ -8,7 +8,7 @@
         "LocalPlayerMixin",
         "PlayerMixin",
         "MobEffectInstanceAccessor",
-        "LightTextureMixin",
+        "LightmapRenderStateExtractorMixin",
         "ManageServerScreenMixin",
         "DirectJoinServerScreenMixin",
         "EditWorldScreenMixin",

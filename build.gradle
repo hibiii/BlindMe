@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version "${build_tool_version}"
+    id 'net.fabricmc.fabric-loom' version "${build_tool_version}"
 }
 
 loom {
@@ -18,10 +18,9 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.deps_minecraft}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.deps_loader}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.deps_stdlib}"
-    modImplementation ("com.terraformersmc:modmenu:${project.deps_modmenu}") {
+    implementation "net.fabricmc:fabric-loader:${project.deps_loader}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.deps_stdlib}"
+    implementation ("com.terraformersmc:modmenu:${project.deps_modmenu}") {
         exclude(group: 'net.fabricmc')
     }
 }
@@ -35,13 +34,13 @@ processResources {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = 'UTF-8'
-    it.options.release = 21
+    it.options.release = 25
 }
 
 jar {

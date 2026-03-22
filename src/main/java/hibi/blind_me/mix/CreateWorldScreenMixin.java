@@ -15,7 +15,9 @@ import hibi.blind_me.config.ConfigFile;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.core.LayeredRegistryAccess;
-import net.minecraft.world.level.storage.WorldData;
+import net.minecraft.server.RegistryLayer;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.storage.LevelDataAndDimensions.WorldDataAndGenSettings;
 import net.minecraft.world.level.storage.LevelStorageSource.LevelStorageAccess;
 
 @Mixin(CreateWorldScreen.class)
@@ -29,7 +31,8 @@ public class CreateWorldScreenMixin {
         ),
         locals = LocalCapture.CAPTURE_FAILHARD
     )
-    void saveSettings(LayeredRegistryAccess<?> _lra, WorldData _wd, CallbackInfoReturnable<Boolean> info, String _s, WorldCreationContext _wcc, Optional<LevelStorageAccess> optional) {
+    //(LayeredRegistryAccess<?> _lra, WorldData _wd, CallbackInfoReturnable<Boolean> info, String _s, WorldCreationContext _wcc, Optional<LevelStorageAccess> optional)
+    void saveSettings(LayeredRegistryAccess<RegistryLayer> _lra, WorldDataAndGenSettings _wdgs, Optional<GameRules> _gr, CallbackInfoReturnable<Boolean> cir, String _s, WorldCreationContext _wcc, Optional<LevelStorageAccess> optional) {
         if (optional.isEmpty()) {
             return;
         }

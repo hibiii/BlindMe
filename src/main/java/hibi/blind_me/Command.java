@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 
 import hibi.blind_me.config.ConfigScreen;
 import hibi.blind_me.config.ServerEffect;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -18,22 +18,22 @@ public final class Command {
     private Command() {};
 
     public static void registerCallback(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext access) {
-        dispatcher.register(ClientCommandManager.literal("blindme")
-            .then(ClientCommandManager.literal("set")
-                .then(ClientCommandManager.literal("off")
+        dispatcher.register(ClientCommands.literal("blindme")
+            .then(ClientCommands.literal("set")
+                .then(ClientCommands.literal("off")
                     .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))
                 )
-                .then(ClientCommandManager.literal("blindness")
+                .then(ClientCommands.literal("blindness")
                     .executes((src) -> Command.worldSubcommand(src, ServerEffect.BLINDNESS))
                 )
-                .then(ClientCommandManager.literal("darkness")
+                .then(ClientCommands.literal("darkness")
                     .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
                 )
-                .then(ClientCommandManager.literal("default")
+                .then(ClientCommands.literal("default")
                     .executes((src) -> Command.worldSubcommand(src, null))
                 )
             )
-            .then(ClientCommandManager.literal("query")
+            .then(ClientCommands.literal("query")
                 .executes(Command::printSubcommand)
             )
             .executes(Command::settingsSubcommand)

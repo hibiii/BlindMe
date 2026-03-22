@@ -32,8 +32,8 @@ public class Main {
         ClientTickEvents.START_CLIENT_TICK.register(EffectManager::tickCallback);
         ClientPlayConnectionEvents.DISCONNECT.register(Networking::disconnectCallback);
         ClientPlayConnectionEvents.JOIN.register(Networking::joinCallback);
-        PayloadTypeRegistry.configurationS2C().register(ForceSettingsPayload.ID, ForceSettingsPayload.CODEC);
-        PayloadTypeRegistry.configurationC2S().register(AcknowledgeForcePayload.ID, AcknowledgeForcePayload.CODEC);
+        PayloadTypeRegistry.clientboundConfiguration().register(ForceSettingsPayload.ID, ForceSettingsPayload.CODEC);
+        PayloadTypeRegistry.serverboundConfiguration().register(AcknowledgeForcePayload.ID, AcknowledgeForcePayload.CODEC);
         ClientConfigurationNetworking.registerGlobalReceiver(ForceSettingsPayload.ID, Networking::joinBlindMeServerCallback);
         ClientCommandRegistrationCallback.EVENT.register(Command::registerCallback);
     }
