@@ -7,7 +7,7 @@
         "depends": [
             {
                 "id": "minecraft",
-                "version": ">=26.1-rc-2"
+                "version": ">=26.1"
             },
             { "id": "fabric-api" }
         ],
