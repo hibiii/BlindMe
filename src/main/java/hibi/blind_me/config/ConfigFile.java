@@ -1,7 +1,6 @@
 package hibi.blind_me.config;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,12 +21,12 @@ public final class ConfigFile {
      * Loads the configuration from disk.
      * When an error occours, this function returns a default configuration instead.
      */
-    public static Config load() throws IOException, JsonSyntaxException {
+    public static Config load() throws JsonSyntaxException {
         try {
             var json = Files.readString(Path.of(PATH));
             var config = new Gson().fromJson(json, Config.class);
             return config;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             Main.LOGGER.warn("Config file not found, using default configuration.");
             return new Config();
         }
