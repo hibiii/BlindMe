@@ -3,9 +3,6 @@
     "id": "blindme",
     "version": "1.5",
     "entrypoints": {
-        "main": [
-            "hibi.blind_me.server.Main::serverInit"
-        ],
         "client": [
             "hibi.blind_me.Main::clientInit"
         ],
@@ -17,10 +14,6 @@
         {
             "config": "blind_me.mixins.json",
             "environment": "client"
-        },
-        {
-            "config": "blind_me.server.mixins.json",
-            "environment": "server"
         }
     ],
     "depends": {

@@ -66,11 +66,7 @@ public class Config {
     }
 
     public ServerOptions getDefaults() {
-        if (Networking.serverEnforced) {
-            return new ServerOptions(Networking.effect, false, Networking.creativeBypass, Networking.spectatorBypass);
-        } else {
-            return new ServerOptions(this.defaultServerEffect, false, this.creativeBypass, this.spectatorBypass);
-        }
+        return new ServerOptions(this.defaultServerEffect, false, this.creativeBypass, this.spectatorBypass);
     }
 
     // Refreshes settings and configurations in other parts of the code base.
