@@ -8,18 +8,23 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.sugar.Local;
+
 import hibi.blind_me.Main;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.screens.Screen;
 
-@Mixin(Minecraft.class)
-public class MinecraftMixin {
+@Mixin(Gui.class)
+public class GuiMixin {
     @Inject(
-        method = "addInitialScreens",
-        at = @At("TAIL")
+        method = "buildInitialScreens",
+        at = @At(
+            value = "INVOKE_ASSIGN",
+            target = "Ljava/util/ArrayList;<init>()Ljava/util/ArrayList;"
+        )
     )
-    void addIrisWarningScreen(List<Function<Runnable, Screen>> list, CallbackInfoReturnable<Boolean> info) {
+    void addIrisWarningScreen(List<Function<Runnable, Screen>> list, CallbackInfoReturnable<Boolean> info, @Local List<Function<Runnable, Screen>> screens) {
         if(FabricLoader.getInstance().isModLoaded("iris") && !Main.CONFIG.hasSeenIrisWarning) {
             list.add(Main::produceIrisWarningScreen);
         }

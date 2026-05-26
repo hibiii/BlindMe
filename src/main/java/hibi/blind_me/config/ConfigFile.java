@@ -43,8 +43,8 @@ public final class ConfigFile {
         } catch (Exception e) {
             Main.LOGGER.error("Could not save the config file", e);
             var client = Minecraft.getInstance();
-            client.getToastManager().addToast(SystemToast.multiline(
-                client, new SystemToast.SystemToastId(10_000L),
+            client.gui.toastManager().addToast(new SystemToast(
+                new SystemToast.SystemToastId(10_000L),
                 Component.translatable(K_SAVE_ERROR), Component.translatable(K_SAVE_ERROR_DESCRIPTION)
             ));
         }

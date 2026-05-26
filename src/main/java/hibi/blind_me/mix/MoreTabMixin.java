@@ -24,7 +24,7 @@ public class MoreTabMixin {
     void addBlindMeButton(CreateWorldScreen parent, CallbackInfo info, GridLayout.RowHelper rowHelper) {
         MixinStorage.OPTIONS = null;
         rowHelper.addChild(ServerScreen.getButton(button -> {
-                Minecraft.getInstance().setScreen(new ServerScreen(parent, "temp@", options -> MixinStorage.OPTIONS = options));
+                Minecraft.getInstance().gui.setScreen(new ServerScreen(parent, "temp@", options -> MixinStorage.OPTIONS = options));
             }, ServerScreen.K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER
         ).width(210).build());
     }

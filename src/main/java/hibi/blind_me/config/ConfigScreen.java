@@ -194,12 +194,12 @@ public class ConfigScreen extends OptionsSubScreen {
                             this.changed = true;
                             this.toggleWorldButtons(false);
                         }
-                        this.minecraft.setScreen(this);
+                        this.minecraft.gui.setScreen(this);
                     },
                     Component.translatable(K_UNLOCK_SCREEN_TITLE),
                     Component.translatable(K_UNLOCK_SCREEN_MESSAGE)
                 );
-                this.minecraft.setScreen(scr);
+                this.minecraft.gui.setScreen(scr);
                 scr.setDelay(10);
                 return;
             }
@@ -210,12 +210,12 @@ public class ConfigScreen extends OptionsSubScreen {
                         this.changed = true;
                         this.toggleWorldButtons(true);
                     }
-                    this.minecraft.setScreen(this);
+                    this.minecraft.gui.setScreen(this);
                 },
                 Component.translatable(K_LOCK_SCREEN_TITLE),
                 Component.translatable(K_LOCK_SCREEN_MESSAGE)
             );
-            this.minecraft.setScreen(scr);
+            this.minecraft.gui.setScreen(scr);
             scr.setDelay(10);
         }).build();
         this.list.addSmall(lockButton, null);

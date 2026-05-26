@@ -83,7 +83,7 @@ public final class Command {
     private static int settingsSubcommand(CommandContext<FabricClientCommandSource> cmd) {
         var client = Minecraft.getInstance();
         client.schedule(() -> {
-            client.setScreen(new ConfigScreen(null));
+            client.gui.setScreen(new ConfigScreen(null));
         });
         return 0;
     }

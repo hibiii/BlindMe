@@ -39,7 +39,7 @@ public abstract class EditWorldScreenMixin extends Screen {
                 Main.CONFIG.setServerOptions(uniqueId, serverOptions);
                 ConfigFile.save(Main.CONFIG);
             });
-            this.minecraft.setScreen(screen);
+            this.minecraft.gui.setScreen(screen);
         }, ServerScreen.K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER).build();
         this.addRenderableWidget(button);
     }

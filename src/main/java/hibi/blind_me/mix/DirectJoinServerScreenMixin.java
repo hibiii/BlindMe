@@ -33,7 +33,7 @@ public abstract class DirectJoinServerScreenMixin extends Screen {
         OPEN_BUTTON = ServerScreen.getButton(openBtn -> {
             var uniqueId = "m@" + this.ipEdit.getValue();
             var screen = new ServerScreen(this, uniqueId, serverOptions -> OPTIONS = serverOptions);
-            this.minecraft.setScreen(screen);
+            this.minecraft.gui.setScreen(screen);
         }, ServerScreen.K_BLINDME_BUTTON_TOOLTIP_MULTIPLAYER).build();
         this.addRenderableWidget(OPEN_BUTTON);
         this.updateSelectButtonStatus();

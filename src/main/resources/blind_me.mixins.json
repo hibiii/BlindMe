@@ -14,7 +14,7 @@
         "EditWorldScreenMixin",
         "MoreTabMixin",
         "CreateWorldScreenMixin",
-        "MinecraftMixin"
+        "GuiMixin"
     ],
     "injectors": {
         "defaultRequire": 1
