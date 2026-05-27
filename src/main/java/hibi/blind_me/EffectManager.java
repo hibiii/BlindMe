@@ -1,23 +1,19 @@
 package hibi.blind_me;
 
-import java.util.Map;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.Holder;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
 import org.jetbrains.annotations.Nullable;
 
 import hibi.blind_me.config.ServerEffect;
-import hibi.blind_me.mix.MobEffectInstanceAccessor;
 
 public final class EffectManager {
 
-    private static MobEffectInstance effect = null;
+    private static final BlindmeFogEnvironment effect = BlindmeFogEnvironment.getInstance();
     private static boolean skipCreative = false;
     private static boolean skipSpectator = true;
-    private static Holder<MobEffect> desiredEffect = null;
-    private static boolean effectChanged = false;
+    private static @Nullable ServerEffect desiredEffect = null;
+    private static boolean effectEnabled = false;
+    private static boolean skip = false;
 
     private EffectManager() {};
 
@@ -26,34 +22,23 @@ public final class EffectManager {
         if (player == null) {
             return;
         }
-        if (effectChanged) {
-            removeModEffect(player);
-            effectChanged = false;
-            effect = null;
-        }
-        if (desiredEffect == null) {
-            return;
-        }
-        if (skipCreative && player.isCreative() || skipSpectator && player.isSpectator()) {
-            if (effect != null && player.hasEffect(desiredEffect)) {
-                removeModEffect(player);
-                effect = null;
+        if (desiredEffect != null) {
+            effectEnabled = true;
+            switch (desiredEffect) {
+                case OFF:
+                    effectEnabled = false;
+                    break;
+                case BLINDNESS:
+                    effect.setProperties(1.25f, 5f, 0xFF000000);
+                    break;
+                case DARKNESS:
+                    effect.setProperties(11.25f, 15f, 0xFF003300);
+                    break;
             }
-            return;
+            desiredEffect = null;
         }
-        if (effect != null && player.hasEffect(desiredEffect)) {
-            return;
-        }
-        MobEffectInstance ef = new MobEffectInstance(
-            desiredEffect,
-            MobEffectInstance.INFINITE_DURATION, 0,
-            true, false, false,
-            (MobEffectInstance) null
-        );
-        ef.skipBlending();
-        if (player.addEffect(ef)) {
-            effect = ef;
-        }
+        skip = skipCreative && player.isCreative() || skipSpectator && player.isSpectator();
+        effect.setEnabled(effectEnabled && !skip);
     }
 
     public static void setDisabledCreative(boolean skipsCreative) {
@@ -65,53 +50,10 @@ public final class EffectManager {
     }
 
     public static void setDesiredEffect(ServerEffect serverEffect) {
-        desiredEffect = serverEffect.getType();
-        effectChanged = true;
+        desiredEffect = serverEffect;
     }
 
-    public static Holder<MobEffect> getDesiredEffect() {
-        return desiredEffect;
-    }
-
-    private static void removeModEffect(LocalPlayer player) {
-        if (effect == null) {
-            return;
-        }
-        Map<Holder<MobEffect>, MobEffectInstance> map = player.getActiveEffectsMap();
-        Holder<MobEffect> type = effect.getEffect();
-        MobEffectInstance ef = player.getEffect(type);
-        if (ef == null) {
-            return;
-        }
-        if (ef == effect) {
-            MobEffectInstance shadowed = ((MobEffectInstanceAccessor)ef).getHiddenEffect();
-            if (shadowed != null) {
-                ef = shadowed;
-                map.put(type, shadowed);
-            } else {
-                map.remove(type);
-            }
-            return;
-        }
-        ef = ((MobEffectInstanceAccessor)ef).getHiddenEffect();
-        while (ef != null) {
-            MobEffectInstance shadowed = ((MobEffectInstanceAccessor)ef).getHiddenEffect();
-            if (shadowed == null) {
-                effect = null;
-                return;
-            }
-            if (shadowed != effect) {
-                ef = shadowed;
-                continue;
-            }
-            MobEffectInstance shadowed2 = ((MobEffectInstanceAccessor)shadowed).getHiddenEffect();
-            ((MobEffectInstanceAccessor)ef).setHiddenEffect(shadowed2);
-            effect = null;
-            return;
-        }
-    }
-
-    public static @Nullable MobEffectInstance getModEffect() {
-        return effect;
+    public static boolean blockingSky() {
+        return effectEnabled && !skip;
     }
 }

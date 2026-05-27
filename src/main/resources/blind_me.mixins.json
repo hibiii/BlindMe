@@ -5,15 +5,14 @@
     "compatibilityLevel": "JAVA_21",
     "client": [
         "IntegratedServerMixin",
-        "PlayerMixin",
-        "MobEffectInstanceAccessor",
-        "LightmapRenderStateExtractorMixin",
         "ManageServerScreenMixin",
         "DirectJoinServerScreenMixin",
         "EditWorldScreenMixin",
         "MoreTabMixin",
         "CreateWorldScreenMixin",
-        "GuiMixin"
+        "GuiMixin",
+        "FogRendererMixin",
+        "CameraMixin"
     ],
     "injectors": {
         "defaultRequire": 1
