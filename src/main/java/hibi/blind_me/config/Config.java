@@ -24,6 +24,7 @@ public class Config {
 
     // The default effect to apply when connected to a server without a specific setting
     public ServerEffect defaultServerEffect = ServerEffect.OFF;
+    // TODO: Type Adapter
 
     public boolean hasSeenIrisWarning = false;
 

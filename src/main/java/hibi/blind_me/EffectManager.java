@@ -24,16 +24,10 @@ public final class EffectManager {
         }
         if (desiredEffect != null) {
             effectEnabled = true;
-            switch (desiredEffect) {
-                case OFF:
-                    effectEnabled = false;
-                    break;
-                case BLINDNESS:
-                    effect.setProperties(1.25f, 5f, 0xFF000000);
-                    break;
-                case DARKNESS:
-                    effect.setProperties(11.25f, 15f, 0xFF003300);
-                    break;
+            if (desiredEffect == ServerEffect.OFF) {
+                effectEnabled = false;
+            } else {
+                effect.setProperties(desiredEffect.start(), desiredEffect.end(), 0xFF000000);
             }
             desiredEffect = null;
         }

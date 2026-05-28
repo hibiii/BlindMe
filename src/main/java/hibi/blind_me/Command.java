@@ -57,22 +57,30 @@ public final class Command {
             return 0;
         }
         Main.CONFIG.setEffectForServer(uniqueId, ef);
-        cmd.getSource().sendFeedback(switch(ef) {
-            case OFF -> Component.translatable(K_EFFECT_OFF);
-            case BLINDNESS -> Component.translatable(K_EFFECT_SET, Component.translatable("effect.minecraft.blindness"));
-            case DARKNESS -> Component.translatable(K_EFFECT_SET, Component.translatable("effect.minecraft.darkness"));
-            case null -> Component.translatable(K_EFFECT_UNSET);
-        });
+        Component feedback;
+        if (ef == null) {
+            feedback = Component.translatable(K_EFFECT_UNSET);
+        } else {
+            if (ef == ServerEffect.OFF) {
+                feedback = Component.translatable(K_EFFECT_OFF);
+            } else {
+                feedback = Component.translatable(K_EFFECT_SET, Component.translatable(ef.component()));
+            }
+        }
+        cmd.getSource().sendFeedback(feedback);
         return 0;
     }
 
     private static int printSubcommand(CommandContext<FabricClientCommandSource> cmd) {
         String uniqueId = Networking.uniqueId;
-        cmd.getSource().sendFeedback(switch(Main.CONFIG.getEffectForServer(uniqueId)) {
-            case BLINDNESS -> Component.translatable(K_PRINT_SET, Component.translatable("effect.minecraft.blindness"));
-            case DARKNESS -> Component.translatable(K_PRINT_SET, Component.translatable("effect.minecraft.darkness"));
-            case OFF -> Component.translatable(K_PRINT_NONE);
-        });
+        ServerEffect ef = Main.CONFIG.getEffectForServer(uniqueId);
+        Component feedback;
+        if (ef == ServerEffect.OFF) {
+            feedback = Component.translatable(K_PRINT_NONE);
+        } else {
+            feedback = Component.translatable(K_PRINT_SET, Component.translatable(ef.component()));
+        }
+        cmd.getSource().sendFeedback(feedback);
         return 0;
     }
 

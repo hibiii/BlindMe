@@ -76,15 +76,9 @@ public class ConfigScreen extends OptionsSubScreen {
 
     private void addDefaultEffectButton() {
         var button = CycleButton
-            .<ServerEffect>builder((ServerEffect ef) -> {
-                return switch(ef) {
-                    case BLINDNESS -> Component.translatable("effect.minecraft.blindness");
-                    case DARKNESS -> Component.translatable("effect.minecraft.darkness");
-                    case OFF -> CommonComponents.OPTION_OFF;
-                };
-            }, Main.CONFIG.defaultServerEffect)
-            .withValues(ServerEffect.values())
-            .withTooltip(effect -> Tooltip.create(Component.translatable(K_EFFECT_DETAILS_TOOLTIP + effect.toString())))
+            .<ServerEffect>builder((ServerEffect ef) -> Component.translatable(ef.component()), Main.CONFIG.defaultServerEffect)
+            .withValues(ServerEffect.OFF, ServerEffect.BLINDNESS, ServerEffect.DARKNESS)
+            .withTooltip(effect -> Tooltip.create(Component.translatable(K_EFFECT_DETAILS_TOOLTIP + effect.subcomponent())))
             .create(Component.translatable(K_DEFAULT_EFFECT), (_button, value) -> {
                 this.changed = true;
                 Main.CONFIG.defaultServerEffect = value;
@@ -103,11 +97,7 @@ public class ConfigScreen extends OptionsSubScreen {
                 if (ef.isEmpty()) {
                     return Component.translatable("effect.blindme.default");
                 }
-                return switch(ef.get()) {
-                    case BLINDNESS -> Component.translatable("effect.minecraft.blindness");
-                    case DARKNESS -> Component.translatable("effect.minecraft.darkness");
-                    case OFF -> CommonComponents.OPTION_OFF;
-                };
+                return Component.translatable(ef.get().component());
             },
             Optional.ofNullable(this.serverOptions.effect()))
             .withValues(Optional.empty(), Optional.of(ServerEffect.BLINDNESS), Optional.of(ServerEffect.DARKNESS), Optional.of(ServerEffect.OFF)
@@ -116,7 +106,7 @@ public class ConfigScreen extends OptionsSubScreen {
                 var effect = optional.orElse(null);
                 Component text;
                 text = Component.translatable(K_EFFECT_DETAILS_TOOLTIP
-                    + ((effect != null) ? effect.toString() : "default")
+                    + ((effect != null) ? effect.subcomponent() : "default")
                 );
                 return Tooltip.create(text);
             })

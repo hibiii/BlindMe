@@ -3,10 +3,19 @@ package hibi.blind_me.config;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 
 import hibi.blind_me.Main;
@@ -24,7 +33,7 @@ public final class ConfigFile {
     public static Config load() throws JsonSyntaxException {
         try {
             var json = Files.readString(Path.of(PATH));
-            var config = new Gson().fromJson(json, Config.class);
+            var config = new GsonBuilder().registerTypeAdapter(ServerEffect.class, new ServerEffectAdapter()).create().fromJson(json, Config.class);
             return config;
         } catch (IOException e) {
             Main.LOGGER.warn("Config file not found, using default configuration.");
@@ -38,7 +47,7 @@ public final class ConfigFile {
      */
     public static void save(Config config) {
         try (var writer = new BufferedWriter(new FileWriter(PATH))) {
-            var json = new Gson().toJson(config);
+            var json = new GsonBuilder().registerTypeAdapter(ServerEffect.class, new ServerEffectAdapter()).create().toJson(config);
             writer.write(json);
         } catch (Exception e) {
             Main.LOGGER.error("Could not save the config file", e);
@@ -59,5 +68,40 @@ public final class ConfigFile {
         PATH = FabricLoader.getInstance().getConfigDir().toAbsolutePath().resolve("blindme.json").toString();
         K_SAVE_ERROR = "blindme.error.save";
         K_SAVE_ERROR_DESCRIPTION = "blindme.error.save.description";
+    }
+
+    private static class ServerEffectAdapter implements JsonSerializer<ServerEffect>, JsonDeserializer<ServerEffect> {
+
+        @Override
+        public JsonElement serialize(ServerEffect src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src.equals(ServerEffect.OFF)) {
+                return new JsonPrimitive("OFF");
+            }
+            if (src.equals(ServerEffect.BLINDNESS)) {
+                return new JsonPrimitive("BLINDNESS");
+            }
+            if (src.equals(ServerEffect.DARKNESS)) {
+                return new JsonPrimitive("DARKNESS");
+            }
+            JsonObject out = new JsonObject();
+            out.addProperty("start", src.start());
+            out.addProperty("end", src.end());
+            return out;
+        }
+
+        @Override
+        public ServerEffect deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
+                String preset = json.getAsString();
+                return switch(preset) {
+                    case "OFF" -> ServerEffect.OFF;
+                    case "BLINDNESS" -> ServerEffect.BLINDNESS;
+                    case "DARKNESS" -> ServerEffect.DARKNESS;
+                    default -> throw new JsonParseException("Unknown preset \"%s\"".formatted(preset));
+                };
+            }
+            JsonObject object = json.getAsJsonObject();
+            return new ServerEffect(object.get("start").getAsFloat(), object.get("end").getAsFloat());
+        }
     }
 }
