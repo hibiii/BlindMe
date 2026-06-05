@@ -74,7 +74,7 @@ public final class ConfigFile {
 
         @Override
         public JsonElement serialize(ServerEffect src, Type typeOfSrc, JsonSerializationContext context) {
-            if (src.equals(ServerEffect.OFF)) {
+            if (src.enabled() == false) {
                 return new JsonPrimitive("OFF");
             }
             if (src.equals(ServerEffect.BLINDNESS)) {

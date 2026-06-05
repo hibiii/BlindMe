@@ -23,12 +23,8 @@ public final class EffectManager {
             return;
         }
         if (desiredEffect != null) {
-            effectEnabled = true;
-            if (desiredEffect == ServerEffect.OFF) {
-                effectEnabled = false;
-            } else {
-                effect.setProperties(desiredEffect.start(), desiredEffect.end(), 0xFF000000);
-            }
+            effectEnabled = desiredEffect.enabled();
+            effect.setProperties(desiredEffect.start(), desiredEffect.end(), 0xFF000000);
             desiredEffect = null;
         }
         skip = skipCreative && player.isCreative() || skipSpectator && player.isSpectator();
