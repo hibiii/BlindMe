@@ -59,17 +59,6 @@ public class ConfigScreen extends OptionsSubScreen {
         );
         this.list.addSmall(creativeBypassButton, spectatorBypassButton);
 
-        var darknessPulseButton = CycleButton
-        .onOffBuilder(Main.CONFIG.disableDarknessPulse)
-        .withTooltip(((bool) -> Tooltip.create(Component.translatable(K_DISABLE_PULSE_TOOLTIP))))
-        .create(Component.translatable(K_DISABLE_PULSE),
-            (button, set) -> {
-                this.changed = true;
-                Main.CONFIG.disableDarknessPulse = set;
-            }
-        );
-        darknessPulseButton.setWidth(310);
-        this.list.addSmall(darknessPulseButton, null);
         this.addDefaultEffectButton();
         this.addButtonsForCurrentServer();
     }
@@ -229,8 +218,6 @@ public class ConfigScreen extends OptionsSubScreen {
         K_CURRENT_SERVER = "blindme.options.current_world_effect",
         K_DEFAULT_EFFECT = "blindme.options.default_effect",
         K_EFFECT_DETAILS_TOOLTIP = "blindme.options.world_effect.tooltip.",
-        K_DISABLE_PULSE = "blindme.options.disable_darkness_pulse",
-        K_DISABLE_PULSE_TOOLTIP = "blindme.options.disable_darkness_pulse.tooltip",
         K_LOCK_BUTTON = "blindme.options.lock_world",
         K_LOCK_SCREEN_TITLE = "blindme.options.lock_world.screen.title",
         K_LOCK_SCREEN_MESSAGE = "blindme.options.lock_world.screen.message",

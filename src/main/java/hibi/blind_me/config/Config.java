@@ -19,12 +19,8 @@ public class Config {
     // The list of servers/worlds and configuration for each individually
     private Map<String, ServerOptions> servers = new HashMap<String, ServerOptions>();
 
-    // If set to true, the Darkness effect will not pulse the brightness when it is applied by the mod
-    public boolean disableDarknessPulse = true;
-
     // The default effect to apply when connected to a server without a specific setting
-    public ServerEffect defaultServerEffect = ServerEffect.OFF;
-    // TODO: Type Adapter
+    public ServerEffect defaultServerEffect = null;
 
     public boolean hasSeenIrisWarning = false;
 
