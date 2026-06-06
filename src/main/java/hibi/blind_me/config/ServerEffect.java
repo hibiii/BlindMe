@@ -18,4 +18,16 @@ public record ServerEffect(float start, float end, String component, String subc
     public ServerEffect(float start, float end) {
         this(start, end, "effect.blindme.custom", "CUSTOM", true);
     }
+
+    public ServerEffect setEnabled(boolean enabled) {
+        return new ServerEffect(this.start, this.end, this.component, this.subcomponent, enabled);
+    }
+
+    public ServerEffect setStart(Float start) {
+        return new ServerEffect(start, this.end, this.component, this.subcomponent, this.enabled);
+    }
+
+    public ServerEffect setEnd(Float end) {
+        return new ServerEffect(this.start, end, this.component, this.subcomponent, this.enabled);
+    }
 }

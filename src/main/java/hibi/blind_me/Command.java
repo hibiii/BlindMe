@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 
-import hibi.blind_me.config.ConfigScreen;
+import hibi.blind_me.config.ConfigScreenFactory;
 import hibi.blind_me.config.ServerEffect;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -87,7 +87,7 @@ public final class Command {
     private static int settingsSubcommand(CommandContext<FabricClientCommandSource> cmd) {
         var client = Minecraft.getInstance();
         client.schedule(() -> {
-            client.gui.setScreen(new ConfigScreen(null));
+            client.gui.setScreen(ConfigScreenFactory.create(null, true, Networking.uniqueId));
         });
         return 0;
     }

@@ -27,6 +27,9 @@ public record ServerOptions(
     public ServerOptions butUnlocked() {
         return new ServerOptions(this.effect, false, this.creativeBypass, this.spectatorBypass);
     }
+    public ServerOptions withLocked(boolean lock) {
+        return new ServerOptions(this.effect, lock, this.creativeBypass, this.spectatorBypass);
+    }
     public ServerOptions withCreativeBypass(@Nullable Boolean creativeBypass) {
         return new ServerOptions(this.effect, this.locked, creativeBypass, this.spectatorBypass);
     }

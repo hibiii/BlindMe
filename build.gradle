@@ -14,6 +14,7 @@ loom {
 repositories {
     maven { url 'https://maven.terraformersmc.com/releases/' }
     maven { url 'https://maven.nucleoid.xyz/' }
+    maven { url 'https://api.modrinth.com/maven/' }
 }
 
 dependencies {
@@ -23,6 +24,7 @@ dependencies {
     compileOnly ("com.terraformersmc:modmenu:${project.deps_modmenu}") {
         exclude(group: 'net.fabricmc')
     }
+    implementation "maven.modrinth:yacl:${project.deps_yacl}"
 }
 
 processResources {

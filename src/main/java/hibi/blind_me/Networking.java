@@ -22,7 +22,15 @@ public class Networking {
 
     public static ServerOptions getServerOptions(String uniqueId) {
         return Main.CONFIG.getServerOptions(uniqueId);
-        
+    }
+
+    public static ServerEffect getEffectOrDefault() {
+        var effect = Main.CONFIG.getServerOptions(uniqueId).effect();
+        if (effect == null) {
+            return Main.CONFIG.defaultServerEffect;
+        } else {
+            return effect;
+        }
     }
 
     public static void joinCallback(ClientPacketListener handler, Object packetSender, Minecraft client) {
