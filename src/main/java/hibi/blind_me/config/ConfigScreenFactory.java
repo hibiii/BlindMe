@@ -24,6 +24,17 @@ import net.minecraft.network.chat.Component;
 public final class ConfigScreenFactory {
 
     public static Screen create(Screen parent, boolean hasGlobalSettings, @Nullable String uniqueId) {
+        return YetAnotherConfigLib.createBuilder()
+        .title(Component.translatable(K_TITLE))
+        .categoryIf(hasGlobalSettings, globalSettings())
+        .categoryIf(uniqueId != null, worldSettings())
+        .save(ConfigScreenFactory::save)
+        .build()
+        .generateScreen(parent);
+    }
+
+    private static ConfigCategory globalSettings() {
+        // Linked effect start-end fields prevent inverted range (start > end)
         var defEfStart = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_START))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_START_DESCRIPTION)))
@@ -36,6 +47,7 @@ public final class ConfigScreenFactory {
                 .formatValue(DOUBLE_DIGIT_FORMATTER)
             )
             .build();
+        
         var defEfEnd = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_END))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_END_DESCRIPTION)))
@@ -56,6 +68,7 @@ public final class ConfigScreenFactory {
                 }
             })
             .build();
+
         defEfStart.addEventListener((opt, ev) -> {
             if(ev != Event.STATE_CHANGE) {
                 return;
@@ -64,6 +77,8 @@ public final class ConfigScreenFactory {
                 defEfEnd.requestSet(opt.pendingValue());
             }
         });
+
+        // Effect enable must disable fog control buttons
         var defEfEnable = Option.<Boolean>createBuilder()
             .name(Component.translatable(K_EFFECT_ENABLED))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_ENABLED_DESCRIPTION)))
@@ -77,33 +92,61 @@ public final class ConfigScreenFactory {
             })
             .controller(BooleanControllerBuilder::create)
             .build();
+        
+        // Other one-off buttons
+        var defCreative = Option.<Boolean>createBuilder()
+            .name(Component.translatable(K_CREATIVE_BYPASS))
+            .description(OptionDescription.of(Component.translatable(K_CREATIVE_BYPASS_DESCRIPTION)))
+            .binding(false, () -> Main.CONFIG.creativeBypass, (bypass) -> {
+                EffectManager.setDisabledCreative(Networking.getServerOptions().creativeBypass() instanceof Boolean b? b : bypass);
+                Main.CONFIG.creativeBypass = bypass;
+            })
+            .controller(BooleanControllerBuilder::create)
+            .build();
+        
+        var defSpectator = Option.<Boolean>createBuilder()
+            .name(Component.translatable(K_SPECTATOR_BYPASS))
+            .description(OptionDescription.of(Component.translatable(K_SPECTATOR_BYPASS_DESCRIPTION)))
+            .binding(true, () -> Main.CONFIG.spectatorBypass, (bypass) -> {
+                EffectManager.setDisabledSpectator(Networking.getServerOptions().spectatorBypass() instanceof Boolean b? b : bypass);
+                Main.CONFIG.spectatorBypass = bypass;
+            })
+            .controller(BooleanControllerBuilder::create)
+            .build();
+        
+        return ConfigCategory.createBuilder()
+            .name(Component.translatable(K_GLOBAL_SETTINGS_SUBTITLE))
+            .option(defCreative)
+            .option(defSpectator)
+            .group(OptionGroup.createBuilder()
+                .name(Component.translatable(K_DEFAULT_EFFECT_SETTINGS))
+                .description(OptionDescription.of(Component.translatable(K_DEFAULT_EFFECT_SETTINGS_DESCRIPITION)))
+                .option(defEfEnable)
+                .option(defEfStart)
+                .option(defEfEnd)
+                .build()
+            )
+            .group(OptionGroup.createBuilder()
+                .name(Component.translatable(K_PRESETS))
+                .description(OptionDescription.of(Component.translatable(K_PRESETS_DESCRIPTION)))
+                // TODO: Deduplicate
+                .option(effectPresetButton("effect.minecraft.blindness", "blindme.effect_description.blindness", 1.25f, 5f, defEfStart, defEfEnd, defEfEnable, true))
+                .option(effectPresetButton("effect.minecraft.darkness", "blindme.effect_description.darkness", 11.25f, 15f, defEfStart, defEfEnd, defEfEnable, true))
+                .build()
+            )
+            .build();
+    }
 
-
-        // TODO: Organize this BS
+    private static ConfigCategory worldSettings() {
+        // Required precedence for future buttons, all others must need to set availability when constructed
         var worldLock = Option.<Boolean>createBuilder()
             .name(Component.translatable(K_LOCK_BUTTON))
             .description(OptionDescription.of(Component.translatable(K_LOCK_BUTTON_DESCRIPTION)))
             .binding(false, () -> Networking.getServerOptions().locked(), (locked) -> setOpts(Networking.getServerOptions().withLocked(locked)))
             .controller(BooleanControllerBuilder::create)
             .build();
-        var worldCreative = Option.<DeferrableOnOff>createBuilder()
-            .name(Component.translatable(K_WORLD_CREATIVE_BYPASS))
-            .description(OptionDescription.of(Component.translatable(K_CREATIVE_BYPASS_DESCRIPTION)))
-            .binding(DeferrableOnOff.DEFAULT, () -> DeferrableOnOff.wrap(Networking.getServerOptions().creativeBypass()), (wrapped) -> {
-                setOpts(Networking.getServerOptions().withCreativeBypass(wrapped.value));
-            })
-            .available(!worldLock.pendingValue())
-            .customController(opt -> new EnumController<>(opt, DeferrableOnOff.class))
-            .build();
-        var worldSpectator = Option.<DeferrableOnOff>createBuilder()
-            .name(Component.translatable(K_WORLD_SPECTATOR_BYPASS))
-            .description(OptionDescription.of(Component.translatable(K_SPECTATOR_BYPASS_DESCRIPTION)))
-            .binding(DeferrableOnOff.DEFAULT, () -> DeferrableOnOff.wrap(Networking.getServerOptions().spectatorBypass()), (wrapped) -> {
-                setOpts(Networking.getServerOptions().withSpectatorBypass(wrapped.value));
-            })
-            .available(!worldLock.pendingValue())
-            .customController(opt -> new EnumController<>(opt, DeferrableOnOff.class))
-            .build();
+        
+        // Effect enable must disable fog control buttons
         var worldEfEnable = Option.<DeferrableOnOff>createBuilder()
             .name(Component.translatable(K_WORLD_EFFECT_ENABLED))
             .description(OptionDescription.of(Component.translatable(K_WORLD_EFFECT_ENABLED_DESCRIPTION)))
@@ -120,6 +163,8 @@ public final class ConfigScreenFactory {
             .available(!worldLock.pendingValue())
             .customController(opt -> new EnumController<>(opt, DeferrableOnOff.class))
             .build();
+    
+        // Linked effect start-end fields prevent inverted range (start > end)
         var worldEfStart = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_START))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_START_DESCRIPTION)))
@@ -135,6 +180,7 @@ public final class ConfigScreenFactory {
                 .formatValue(DOUBLE_DIGIT_FORMATTER)
             )
             .build();
+    
         var worldEfEnd = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_END))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_END_DESCRIPTION)))
@@ -158,6 +204,7 @@ public final class ConfigScreenFactory {
                 }
             })
             .build();
+    
         worldEfStart.addEventListener((opt, ev) -> {
             if(ev != Event.STATE_CHANGE) {
                 return;
@@ -166,15 +213,40 @@ public final class ConfigScreenFactory {
                 worldEfEnd.requestSet(opt.pendingValue());
             }
         });
+
+        // Other one-off buttons
+        var worldCreative = Option.<DeferrableOnOff>createBuilder()
+            .name(Component.translatable(K_WORLD_CREATIVE_BYPASS))
+            .description(OptionDescription.of(Component.translatable(K_CREATIVE_BYPASS_DESCRIPTION)))
+            .binding(DeferrableOnOff.DEFAULT, () -> DeferrableOnOff.wrap(Networking.getServerOptions().creativeBypass()), (wrapped) -> {
+                setOpts(Networking.getServerOptions().withCreativeBypass(wrapped.value));
+            })
+            .available(!worldLock.pendingValue())
+            .customController(opt -> new EnumController<>(opt, DeferrableOnOff.class))
+            .build();
+    
+        var worldSpectator = Option.<DeferrableOnOff>createBuilder()
+            .name(Component.translatable(K_WORLD_SPECTATOR_BYPASS))
+            .description(OptionDescription.of(Component.translatable(K_SPECTATOR_BYPASS_DESCRIPTION)))
+            .binding(DeferrableOnOff.DEFAULT, () -> DeferrableOnOff.wrap(Networking.getServerOptions().spectatorBypass()), (wrapped) -> {
+                setOpts(Networking.getServerOptions().withSpectatorBypass(wrapped.value));
+            })
+            .available(!worldLock.pendingValue())
+            .customController(opt -> new EnumController<>(opt, DeferrableOnOff.class))
+            .build();
+    
+        // Preset buttons must also be affected by the lock
+        var worldBlindness = effectPresetButton("effect.minecraft.blindness", "blindme.effect_description.blindness", 1.25f, 5f, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
+        worldBlindness.setAvailable(!worldLock.pendingValue());
+
+        var worldDarkness = effectPresetButton("effect.minecraft.darkness", "blindme.effect_description.darkness", 11.25f, 15f, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
+        worldDarkness.setAvailable(!worldLock.pendingValue());
+
         worldEfEnable.addEventListener((opt, ev) -> {
             var available = opt.pendingValue() == DeferrableOnOff.ON && !worldLock.pendingValue();
             worldEfStart.setAvailable(available);
             worldEfEnd.setAvailable(available);
         });
-        var worldBlindness = effectPresetButton("effect.minecraft.blindness", "blindme.effect_description.blindness", 1.25f, 5f, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
-        worldBlindness.setAvailable(!worldLock.pendingValue());
-        var worldDarkness = effectPresetButton("effect.minecraft.darkness", "blindme.effect_description.darkness", 11.25f, 15f, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
-        worldDarkness.setAvailable(!worldLock.pendingValue());
         worldLock.addEventListener((opt, ev) -> {
             var available = !opt.pendingValue();
             worldEfEnable.setAvailable(available);
@@ -184,53 +256,7 @@ public final class ConfigScreenFactory {
             worldDarkness.setAvailable(available);
         });
 
-
-        return YetAnotherConfigLib.createBuilder()
-        .title(Component.translatable(K_TITLE))
-        .categoryIf(hasGlobalSettings, ConfigCategory.createBuilder()
-            .name(Component.translatable(K_GLOBAL_SETTINGS_SUBTITLE))
-            .option(Option.<Boolean>createBuilder()
-                .name(Component.translatable(K_CREATIVE_BYPASS))
-                .description(OptionDescription.of(Component.translatable(K_CREATIVE_BYPASS_DESCRIPTION)))
-                .binding(false, () -> Main.CONFIG.creativeBypass, (bypass) -> {
-                    EffectManager.setDisabledCreative(Networking.getServerOptions().creativeBypass() instanceof Boolean b? b : bypass);
-                    Main.CONFIG.creativeBypass = bypass;
-                })
-                .controller(BooleanControllerBuilder::create)
-                .build()
-            )
-            .option(Option.<Boolean>createBuilder()
-                .name(Component.translatable(K_SPECTATOR_BYPASS))
-                .description(OptionDescription.of(Component.translatable(K_SPECTATOR_BYPASS_DESCRIPTION)))
-                .binding(true, () -> Main.CONFIG.spectatorBypass, (bypass) -> {
-                    EffectManager.setDisabledSpectator(Networking.getServerOptions().spectatorBypass() instanceof Boolean b? b : bypass);
-                    Main.CONFIG.spectatorBypass = bypass;
-                })
-                .controller(BooleanControllerBuilder::create)
-                .build()
-            )
-
-            .group(OptionGroup.createBuilder()
-                .name(Component.translatable(K_DEFAULT_EFFECT_SETTINGS))
-                .description(OptionDescription.of(Component.translatable(K_DEFAULT_EFFECT_SETTINGS_DESCRIPITION)))
-                .option(defEfEnable)
-                .option(defEfStart)
-                .option(defEfEnd)
-                .build()
-            )
-
-            .group(OptionGroup.createBuilder()
-                .name(Component.translatable(K_PRESETS))
-                .description(OptionDescription.of(Component.translatable(K_PRESETS_DESCRIPTION)))
-                // TODO: Deduplicate
-                .option(effectPresetButton("effect.minecraft.blindness", "blindme.effect_description.blindness", 1.25f, 5f, defEfStart, defEfEnd, defEfEnable, true))
-                .option(effectPresetButton("effect.minecraft.darkness", "blindme.effect_description.darkness", 11.25f, 15f, defEfStart, defEfEnd, defEfEnable, true))
-                .build()
-            )
-            .build()
-        ) // Global settings
-
-        .categoryIf(uniqueId != null, ConfigCategory.createBuilder()
+        return ConfigCategory.createBuilder()
             .name(Component.translatable(K_WORLD_SETTINGS))
             .option(worldCreative)
             .option(worldSpectator)
@@ -252,11 +278,7 @@ public final class ConfigScreenFactory {
                 .option(worldDarkness)
                 .build()
             )
-            .build()
-        )
-        .save(ConfigScreenFactory::save)
-        .build()
-        .generateScreen(parent);
+            .build();
     }
 
     private static void save() {
