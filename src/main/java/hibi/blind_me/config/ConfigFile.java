@@ -86,6 +86,9 @@ public final class ConfigFile {
             JsonObject out = new JsonObject();
             out.addProperty("start", src.start());
             out.addProperty("end", src.end());
+            if (src.color() != 0xff000000) {
+                out.addProperty("color", String.format("%08X", src.color()));
+            }
             return out;
         }
 
@@ -101,7 +104,16 @@ public final class ConfigFile {
                 };
             }
             JsonObject object = json.getAsJsonObject();
-            return new ServerEffect(object.get("start").getAsFloat(), object.get("end").getAsFloat());
+            JsonElement colorEl = object.get("color");
+            int color = 0xff000000;
+            if (colorEl != null) {
+                color = Integer.parseUnsignedInt(colorEl.getAsString(), 16);
+            }
+            return new ServerEffect(
+                object.get("start").getAsFloat(),
+                object.get("end").getAsFloat(),
+                color
+            );
         }
     }
 }

@@ -24,6 +24,8 @@
     "blindme.options.effect_start.description": "This option controls how thick the fog is in relation to the point you can no longer see through it. The lower the number, the closer to the player will the fog obscure blocks.",
     "blindme.options.effect_end": "End of fog (blocks)",
     "blindme.options.effect_end.description": "This option controls how far away you can see through the fog. The higher the number, the more visibility.",
+    "blindme.options.effect_color": "Fog color",
+    "blindme.options.effect_color.description": "This option controls the color of the fog. It does not need to be pure black, and can be a bright pink if so desired.",
     "blindme.options.effect_presets": "Preset Effects",
     "blindme.options.effect_presets.description": "Instead of manually editing the fog, you can choose to load presets.",
     "blindme.options.world_specific_settings": "World-specific Options",

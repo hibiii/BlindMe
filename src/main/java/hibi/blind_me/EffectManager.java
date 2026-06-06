@@ -24,7 +24,7 @@ public final class EffectManager {
         }
         if (desiredEffect != null) {
             effectEnabled = desiredEffect.enabled();
-            effect.setProperties(desiredEffect.start(), desiredEffect.end(), 0xFF000000);
+            effect.setProperties(desiredEffect.start(), desiredEffect.end(), desiredEffect.color());
             desiredEffect = null;
         }
         skip = skipCreative && player.isCreative() || skipSpectator && player.isSpectator();

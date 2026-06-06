@@ -1,5 +1,7 @@
 package hibi.blind_me.config;
 
+import java.awt.Color;
+
 import org.jetbrains.annotations.Nullable;
 
 import dev.isxander.yacl3.api.ButtonOption;
@@ -7,10 +9,11 @@ import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.NameableEnum;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
+import dev.isxander.yacl3.api.OptionEventListener.Event;
 import dev.isxander.yacl3.api.OptionGroup;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
-import dev.isxander.yacl3.api.OptionEventListener.Event;
 import dev.isxander.yacl3.api.controller.BooleanControllerBuilder;
+import dev.isxander.yacl3.api.controller.ColorControllerBuilder;
 import dev.isxander.yacl3.api.controller.FloatFieldControllerBuilder;
 import dev.isxander.yacl3.api.controller.ValueFormatter;
 import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
@@ -117,6 +120,21 @@ public final class ConfigScreenFactory {
             }
         });
 
+        var defEfColor = Option.<Color>createBuilder()
+            .name(Component.translatable(K_EFFECT_COLOR))
+            .description(OptionDescription.of(Component.translatable(K_EFFECT_COLOR_DESCRIPTION)))
+            .binding(new Color(0x000000), () ->{
+                int raw = Main.CONFIG.defaultServerEffect.color();
+                int rgb = raw & 0x00ffffff;
+                return new Color(rgb);
+            }, (color) -> {
+                Main.CONFIG.defaultServerEffect = Main.CONFIG.defaultServerEffect.setColor(
+                    color.getRGB() | 0xff000000
+                );
+            })
+            .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(false))
+            .build();
+
         // Effect enable must disable fog control buttons
         var defEfEnable = Option.<Boolean>createBuilder()
             .name(Component.translatable(K_EFFECT_ENABLED))
@@ -128,6 +146,7 @@ public final class ConfigScreenFactory {
             .addListener((opt, ev) -> {
                 defEfStart.setAvailable(opt.pendingValue());
                 defEfEnd.setAvailable(opt.pendingValue());
+                defEfColor.setAvailable(opt.pendingValue());
             })
             .controller(BooleanControllerBuilder::create)
             .build();
@@ -163,13 +182,14 @@ public final class ConfigScreenFactory {
                 .option(defEfEnable)
                 .option(defEfStart)
                 .option(defEfEnd)
+                .option(defEfColor)
                 .build()
             )
             .group(OptionGroup.createBuilder()
                 .name(Component.translatable(K_PRESETS))
                 .description(OptionDescription.of(Component.translatable(K_PRESETS_DESCRIPTION)))
-                .option(effectPresetButton(ServerEffectPresets.BLINDNESS, defEfStart, defEfEnd, defEfEnable, true))
-                .option(effectPresetButton(ServerEffectPresets.DARKNESS, defEfStart, defEfEnd, defEfEnable, true))
+                .option(effectPresetButton(ServerEffectPresets.BLINDNESS, defEfStart, defEfEnd, defEfColor, defEfEnable, true))
+                .option(effectPresetButton(ServerEffectPresets.DARKNESS, defEfStart, defEfEnd, defEfColor, defEfEnable, true))
                 .build()
             )
             .build();
@@ -195,6 +215,9 @@ public final class ConfigScreenFactory {
                 if(wrapped == DeferrableOnOff.DEFAULT) {
                     options = options.withEffect(null);
                 } else {
+                    if (options.effect() == null) {
+                        options = options.withEffect(ServerEffectPresets.BLINDNESS.toEffect());
+                    }
                     options = options.withEffect(options.effect().setEnabled(wrapped.value));
                 }
             })
@@ -206,13 +229,13 @@ public final class ConfigScreenFactory {
         var worldEfStart = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_START))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_START_DESCRIPTION)))
-            .binding(1.25f, () -> options.effect().start(), (start) -> {
+            .binding(1.25f, () -> options.effect() instanceof ServerEffect ef? ef.start() : 1.25f, (start) -> {
                 if (worldEfEnable.pendingValue() == DeferrableOnOff.DEFAULT) {
                     return;
                 }
                 options = options.withEffect(options.effect().setStart(start));
             })
-            .available(!worldLock.pendingValue())
+            .available(!worldLock.pendingValue() && worldEfEnable.pendingValue() == DeferrableOnOff.ON)
             .controller(opt -> FloatFieldControllerBuilder.create(opt)
                 .range(0f, 50f)
                 .formatValue(DOUBLE_DIGIT_FORMATTER)
@@ -222,13 +245,13 @@ public final class ConfigScreenFactory {
         var worldEfEnd = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_END))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_END_DESCRIPTION)))
-            .binding(5f, () -> options.effect().end(), (end) -> {
+            .binding(5f, () -> options.effect() instanceof ServerEffect ef? ef.end() : 5f, (end) -> {
                 if (worldEfEnable.pendingValue() == DeferrableOnOff.DEFAULT) {
                     return;
                 }
                 options = options.withEffect(options.effect().setEnd(end));
             })
-            .available(!worldLock.pendingValue())
+            .available(!worldLock.pendingValue() && worldEfEnable.pendingValue() == DeferrableOnOff.ON)
             .controller(opt -> FloatFieldControllerBuilder.create(opt)
                 .range(0f, 50f)
                 .formatValue(DOUBLE_DIGIT_FORMATTER)
@@ -251,6 +274,25 @@ public final class ConfigScreenFactory {
                 worldEfEnd.requestSet(opt.pendingValue());
             }
         });
+
+        var worldEfColor = Option.<Color>createBuilder()
+            .name(Component.translatable(K_EFFECT_COLOR))
+            .description(OptionDescription.of(Component.translatable(K_EFFECT_COLOR_DESCRIPTION)))
+            .binding(new Color(0x000000), () ->{
+                int raw = options.effect() instanceof ServerEffect ef? ef.color() : 0xff000000;
+                int rgb = raw & 0x00ffffff;
+                return new Color(rgb);
+            }, (color) -> {
+                if (worldEfEnable.pendingValue() == DeferrableOnOff.DEFAULT) {
+                    return;
+                }
+                options = options.withEffect(options.effect().setColor(
+                    color.getRGB() | 0xff000000
+                ));
+            })
+            .available(!worldLock.pendingValue() && worldEfEnable.pendingValue() == DeferrableOnOff.ON)
+            .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(false))
+            .build();
 
         // Other one-off buttons
         var worldCreative = Option.<DeferrableOnOff>createBuilder()
@@ -278,16 +320,17 @@ public final class ConfigScreenFactory {
             .build();
     
         // Preset buttons must also be affected by the lock
-        var worldBlindness = effectPresetButton(ServerEffectPresets.BLINDNESS, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
+        var worldBlindness = effectPresetButton(ServerEffectPresets.BLINDNESS, worldEfStart, worldEfEnd, worldEfColor, worldEfEnable, DeferrableOnOff.ON);
         worldBlindness.setAvailable(!worldLock.pendingValue());
 
-        var worldDarkness = effectPresetButton(ServerEffectPresets.DARKNESS, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
+        var worldDarkness = effectPresetButton(ServerEffectPresets.DARKNESS, worldEfStart, worldEfEnd, worldEfColor, worldEfEnable, DeferrableOnOff.ON);
         worldDarkness.setAvailable(!worldLock.pendingValue());
 
         worldEfEnable.addEventListener((opt, ev) -> {
             var available = opt.pendingValue() == DeferrableOnOff.ON && !worldLock.pendingValue();
             worldEfStart.setAvailable(available);
             worldEfEnd.setAvailable(available);
+            worldEfColor.setAvailable(available);
         });
         worldLock.addEventListener((opt, ev) -> {
             var available = !opt.pendingValue();
@@ -310,6 +353,7 @@ public final class ConfigScreenFactory {
                 .option(worldEfEnable)
                 .option(worldEfStart)
                 .option(worldEfEnd)
+                .option(worldEfColor)
                 .build()
             )
 
@@ -340,6 +384,8 @@ public final class ConfigScreenFactory {
         K_EFFECT_START_DESCRIPTION = "blindme.options.effect_start.description",
         K_EFFECT_END = "blindme.options.effect_end",
         K_EFFECT_END_DESCRIPTION = "blindme.options.effect_end.description",
+        K_EFFECT_COLOR = "blindme.options.effect_color",
+        K_EFFECT_COLOR_DESCRIPTION = "blindme.options.effect_color.description",
         K_PRESETS = "blindme.options.effect_presets",
         K_PRESETS_DESCRIPTION = "blindme.options.effect_presets.description",
         K_WORLD_SETTINGS = "blindme.options.world_specific_settings",
@@ -353,7 +399,7 @@ public final class ConfigScreenFactory {
         K_WORLD_EFFECT_ENABLED_DESCRIPTION = "blindme.options.world_effect_enabled.description"
     ;
 
-    private static <T> ButtonOption effectPresetButton(ServerEffectPresets preset, Option<Float> optStart, Option<Float> optEnd, Option<T> optEnable, T enable) {
+    private static <T> ButtonOption effectPresetButton(ServerEffectPresets preset, Option<Float> optStart, Option<Float> optEnd, Option<Color>optColor, Option<T> optEnable, T enable) {
         return ButtonOption.createBuilder()
             .name(Component.translatable(preset.nameKey))
             .description(OptionDescription.of(Component.translatable(preset.descriptionKey)))
@@ -362,6 +408,7 @@ public final class ConfigScreenFactory {
                 optEnable.requestSet(enable);
                 optStart.requestSet(preset.start);
                 optEnd.requestSet(preset.end);
+                optColor.requestSet(new Color(preset.color & 0x00FFFFFF));
             })
             .build();
     }
