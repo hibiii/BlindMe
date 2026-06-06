@@ -17,6 +17,9 @@ import dev.isxander.yacl3.gui.controllers.cycling.EnumController;
 import hibi.blind_me.EffectManager;
 import hibi.blind_me.Main;
 import hibi.blind_me.Networking;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Button.OnPress;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -24,14 +27,50 @@ import net.minecraft.network.chat.Component;
 public final class ConfigScreenFactory {
 
     public static Screen create(Screen parent, boolean hasGlobalSettings, @Nullable String uniqueId) {
-        return YetAnotherConfigLib.createBuilder()
-        .title(Component.translatable(K_TITLE))
-        .categoryIf(hasGlobalSettings, globalSettings())
-        .categoryIf(uniqueId != null, worldSettings())
-        .save(ConfigScreenFactory::save)
+        return create(parent, hasGlobalSettings, uniqueId, () -> {
+            if (uniqueId != null) {
+                Main.CONFIG.setServerOptions(uniqueId, options);
+            }
+            ConfigFile.save(Main.CONFIG);
+            Main.CONFIG.configureInstance();
+        });
+    }
+
+    public static Screen create(Screen parent, boolean hasGlobalSettings, @Nullable String uniqueId, Runnable saveCallback) {
+        if (uniqueId != null) {
+            options = Main.CONFIG.getServerOptions(uniqueId);
+        }
+        var builder = YetAnotherConfigLib.createBuilder()
+        .title(Component.translatable(K_TITLE));
+        if (hasGlobalSettings) {
+            builder.category(globalSettings());
+        }
+        if (uniqueId != null) {
+            builder.category(worldSettings(uniqueId));
+        }
+        return builder
+        .save(saveCallback)
         .build()
         .generateScreen(parent);
     }
+
+    public static Button.Builder getButton(OnPress callback, String tooltip) {
+        return Button.builder(Component.translatable(ConfigScreenFactory.K_BLINDME_BUTTON), callback)
+            .bounds(5, 5, 155, 20)
+            .tooltip(Tooltip.create(Component.translatable(tooltip)));
+    }
+
+    public static final String
+        K_BLINDME_BUTTON = "blindme.server_options.title",
+        K_BLINDME_BUTTON_TOOLTIP_MULTIPLAYER = "blindme.server_options.button.tooltip.multiplayer",
+        K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER = "blindme.server_options.button.tooltip.singleplayer"
+    ;
+
+    // Required for some screens which work independently of world
+    public static ServerOptions getLastServerOptions() {
+        return options;
+    }
+    private static ServerOptions options;
 
     private static ConfigCategory globalSettings() {
         // Linked effect start-end fields prevent inverted range (start > end)
@@ -137,12 +176,12 @@ public final class ConfigScreenFactory {
             .build();
     }
 
-    private static ConfigCategory worldSettings() {
+    private static ConfigCategory worldSettings(String uniqueId) {
         // Required precedence for future buttons, all others must need to set availability when constructed
         var worldLock = Option.<Boolean>createBuilder()
             .name(Component.translatable(K_LOCK_BUTTON))
             .description(OptionDescription.of(Component.translatable(K_LOCK_BUTTON_DESCRIPTION)))
-            .binding(false, () -> Networking.getServerOptions().locked(), (locked) -> setOpts(Networking.getServerOptions().withLocked(locked)))
+            .binding(false, () -> options.locked(), (locked) -> options = options.withLocked(locked))
             .controller(BooleanControllerBuilder::create)
             .build();
         
@@ -151,13 +190,13 @@ public final class ConfigScreenFactory {
             .name(Component.translatable(K_WORLD_EFFECT_ENABLED))
             .description(OptionDescription.of(Component.translatable(K_WORLD_EFFECT_ENABLED_DESCRIPTION)))
             .binding(DeferrableOnOff.DEFAULT, () -> {
-                var effect = Networking.getServerOptions().effect();
+                var effect = options.effect();
                 return effect == null? DeferrableOnOff.DEFAULT : DeferrableOnOff.wrap(effect.enabled());
             }, (wrapped) -> {
                 if(wrapped == DeferrableOnOff.DEFAULT) {
-                    setEffect(null);
+                    options = options.withEffect(null);
                 } else {
-                    setEffect(Networking.getEffectOrDefault().setEnabled(wrapped.value));
+                    options = options.withEffect(options.effect().setEnabled(wrapped.value));
                 }
             })
             .available(!worldLock.pendingValue())
@@ -168,11 +207,11 @@ public final class ConfigScreenFactory {
         var worldEfStart = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_START))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_START_DESCRIPTION)))
-            .binding(1.25f, () -> Networking.getEffectOrDefault().start(), (start) -> {
+            .binding(1.25f, () -> options.effect().start(), (start) -> {
                 if (worldEfEnable.pendingValue() == DeferrableOnOff.DEFAULT) {
                     return;
                 }
-                setEffect(Networking.getEffectOrDefault().setStart(start));
+                options = options.withEffect(options.effect().setStart(start));
             })
             .available(!worldLock.pendingValue())
             .controller(opt -> FloatFieldControllerBuilder.create(opt)
@@ -184,11 +223,11 @@ public final class ConfigScreenFactory {
         var worldEfEnd = Option.<Float>createBuilder()
             .name(Component.translatable(K_EFFECT_END))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_END_DESCRIPTION)))
-            .binding(5f, () -> Networking.getEffectOrDefault().end(), (end) -> {
+            .binding(5f, () -> options.effect().end(), (end) -> {
                 if (worldEfEnable.pendingValue() == DeferrableOnOff.DEFAULT) {
                     return;
                 }
-                setEffect(Networking.getEffectOrDefault().setEnd(end));
+                options = options.withEffect(options.effect().setEnd(end));
             })
             .available(!worldLock.pendingValue())
             .controller(opt -> FloatFieldControllerBuilder.create(opt)
@@ -218,8 +257,10 @@ public final class ConfigScreenFactory {
         var worldCreative = Option.<DeferrableOnOff>createBuilder()
             .name(Component.translatable(K_WORLD_CREATIVE_BYPASS))
             .description(OptionDescription.of(Component.translatable(K_CREATIVE_BYPASS_DESCRIPTION)))
-            .binding(DeferrableOnOff.DEFAULT, () -> DeferrableOnOff.wrap(Networking.getServerOptions().creativeBypass()), (wrapped) -> {
-                setOpts(Networking.getServerOptions().withCreativeBypass(wrapped.value));
+            .binding(DeferrableOnOff.DEFAULT, () ->
+                DeferrableOnOff.wrap(options.creativeBypass()),
+            (wrapped) -> {
+                options = options.withCreativeBypass(wrapped.value);
             })
             .available(!worldLock.pendingValue())
             .customController(opt -> new EnumController<>(opt, DeferrableOnOff.class))
@@ -228,8 +269,10 @@ public final class ConfigScreenFactory {
         var worldSpectator = Option.<DeferrableOnOff>createBuilder()
             .name(Component.translatable(K_WORLD_SPECTATOR_BYPASS))
             .description(OptionDescription.of(Component.translatable(K_SPECTATOR_BYPASS_DESCRIPTION)))
-            .binding(DeferrableOnOff.DEFAULT, () -> DeferrableOnOff.wrap(Networking.getServerOptions().spectatorBypass()), (wrapped) -> {
-                setOpts(Networking.getServerOptions().withSpectatorBypass(wrapped.value));
+            .binding(DeferrableOnOff.DEFAULT, () ->
+                DeferrableOnOff.wrap(options.spectatorBypass()),
+            (wrapped) -> {
+                options = options.withSpectatorBypass(wrapped.value);
             })
             .available(!worldLock.pendingValue())
             .customController(opt -> new EnumController<>(opt, DeferrableOnOff.class))
@@ -279,19 +322,6 @@ public final class ConfigScreenFactory {
                 .build()
             )
             .build();
-    }
-
-    private static void save() {
-        ConfigFile.save(Main.CONFIG);
-        Main.CONFIG.configureInstance();
-    }
-
-    private static void setOpts(ServerOptions opts) {
-        Main.CONFIG.setServerOptions(Networking.uniqueId, opts);
-    }
-
-    private static void setEffect(ServerEffect eff) {
-        setOpts(Networking.getServerOptions().withEffect(eff));
     }
 
     private static final ValueFormatter<Float> DOUBLE_DIGIT_FORMATTER = value -> Component.literal(String.format("%,.2f", value).replaceAll("[\u00a0\u202F]", " "));

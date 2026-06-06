@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import hibi.blind_me.Main;
 import hibi.blind_me.config.ConfigFile;
-import hibi.blind_me.config.ServerScreen;
+import hibi.blind_me.config.ConfigScreenFactory;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.EditWorldScreen;
 import net.minecraft.network.chat.Component;
@@ -30,9 +30,10 @@ public abstract class EditWorldScreenMixin extends Screen {
         at = @At("TAIL")
     )
     void addBlindMeButton(CallbackInfo info) {
-        var button = ServerScreen.getButton(openBtn -> {
+        var button = ConfigScreenFactory.getButton(openBtn -> {
             var uniqueId = "s@" + this.levelAccess.getLevelId();
-            var screen = new ServerScreen(this, uniqueId, serverOptions -> {
+            var screen = ConfigScreenFactory.create(this, false, uniqueId, () -> {
+                var serverOptions = ConfigScreenFactory.getLastServerOptions();
                 if (serverOptions == null) {
                     return;
                 }
@@ -40,7 +41,7 @@ public abstract class EditWorldScreenMixin extends Screen {
                 ConfigFile.save(Main.CONFIG);
             });
             this.minecraft.gui.setScreen(screen);
-        }, ServerScreen.K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER).build();
+        }, ConfigScreenFactory.K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER).build();
         this.addRenderableWidget(button);
     }
 }

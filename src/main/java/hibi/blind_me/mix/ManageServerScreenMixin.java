@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import hibi.blind_me.Main;
 import hibi.blind_me.config.ConfigFile;
+import hibi.blind_me.config.ConfigScreenFactory;
 import hibi.blind_me.config.ServerOptions;
-import hibi.blind_me.config.ServerScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ManageServerScreen;
@@ -30,11 +30,11 @@ public abstract class ManageServerScreenMixin extends Screen {
     )
     void addBlindMeButton(CallbackInfo info) {
         OPTIONS = null;
-        OPEN_BUTTON = ServerScreen.getButton(openBtn -> {
+        OPEN_BUTTON = ConfigScreenFactory.getButton(openBtn -> {
             var uniqueId = "m@" + this.ipEdit.getValue();
-            var screen = new ServerScreen(this, uniqueId, serverOptions -> OPTIONS = serverOptions);
+            var screen = ConfigScreenFactory.create(this, false, uniqueId, () -> OPTIONS = ConfigScreenFactory.getLastServerOptions());
             this.minecraft.gui.setScreen(screen);
-        }, ServerScreen.K_BLINDME_BUTTON_TOOLTIP_MULTIPLAYER).build();
+        }, ConfigScreenFactory.K_BLINDME_BUTTON_TOOLTIP_MULTIPLAYER).build();
         this.addRenderableWidget(OPEN_BUTTON);
         this.updateAddButtonStatus();
     }
@@ -44,6 +44,7 @@ public abstract class ManageServerScreenMixin extends Screen {
         at = @At("TAIL")
     )
     void saveAndDiscard(CallbackInfo info) {
+        System.out.println("Options is "+ OPTIONS);
         if (OPTIONS != null) {
             Main.CONFIG.setServerOptions("m@" + this.ipEdit.getValue(), OPTIONS);
             ConfigFile.save(Main.CONFIG);

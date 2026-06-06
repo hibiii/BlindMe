@@ -25,6 +25,10 @@ public class Networking {
     }
 
     public static ServerEffect getEffectOrDefault() {
+        return getEffectOrDefault(uniqueId);
+    }
+
+    public static ServerEffect getEffectOrDefault(String uniqueId) {
         var effect = Main.CONFIG.getServerOptions(uniqueId).effect();
         if (effect == null) {
             return Main.CONFIG.defaultServerEffect;

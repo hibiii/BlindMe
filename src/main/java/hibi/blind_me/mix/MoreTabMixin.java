@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import hibi.blind_me.MixinStorage;
-import hibi.blind_me.config.ServerScreen;
+import hibi.blind_me.config.ConfigScreenFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
@@ -23,9 +23,9 @@ public class MoreTabMixin {
     )
     void addBlindMeButton(CreateWorldScreen parent, CallbackInfo info, GridLayout.RowHelper rowHelper) {
         MixinStorage.OPTIONS = null;
-        rowHelper.addChild(ServerScreen.getButton(button -> {
-                Minecraft.getInstance().gui.setScreen(new ServerScreen(parent, "temp@", options -> MixinStorage.OPTIONS = options));
-            }, ServerScreen.K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER
+        rowHelper.addChild(ConfigScreenFactory.getButton(button -> {
+                Minecraft.getInstance().gui.setScreen(ConfigScreenFactory.create(parent, false, "temp@", () -> MixinStorage.OPTIONS = ConfigScreenFactory.getLastServerOptions()));
+            }, ConfigScreenFactory.K_BLINDME_BUTTON_TOOLTIP_SINGLEPLAYER
         ).width(210).build());
     }
 }
