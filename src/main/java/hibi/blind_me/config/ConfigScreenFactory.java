@@ -168,9 +168,8 @@ public final class ConfigScreenFactory {
             .group(OptionGroup.createBuilder()
                 .name(Component.translatable(K_PRESETS))
                 .description(OptionDescription.of(Component.translatable(K_PRESETS_DESCRIPTION)))
-                // TODO: Deduplicate
-                .option(effectPresetButton("effect.minecraft.blindness", "blindme.effect_description.blindness", 1.25f, 5f, defEfStart, defEfEnd, defEfEnable, true))
-                .option(effectPresetButton("effect.minecraft.darkness", "blindme.effect_description.darkness", 11.25f, 15f, defEfStart, defEfEnd, defEfEnable, true))
+                .option(effectPresetButton(ServerEffectPresets.BLINDNESS, defEfStart, defEfEnd, defEfEnable, true))
+                .option(effectPresetButton(ServerEffectPresets.DARKNESS, defEfStart, defEfEnd, defEfEnable, true))
                 .build()
             )
             .build();
@@ -279,10 +278,10 @@ public final class ConfigScreenFactory {
             .build();
     
         // Preset buttons must also be affected by the lock
-        var worldBlindness = effectPresetButton("effect.minecraft.blindness", "blindme.effect_description.blindness", 1.25f, 5f, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
+        var worldBlindness = effectPresetButton(ServerEffectPresets.BLINDNESS, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
         worldBlindness.setAvailable(!worldLock.pendingValue());
 
-        var worldDarkness = effectPresetButton("effect.minecraft.darkness", "blindme.effect_description.darkness", 11.25f, 15f, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
+        var worldDarkness = effectPresetButton(ServerEffectPresets.DARKNESS, worldEfStart, worldEfEnd, worldEfEnable, DeferrableOnOff.ON);
         worldDarkness.setAvailable(!worldLock.pendingValue());
 
         worldEfEnable.addEventListener((opt, ev) -> {
@@ -354,16 +353,15 @@ public final class ConfigScreenFactory {
         K_WORLD_EFFECT_ENABLED_DESCRIPTION = "blindme.options.world_effect_enabled.description"
     ;
 
-    // TODO: Move presets to independent location
-    private static <T> ButtonOption effectPresetButton(String name, String description, float start, float end, Option<Float> optStart, Option<Float> optEnd, Option<T> optEnable, T enable) {
+    private static <T> ButtonOption effectPresetButton(ServerEffectPresets preset, Option<Float> optStart, Option<Float> optEnd, Option<T> optEnable, T enable) {
         return ButtonOption.createBuilder()
-            .name(Component.translatable(name))
-            .description(OptionDescription.of(Component.translatable(description)))
+            .name(Component.translatable(preset.nameKey))
+            .description(OptionDescription.of(Component.translatable(preset.descriptionKey)))
             .text(CommonComponents.EMPTY)
             .action((_, _) -> {
                 optEnable.requestSet(enable);
-                optStart.requestSet(start);
-                optEnd.requestSet(end);
+                optStart.requestSet(preset.start);
+                optEnd.requestSet(preset.end);
             })
             .build();
     }

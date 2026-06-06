@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 
 import hibi.blind_me.config.ConfigScreenFactory;
 import hibi.blind_me.config.ServerEffect;
+import hibi.blind_me.config.ServerEffectPresets;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
@@ -21,13 +22,13 @@ public final class Command {
         dispatcher.register(ClientCommands.literal("blindme")
             .then(ClientCommands.literal("set")
                 .then(ClientCommands.literal("off")
-                    .executes((src) -> Command.worldSubcommand(src, ServerEffect.OFF))
+                    .executes((src) -> Command.worldSubcommand(src, ServerEffectPresets.OFF))
                 )
                 .then(ClientCommands.literal("blindness")
-                    .executes((src) -> Command.worldSubcommand(src, ServerEffect.BLINDNESS))
+                    .executes((src) -> Command.worldSubcommand(src, ServerEffectPresets.BLINDNESS))
                 )
                 .then(ClientCommands.literal("darkness")
-                    .executes((src) -> Command.worldSubcommand(src, ServerEffect.DARKNESS))
+                    .executes((src) -> Command.worldSubcommand(src, ServerEffectPresets.DARKNESS))
                 )
                 .then(ClientCommands.literal("default")
                     .executes((src) -> Command.worldSubcommand(src, null))
@@ -40,7 +41,7 @@ public final class Command {
         );
     }
 
-    private static int worldSubcommand(CommandContext<FabricClientCommandSource> cmd, @Nullable ServerEffect ef) {
+    private static int worldSubcommand(CommandContext<FabricClientCommandSource> cmd, @Nullable ServerEffectPresets newPre) {
         String uniqueId = Networking.uniqueId;
         if (uniqueId == null) {
             throw new IllegalStateException("Command called outside of a world");
@@ -50,23 +51,32 @@ public final class Command {
             cmd.getSource().sendFeedback(Component.translatable(K_OPTIONS_LOCKED).withStyle(ChatFormatting.RED));
             return 0;
         }
-        if (opts.effect() == ef) {
-            cmd.getSource().sendFeedback(Component.translatable(
-                (ef == null) ? K_EFFECT_ALREADY_UNSET : K_EFFECT_ALREADY_SET
-            ));
-            return 0;
-        }
-        Main.CONFIG.setEffectForServer(uniqueId, ef);
         Component feedback;
-        if (ef == null) {
-            feedback = Component.translatable(K_EFFECT_UNSET);
-        } else {
-            if (ef == ServerEffect.OFF) {
-                feedback = Component.translatable(K_EFFECT_OFF);
+        var oldEf = opts.effect();
+        var newEf = oldEf;
+        if (newPre == null) {
+            if (oldEf == null) {
+                feedback = Component.translatable(K_EFFECT_ALREADY_UNSET);
             } else {
-                feedback = Component.translatable(K_EFFECT_SET, Component.translatable(ef.component()));
+                newEf = null;
+                feedback = Component.translatable(K_EFFECT_UNSET);
+            }
+        } else if (newPre == ServerEffectPresets.OFF) {
+            if (oldEf != null && !oldEf.enabled()) {
+                feedback = Component.translatable(K_EFFECT_ALREADY_OFF);
+            } else {
+                newEf = ServerEffectPresets.OFF.toEffect();
+                feedback = Component.translatable(K_EFFECT_OFF);
+            }
+        } else {
+            if (newPre.equals(oldEf)) {
+                feedback = Component.translatable(K_EFFECT_ALREADY_SET);
+            } else {
+                newEf = newPre.toEffect();
+                feedback = Component.translatable(K_EFFECT_SET, Component.translatable(newPre.nameKey));
             }
         }
+        Main.CONFIG.setEffectForServer(uniqueId, newEf);
         cmd.getSource().sendFeedback(feedback);
         return 0;
     }
@@ -75,10 +85,10 @@ public final class Command {
         String uniqueId = Networking.uniqueId;
         ServerEffect ef = Main.CONFIG.getEffectForServer(uniqueId);
         Component feedback;
-        if (ef == ServerEffect.OFF) {
+        if (!ef.enabled()) {
             feedback = Component.translatable(K_PRINT_NONE);
         } else {
-            feedback = Component.translatable(K_PRINT_SET, Component.translatable(ef.component()));
+            feedback = Component.translatable(K_PRINT_SET, Component.translatable(ServerEffectPresets.matchNameKey(ef)));
         }
         cmd.getSource().sendFeedback(feedback);
         return 0;
@@ -94,6 +104,7 @@ public final class Command {
 
     private static final String
         K_EFFECT_ALREADY_SET = "blindme.command.effect_already_set",
+        K_EFFECT_ALREADY_OFF = "blindme.command.effect_already_disabled",
         K_EFFECT_ALREADY_UNSET = "blindme.command.effect_already_unset",
         K_EFFECT_SET = "blindme.command.set_effect",
         K_EFFECT_OFF = "blindme.command.disable_effect",

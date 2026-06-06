@@ -1,6 +1,7 @@
 {
     "blindme.command.effect_already_set": "This is the currently active effect",
     "blindme.command.set_effect": "Set the active effect to %s",
+    "blindme.command.effect_already_disabled": "Vision-impairing effects are already dsiabled",
     "blindme.command.disable_effect": "Disabled vision-impairing effects",
     "blindme.command.unset_effect": "Disabled world-specific effect",
     "blindme.command.effect_already_unset": "There already isn't an effect set specifically for this world",

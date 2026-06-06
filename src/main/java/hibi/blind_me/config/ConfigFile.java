@@ -77,10 +77,10 @@ public final class ConfigFile {
             if (src.enabled() == false) {
                 return new JsonPrimitive("OFF");
             }
-            if (src.equals(ServerEffect.BLINDNESS)) {
+            if (ServerEffectPresets.BLINDNESS.equals(src)) {
                 return new JsonPrimitive("BLINDNESS");
             }
-            if (src.equals(ServerEffect.DARKNESS)) {
+            if (ServerEffectPresets.DARKNESS.equals(src)) {
                 return new JsonPrimitive("DARKNESS");
             }
             JsonObject out = new JsonObject();
@@ -94,9 +94,9 @@ public final class ConfigFile {
             if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isString()) {
                 String preset = json.getAsString();
                 return switch(preset) {
-                    case "OFF" -> ServerEffect.OFF;
-                    case "BLINDNESS" -> ServerEffect.BLINDNESS;
-                    case "DARKNESS" -> ServerEffect.DARKNESS;
+                    case "OFF" -> ServerEffectPresets.OFF.toEffect();
+                    case "BLINDNESS" -> ServerEffectPresets.BLINDNESS.toEffect();
+                    case "DARKNESS" -> ServerEffectPresets.DARKNESS.toEffect();
                     default -> throw new JsonParseException("Unknown preset \"%s\"".formatted(preset));
                 };
             }
