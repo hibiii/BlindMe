@@ -56,6 +56,8 @@
     
     "effect.blindme.default": "Default",
     "effect.blindme.server_default": "Server-defined default",
+    "effect.blindme.truly_blind": "Truly Blind",
+    "effect.blindme.silent_hill": "Silent Hill",
     "blindme.options.world_effect.tooltip.OFF": "OFF: Disable any vision-impairing effects",
     "blindme.options.world_effect.tooltip.BLINDNESS": "Blindness: Blocks and entities are only visible in a small radius",
     "blindme.options.world_effect.tooltip.DARKNESS": "Darkness: Blocks and entities are visible in a medium radius",
@@ -63,6 +65,8 @@
 
     "blindme.effect_description.blindness": "The traditional Blindness effect. A very restrictive effect that drastically reduces the player’s range of vision to a radius of four blocks around themselves. All else is rendered in pure black.",
     "blindme.effect_description.darkness": "The effect that Darkness has with distant objects. Not as restrictive as Blindness, it reduces the range of vision to a radius of approximately 14 blocks. Does not come with the darkening pulse effect of vanilla Darkness.",
+    "blindme.effect_description.truly_blind": "Designed to bring a modicum of real life blindness into the game while keeping it adapted to the fact video games cannot express tactile sense. Truly Blind restricts the player's range of vision to a hauntingly short 1.9 blocks. The vast majority of things within touching distance are hidden and cannot be seen.",
+    "blindme.effect_description.silent_hill": "A fog preset designed to resemble the fog from Silent Hill. Added as a joke as so many people see BlindMe gameplay and instinctively say that the game is Silent Hill.",
 
     "blindme.shaders_warning.title": "BlindMe Compatibility Waning",
     "blindme.shaders_warning.messsage": "BlindMe has detected that the Iris Shaders mod is currently installed and active. While BlindMe and Iris Shaders do not have compatibility issues themselves, many popular shader packs do not fully consider the Blindness effect or even the fog from the Darkness effect, and will errouneously let you see a larger radius directly or through a transluscent obstacle.\n\nPlease be advised that I, the developer of BlindMe myself, recommend AGAINST using shader packs without considerable and thorough testing, as they can fully nullify the challenge of BlindMe.",

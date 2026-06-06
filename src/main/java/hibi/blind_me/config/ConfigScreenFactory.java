@@ -188,8 +188,11 @@ public final class ConfigScreenFactory {
             .group(OptionGroup.createBuilder()
                 .name(Component.translatable(K_PRESETS))
                 .description(OptionDescription.of(Component.translatable(K_PRESETS_DESCRIPTION)))
+                .collapsed(true)
                 .option(effectPresetButton(ServerEffectPresets.BLINDNESS, defEfStart, defEfEnd, defEfColor, defEfEnable, true))
                 .option(effectPresetButton(ServerEffectPresets.DARKNESS, defEfStart, defEfEnd, defEfColor, defEfEnable, true))
+                .option(effectPresetButton(ServerEffectPresets.TRULY_BLIND, defEfStart, defEfEnd, defEfColor, defEfEnable, true))
+                .option(effectPresetButton(ServerEffectPresets.SILENT_HILL, defEfStart, defEfEnd, defEfColor, defEfEnable, true))
                 .build()
             )
             .build();
@@ -326,6 +329,12 @@ public final class ConfigScreenFactory {
         var worldDarkness = effectPresetButton(ServerEffectPresets.DARKNESS, worldEfStart, worldEfEnd, worldEfColor, worldEfEnable, DeferrableOnOff.ON);
         worldDarkness.setAvailable(!worldLock.pendingValue());
 
+        var worldTrulyBlind = effectPresetButton(ServerEffectPresets.TRULY_BLIND, worldEfStart, worldEfEnd, worldEfColor, worldEfEnable, DeferrableOnOff.ON);
+        worldTrulyBlind.setAvailable(!worldLock.pendingValue());
+
+        var worldSilentHill = effectPresetButton(ServerEffectPresets.SILENT_HILL, worldEfStart, worldEfEnd, worldEfColor, worldEfEnable, DeferrableOnOff.ON);
+        worldSilentHill.setAvailable(!worldLock.pendingValue());
+
         worldEfEnable.addEventListener((opt, ev) -> {
             var available = opt.pendingValue() == DeferrableOnOff.ON && !worldLock.pendingValue();
             worldEfStart.setAvailable(available);
@@ -339,6 +348,8 @@ public final class ConfigScreenFactory {
             worldSpectator.setAvailable(available);
             worldBlindness.setAvailable(available);
             worldDarkness.setAvailable(available);
+            worldTrulyBlind.setAvailable(available);
+            worldSilentHill.setAvailable(available);
         });
 
         return ConfigCategory.createBuilder()
@@ -360,8 +371,11 @@ public final class ConfigScreenFactory {
             .group(OptionGroup.createBuilder()
                 .name(Component.translatable(K_PRESETS))
                 .description(OptionDescription.of(Component.translatable(K_PRESETS_DESCRIPTION)))
+                .collapsed(true)
                 .option(worldBlindness)
                 .option(worldDarkness)
+                .option(worldTrulyBlind)
+                .option(worldSilentHill)
                 .build()
             )
             .build();

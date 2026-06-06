@@ -4,6 +4,8 @@ public enum ServerEffectPresets {
     OFF(1.25f, 5f, 0xff000000, "options.off", "blindme.effect_description.off", false),
     BLINDNESS(1.25f, 5f, 0xff000000, "effect.minecraft.blindness", "blindme.effect_description.blindness", true),
     DARKNESS(11.25f, 15f, 0xff000000, "effect.minecraft.darkness", "blindme.effect_description.darkness", true),
+    TRULY_BLIND(0.5f, 1.9f, 0xff000000, "effect.blindme.truly_blind", "blindme.effect_description.truly_blind", true),
+    SILENT_HILL(2f, 7f, 0xff5a7075, "effect.blindme.silent_hill", "blindme.effect_description.silent_hill", true),
     ;
 
     public final String nameKey;
