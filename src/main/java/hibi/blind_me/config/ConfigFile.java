@@ -83,6 +83,12 @@ public final class ConfigFile {
             if (ServerEffectPresets.DARKNESS.equals(src)) {
                 return new JsonPrimitive("DARKNESS");
             }
+            if (ServerEffectPresets.TRULY_BLIND.equals(src)) {
+                return new JsonPrimitive("TRULY_BLIND");
+            }
+            if (ServerEffectPresets.SILENT_HILL.equals(src)) {
+                return new JsonPrimitive("SILENT_HILL");
+            }
             JsonObject out = new JsonObject();
             out.addProperty("start", src.start());
             out.addProperty("end", src.end());
@@ -100,6 +106,8 @@ public final class ConfigFile {
                     case "OFF" -> ServerEffectPresets.OFF.toEffect();
                     case "BLINDNESS" -> ServerEffectPresets.BLINDNESS.toEffect();
                     case "DARKNESS" -> ServerEffectPresets.DARKNESS.toEffect();
+                    case "TRULY_BLIND" -> ServerEffectPresets.TRULY_BLIND.toEffect();
+                    case "SILENT_HILL" -> ServerEffectPresets.SILENT_HILL.toEffect();
                     default -> throw new JsonParseException("Unknown preset \"%s\"".formatted(preset));
                 };
             }
