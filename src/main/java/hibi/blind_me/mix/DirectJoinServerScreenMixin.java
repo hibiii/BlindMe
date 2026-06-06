@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import hibi.blind_me.Main;
 import hibi.blind_me.config.ConfigFile;
 import hibi.blind_me.config.ConfigScreenFactory;
-import hibi.blind_me.config.ServerOptions;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.DirectJoinServerScreen;
@@ -29,10 +28,9 @@ public abstract class DirectJoinServerScreenMixin extends Screen {
         at = @At("TAIL")
     )
     void addBlindMeButton(CallbackInfo info) {
-        OPTIONS = null;
         OPEN_BUTTON = ConfigScreenFactory.getButton(openBtn -> {
             var uniqueId = "m@" + this.ipEdit.getValue();
-            var screen = ConfigScreenFactory.create(this, false, uniqueId, () -> OPTIONS = ConfigScreenFactory.getLastServerOptions());
+            var screen = ConfigScreenFactory.create(this, false, uniqueId, () -> CHANGED = true);
             this.minecraft.gui.setScreen(screen);
         }, ConfigScreenFactory.K_BLINDME_BUTTON_TOOLTIP_MULTIPLAYER).build();
         this.addRenderableWidget(OPEN_BUTTON);
@@ -40,16 +38,16 @@ public abstract class DirectJoinServerScreenMixin extends Screen {
     }
 
     @Inject(
-        method = "onClose",
+        method = "removed",
         at = @At("HEAD")
     )
     void saveAndDiscard(CallbackInfo info) {
-        if (OPTIONS != null) {
-            Main.CONFIG.setServerOptions("m@" + this.ipEdit.getValue(), OPTIONS);
+        if (CHANGED) {
+            Main.CONFIG.setServerOptions("m@" + this.ipEdit.getValue(), ConfigScreenFactory.getLastServerOptions());
             ConfigFile.save(Main.CONFIG);
         }
         OPEN_BUTTON = null;
-        OPTIONS = null;
+        CHANGED = false;
     }
 
     @Inject(
@@ -70,5 +68,5 @@ public abstract class DirectJoinServerScreenMixin extends Screen {
     private EditBox ipEdit;
 
     private static Button OPEN_BUTTON = null;
-    private static ServerOptions OPTIONS = null;
+    private static boolean CHANGED = false;
 }

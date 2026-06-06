@@ -6,6 +6,7 @@
     "client": [
         "IntegratedServerMixin",
         "ManageServerScreenMixin",
+        "ScreenMixin",
         "DirectJoinServerScreenMixin",
         "EditWorldScreenMixin",
         "MoreTabMixin",

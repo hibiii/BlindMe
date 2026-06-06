@@ -9,48 +9,37 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import hibi.blind_me.Main;
 import hibi.blind_me.config.ConfigFile;
 import hibi.blind_me.config.ConfigScreenFactory;
-import hibi.blind_me.config.ServerOptions;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ManageServerScreen;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import net.minecraft.network.chat.Component;
 
 @Mixin(ManageServerScreen.class)
-public abstract class ManageServerScreenMixin extends Screen {
-    
-    protected ManageServerScreenMixin(Component component) {
-        super(component);
-    }
+public abstract class ManageServerScreenMixin extends ScreenMixin {
 
     @Inject(
         method = "init",
         at = @At("TAIL")
     )
     void addBlindMeButton(CallbackInfo info) {
-        OPTIONS = null;
+        ManageServerScreen that = (ManageServerScreen) (Object) this;
         OPEN_BUTTON = ConfigScreenFactory.getButton(openBtn -> {
             var uniqueId = "m@" + this.ipEdit.getValue();
-            var screen = ConfigScreenFactory.create(this, false, uniqueId, () -> OPTIONS = ConfigScreenFactory.getLastServerOptions());
-            this.minecraft.gui.setScreen(screen);
+            var screen = ConfigScreenFactory.create(that, false, uniqueId, () -> CHANGED = true);
+            that.minecraft.gui.setScreen(screen);
         }, ConfigScreenFactory.K_BLINDME_BUTTON_TOOLTIP_MULTIPLAYER).build();
-        this.addRenderableWidget(OPEN_BUTTON);
+        that.addRenderableWidget(OPEN_BUTTON);
         this.updateAddButtonStatus();
     }
 
-    @Inject(
-        method = "onClose",
-        at = @At("TAIL")
-    )
-    void saveAndDiscard(CallbackInfo info) {
-        System.out.println("Options is "+ OPTIONS);
-        if (OPTIONS != null) {
-            Main.CONFIG.setServerOptions("m@" + this.ipEdit.getValue(), OPTIONS);
+    @Override
+    void removedHook(CallbackInfo info) {
+        if (CHANGED) {
+            Main.CONFIG.setServerOptions("m@" + this.ipEdit.getValue(), ConfigScreenFactory.getLastServerOptions());
             ConfigFile.save(Main.CONFIG);
         }
         OPEN_BUTTON = null;
-        OPTIONS = null;
+        CHANGED = false;
     }
 
     @Inject(
@@ -71,5 +60,5 @@ public abstract class ManageServerScreenMixin extends Screen {
     private EditBox ipEdit;
 
     private static Button OPEN_BUTTON = null;
-    private static ServerOptions OPTIONS = null;
+    private static boolean CHANGED = false;
 }
