@@ -39,6 +39,11 @@ public class BlindmeFogEnvironment extends FogEnvironment {
         this.enabled = enabled;
     }
 
+    public void setProperties(float start, float end) {
+        this.envEnd = end;
+        this.envStart = start;
+    }
+
     public void setProperties(float start, float end, int color) {
         this.envEnd = end;
         this.envStart = start;
