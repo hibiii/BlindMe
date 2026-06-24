@@ -3,6 +3,6 @@
 1. Update Loom. If necessary, upgrade Gradle wrapper with `./gradlew wrapper --gradle-version latest`.
 2. Update dependency versions.
 3. Fix errors in code.
-4. Run tests: client screens, client gameplay, server-modded, server-vanilla.
+4. Run tests: client screens, client gameplay, unique ID with client and server.
 5. If behavior deviates, run tests again.
 6. Update mod loader manifests.
