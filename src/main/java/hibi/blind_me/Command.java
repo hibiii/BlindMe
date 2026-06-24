@@ -89,9 +89,11 @@ public final class Command {
 
     private static int printSubcommand(CommandContext<FabricClientCommandSource> cmd) {
         String uniqueId = Networking.uniqueId;
-        ServerEffect ef = Main.CONFIG.getEffectForServer(uniqueId);
+        ServerEffect ef = Main.CONFIG.getServerOptions(uniqueId).effect();
         Component feedback;
-        if (!ef.enabled()) {
+        if (ef == null) {
+            feedback = Component.translatable(K_PRINT_SET, Component.translatable("effect.blindme.default"));
+        } else if (!ef.enabled()) {
             feedback = Component.translatable(K_PRINT_NONE);
         } else {
             feedback = Component.translatable(K_PRINT_SET, Component.translatable(ServerEffectPresets.matchNameKey(ef)));
