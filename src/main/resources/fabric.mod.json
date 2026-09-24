@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "blindme",
-    "version": "2.1",
+    "version": "2.0+26.3",
     "entrypoints": {
         "client": [
             "hibi.blind_me.Main::clientInit"
