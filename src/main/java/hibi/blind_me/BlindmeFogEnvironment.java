@@ -1,5 +1,6 @@
 package hibi.blind_me;
 
+import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Camera;
@@ -7,13 +8,14 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.fog.FogData;
 import net.minecraft.client.renderer.fog.environment.FogEnvironment;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.material.FogType;
 
 public class BlindmeFogEnvironment extends FogEnvironment {
 
     private boolean enabled = false;
-    private int color = 0xFF000000;
+    private Vector3fc color = ARGB.vector3fFromRGB24(0x000000);
     private float envEnd = 5;
     private float envStart = 4;
 
@@ -26,7 +28,7 @@ public class BlindmeFogEnvironment extends FogEnvironment {
     }
 
     @Override
-    public int getBaseColor(ClientLevel level, Camera camera, int renderDistance, float partialTicks) {
+    public Vector3fc getBaseColor(ClientLevel level, Camera camera, int renderDistance, float partialTicks) {
         return this.color;
     }
 
@@ -47,7 +49,7 @@ public class BlindmeFogEnvironment extends FogEnvironment {
     public void setProperties(float start, float end, int color) {
         this.envEnd = end;
         this.envStart = start;
-        this.color = color;
+        this.color = ARGB.vector3fFromRGB24(color);
     }
     
     private static final BlindmeFogEnvironment instance = new BlindmeFogEnvironment();

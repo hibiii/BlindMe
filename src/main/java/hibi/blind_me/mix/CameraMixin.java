@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import hibi.blind_me.EffectManager;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 
 @Mixin(Camera.class)
@@ -16,7 +17,7 @@ public class CameraMixin {
         method = "extractRenderState",
         at = @At("TAIL")
     )
-    public void blockSky(final CameraRenderState cameraState, final float cameraEntityPartialTicks, CallbackInfo info) {
+    public void blockSky(final CameraRenderState cameraState, final DeltaTracker deltaTracker, CallbackInfo info) {
         cameraState.entityRenderState.doesMobEffectBlockSky |= EffectManager.blockingSky();
     }
 }

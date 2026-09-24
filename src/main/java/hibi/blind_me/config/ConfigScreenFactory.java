@@ -124,13 +124,10 @@ public final class ConfigScreenFactory {
             .name(Component.translatable(K_EFFECT_COLOR))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_COLOR_DESCRIPTION)))
             .binding(new Color(0x000000), () ->{
-                int raw = Main.CONFIG.defaultServerEffect.color();
-                int rgb = raw & 0x00ffffff;
+                int rgb = Main.CONFIG.defaultServerEffect.color();
                 return new Color(rgb);
             }, (color) -> {
-                Main.CONFIG.defaultServerEffect = Main.CONFIG.defaultServerEffect.setColor(
-                    color.getRGB() | 0xff000000
-                );
+                Main.CONFIG.defaultServerEffect = Main.CONFIG.defaultServerEffect.setColor(color.getRGB());
             })
             .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(false))
             .build();
@@ -282,16 +279,13 @@ public final class ConfigScreenFactory {
             .name(Component.translatable(K_EFFECT_COLOR))
             .description(OptionDescription.of(Component.translatable(K_EFFECT_COLOR_DESCRIPTION)))
             .binding(new Color(0x000000), () ->{
-                int raw = options.effect() instanceof ServerEffect ef? ef.color() : 0xff000000;
-                int rgb = raw & 0x00ffffff;
+                int rgb = options.effect() instanceof ServerEffect ef? ef.color() : 0x000000;
                 return new Color(rgb);
             }, (color) -> {
                 if (worldEfEnable.pendingValue() == DeferrableOnOff.DEFAULT) {
                     return;
                 }
-                options = options.withEffect(options.effect().setColor(
-                    color.getRGB() | 0xff000000
-                ));
+                options = options.withEffect(options.effect().setColor(color.getRGB()));
             })
             .available(!worldLock.pendingValue() && worldEfEnable.pendingValue() == DeferrableOnOff.ON)
             .controller(opt -> ColorControllerBuilder.create(opt).allowAlpha(false))
@@ -422,7 +416,7 @@ public final class ConfigScreenFactory {
                 optEnable.requestSet(enable);
                 optStart.requestSet(preset.start);
                 optEnd.requestSet(preset.end);
-                optColor.requestSet(new Color(preset.color & 0x00FFFFFF));
+                optColor.requestSet(new Color(preset.color));
             })
             .build();
     }
