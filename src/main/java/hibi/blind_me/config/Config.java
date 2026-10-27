@@ -20,7 +20,7 @@ public class Config {
     private Map<String, ServerOptions> servers = new HashMap<String, ServerOptions>();
 
     // The default effect to apply when connected to a server without a specific setting
-    public ServerEffect defaultServerEffect = null;
+    public ServerEffect defaultServerEffect = ServerEffectPresets.OFF.toEffect();
 
     public boolean hasSeenIrisWarning = false;
 
